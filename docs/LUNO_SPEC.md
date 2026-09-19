@@ -7,6 +7,15 @@
 
 ---
 
+## 🔗 ลิงก์สำคัญของโปรเจกต์ (Important Links)
+
+* **GitHub Repository (Private):** [https://github.com/atsadatan/LUNO](https://github.com/atsadatan/LUNO)
+* **Google Apps Script Web App (API):** `https://script.google.com/macros/s/AKfycbxXzOQjibeWZCDTXHscNihZZp3e3C4Gm4EvjOJJ5LcZ_1-TCsUh9ji7HHNTbaauCMLQ/exec`
+* **Google Sheet Database:** [https://docs.google.com/spreadsheets/d/1LeSBKpY0HW3jjsoRdWmynbQnJGuWE6TyJV5PIq8Zyzk/edit](https://docs.google.com/spreadsheets/d/1LeSBKpY0HW3jjsoRdWmynbQnJGuWE6TyJV5PIq8Zyzk/edit)
+* **Google Apps Script Dashboard:** [https://script.google.com](https://script.google.com)
+
+---
+
 ## 1. หลักการและเหตุผล (Rationale & Context)
 
 โปรแกรมพัฒนาเชิงปฏิบัติการนี้ออกแบบโดยยึดหลัก **"ขั้นตอนน้อยที่สุด ไม่ผูกเวลา และไร้แรงเสียดทาน (Zero Friction)"** เพื่อให้ตอบโจทย์ผู้บริหารสถานศึกษาขนาดเล็กที่มีภาระงานมากและเวลาว่างไม่แน่นอน:
