@@ -3,21 +3,14 @@ import { PlayCircle, CheckCircle2, RotateCcw, AlertTriangle, Smartphone, FolderS
 import { SoundService } from '../services/audio';
 import { ApiService } from '../services/api';
 
-interface Item {
+import { LEVEL_1_CHANNELS } from '../../1_EDIT_CONTENT_HERE/interactive_scenarios';
+
+const INITIAL_ITEMS = LEVEL_1_CHANNELS as Array<{
   id: string;
   name: string;
   category: 'cat-emergency' | 'cat-internal' | 'cat-community';
   icon: string;
-}
-
-const INITIAL_ITEMS: Item[] = [
-  { id: 'item-1', name: 'LINE Alert แจ้งเตือนภัย & น้ำท่วม', category: 'cat-emergency', icon: '🚨' },
-  { id: 'item-2', name: 'Google Drive แชร์แผนการสอนครู', category: 'cat-internal', icon: '📂' },
-  { id: 'item-3', name: 'Facebook Fanpage โรงเรียน', category: 'cat-community', icon: '🌐' },
-  { id: 'item-4', name: 'SMS สายด่วนแจ้งเหตุฉุกเฉินถึงผู้ปกครอง', category: 'cat-emergency', icon: '📱' },
-  { id: 'item-5', name: 'LINE กลุ่มงานบริหารและครูประจำชั้น', category: 'cat-internal', icon: '👥' },
-  { id: 'item-6', name: 'TikTok / YouTube กิจกรรมนักเรียน', category: 'cat-community', icon: '🎬' },
-];
+}>;
 
 interface Props {
   onPassLevel: () => void;

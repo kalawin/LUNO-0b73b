@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { PlayCircle, CheckCircle2, AlertTriangle, ArrowRight, Lightbulb } from 'lucide-react';
 import { SoundService } from '../services/audio';
 import { ApiService } from '../services/api';
+import { LEVEL_4_VISION_PARTS, LEVEL_4_QUIZ } from '../../1_EDIT_CONTENT_HERE/interactive_scenarios';
 
 interface Props {
   onPassLevel: () => void;
@@ -14,10 +15,10 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
     return prog.watchedVideos || {};
   });
 
-  // Vision Builder states
-  const [part1, setPart1] = useState('มุ่งสู่โรงเรียนแห่งการเรียนรู้ดิจิทัลที่ทั่วถึง');
-  const [part2, setPart2] = useState('ด้วยพลังความร่วมมือของครู ชุมชน และเทคโนโลยีเปิด');
-  const [part3, setPart3] = useState('เพื่อให้นักเรียนทุกคนมีทักษะอนาคตอย่างเท่าเทียม');
+  // Vision Builder states (ดึงค่าเริ่มต้นจาก 1_EDIT_CONTENT_HERE/interactive_scenarios.ts)
+  const [part1, setPart1] = useState(LEVEL_4_VISION_PARTS.pillars[0] || '');
+  const [part2, setPart2] = useState(LEVEL_4_VISION_PARTS.actionDrivers[0] || '');
+  const [part3, setPart3] = useState(LEVEL_4_VISION_PARTS.impacts[0] || '');
 
   const [quizAnswer, setQuizAnswer] = useState<string>('');
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error' | 'warning'; message: string; details?: string } | null>(null);
@@ -46,12 +47,13 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
       return;
     }
 
-    if (quizAnswer === 'A') {
+    const selected = LEVEL_4_QUIZ.choices.find(c => c.id === quizAnswer);
+    if (selected && selected.isCorrect) {
       SoundService.playSuccess();
       setFeedback({
         type: 'success',
-        message: 'ยอดเยี่ยมมาก! ท่านตอบถูกต้องและปลดล็อกแบบทดสอบหลังเรียน',
-        details: 'การขอความยินยอมและปกป้องสิทธิส่วนบุคคลของเด็ก (PDPA) รวมถึงความปลอดภัยทางไซเบอร์ เป็นรากฐานของค่านิยมและจริยธรรมดิจิทัลในสถานศึกษา'
+        message: LEVEL_4_QUIZ.correctFeedback.message,
+        details: LEVEL_4_QUIZ.correctFeedback.details
       });
 
       // บันทึกวิสัยทัศน์ที่สร้างลงเครื่องและส่ง Telemetry เข้าชีท data1
@@ -69,8 +71,8 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
       SoundService.playError();
       setFeedback({
         type: 'error',
-        message: 'ยังไม่ถูกต้อง',
-        details: 'การสื่อสารยุคดิจิทัลต้องคำนึงถึงความยินยอมและการคุ้มครองข้อมูลส่วนบุคคลของเด็กนักเรียนเป็นสำคัญอันดับแรก โปรดลองตอบใหม่อีกครั้ง'
+        message: LEVEL_4_QUIZ.incorrectFeedback.message,
+        details: LEVEL_4_QUIZ.incorrectFeedback.details
       });
     }
   };
@@ -179,9 +181,9 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
               onChange={(e) => setPart1(e.target.value)}
               className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-700 text-white text-xs sm:text-sm focus:border-red-500 focus:outline-none"
             >
-              <option value="มุ่งสู่โรงเรียนแห่งการเรียนรู้ดิจิทัลที่ทั่วถึง">มุ่งสู่โรงเรียนแห่งการเรียนรู้ดิจิทัลที่ทั่วถึง</option>
-              <option value="ยกระดับสมรรถนะผู้เรียนด้วยนวัตกรรมดิจิทัล">ยกระดับสมรรถนะผู้เรียนด้วยนวัตกรรมดิจิทัล</option>
-              <option value="สร้างชุมชนการเรียนรู้วิถีดิจิทัลที่ปลอดภัย">สร้างชุมชนการเรียนรู้วิถีดิจิทัลที่ปลอดภัย</option>
+              {LEVEL_4_VISION_PARTS.pillars.map((item, idx) => (
+                <option key={idx} value={item}>{item}</option>
+              ))}
             </select>
           </div>
 
@@ -194,9 +196,9 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
               onChange={(e) => setPart2(e.target.value)}
               className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-700 text-white text-xs sm:text-sm focus:border-red-500 focus:outline-none"
             >
-              <option value="ด้วยพลังความร่วมมือของครู ชุมชน และเทคโนโลยีเปิด">ด้วยพลังความร่วมมือของครู ชุมชน และเทคโนโลยีเปิด</option>
-              <option value="ผ่านการเป็นแบบอย่างที่ดีและการเรียนรู้ตลอดชีวิต">ผ่านการเป็นแบบอย่างที่ดีและการเรียนรู้ตลอดชีวิต</option>
-              <option value="ด้วยการบริหารจัดการที่คุ้มค่า โปร่งใส และเอื้ออาทร">ด้วยการบริหารจัดการที่คุ้มค่า โปร่งใส และเอื้ออาทร</option>
+              {LEVEL_4_VISION_PARTS.actionDrivers.map((item, idx) => (
+                <option key={idx} value={item}>{item}</option>
+              ))}
             </select>
           </div>
 
@@ -209,9 +211,9 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
               onChange={(e) => setPart3(e.target.value)}
               className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-700 text-white text-xs sm:text-sm focus:border-red-500 focus:outline-none"
             >
-              <option value="เพื่อให้นักเรียนทุกคนมีทักษะอนาคตอย่างเท่าเทียม">เพื่อให้นักเรียนทุกคนมีทักษะอนาคตอย่างเท่าเทียม</option>
-              <option value="เพื่อความสุขและการพัฒนาที่ยั่งยืนของสถานศึกษา">เพื่อความสุขและการพัฒนาที่ยั่งยืนของสถานศึกษา</option>
-              <option value="เพื่อก้าวทันโลกยุค AI อย่างมีจริยธรรมและคุณธรรม">เพื่อก้าวทันโลกยุค AI อย่างมีจริยธรรมและคุณธรรม</option>
+              {LEVEL_4_VISION_PARTS.impacts.map((item, idx) => (
+                <option key={idx} value={item}>{item}</option>
+              ))}
             </select>
           </div>
         </div>
@@ -234,48 +236,24 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
             </span>
             <div className="flex-1">
               <h4 className="text-sm sm:text-base font-bold text-white mb-3">
-                คำถามท้ายด่านที่ 4: การเผยแพร่ภาพถ่ายกิจกรรมนักเรียนลงบน Social Media ของโรงเรียนขนาดเล็ก ผู้บริหารควรสร้างข้อตกลงร่วมด้านใดเป็นลำดับแรก?
+                {LEVEL_4_QUIZ.question}
               </h4>
               <div className="space-y-2.5">
-                <label className={`flex items-center p-3 rounded-xl border text-sm cursor-pointer transition ${
-                  quizAnswer === 'A' ? 'bg-red-950/60 border-red-500 text-white' : 'bg-zinc-900/60 border-zinc-800 hover:border-zinc-700 text-zinc-200'
-                }`}>
-                  <input
-                    type="radio"
-                    name="l4_quiz"
-                    value="A"
-                    checked={quizAnswer === 'A'}
-                    onChange={() => setQuizAnswer('A')}
-                    className="w-4 h-4 text-red-600 focus:ring-red-500"
-                  />
-                  <span className="ml-3">ก. การขอความยินยอมและปกป้องสิทธิส่วนบุคคลของเด็ก (PDPA) รวมถึงความปลอดภัย</span>
-                </label>
-                <label className={`flex items-center p-3 rounded-xl border text-sm cursor-pointer transition ${
-                  quizAnswer === 'B' ? 'bg-red-950/60 border-red-500 text-white' : 'bg-zinc-900/60 border-zinc-800 hover:border-zinc-700 text-zinc-200'
-                }`}>
-                  <input
-                    type="radio"
-                    name="l4_quiz"
-                    value="B"
-                    checked={quizAnswer === 'B'}
-                    onChange={() => setQuizAnswer('B')}
-                    className="w-4 h-4 text-red-600 focus:ring-red-500"
-                  />
-                  <span className="ml-3">ข. การคัดเลือกเฉพาะภาพที่ได้ยอดกด Like สูงที่สุดโดยไม่ต้องคำนึงถึงข้อมูลส่วนบุคคล</span>
-                </label>
-                <label className={`flex items-center p-3 rounded-xl border text-sm cursor-pointer transition ${
-                  quizAnswer === 'C' ? 'bg-red-950/60 border-red-500 text-white' : 'bg-zinc-900/60 border-zinc-800 hover:border-zinc-700 text-zinc-200'
-                }`}>
-                  <input
-                    type="radio"
-                    name="l4_quiz"
-                    value="C"
-                    checked={quizAnswer === 'C'}
-                    onChange={() => setQuizAnswer('C')}
-                    className="w-4 h-4 text-red-600 focus:ring-red-500"
-                  />
-                  <span className="ml-3">ค. ห้ามโพสต์เรื่องใดๆ เกี่ยวกับนักเรียนโดยเด็ดขาดแม้จะเป็นภาพรับเกียรติบัตร</span>
-                </label>
+                {LEVEL_4_QUIZ.choices.map((c) => (
+                  <label key={c.id} className={`flex items-center p-3 rounded-xl border text-sm cursor-pointer transition ${
+                    quizAnswer === c.id ? 'bg-red-950/60 border-red-500 text-white' : 'bg-zinc-900/60 border-zinc-800 hover:border-zinc-700 text-zinc-200'
+                  }`}>
+                    <input
+                      type="radio"
+                      name="l4_quiz"
+                      value={c.id}
+                      checked={quizAnswer === c.id}
+                      onChange={() => setQuizAnswer(c.id)}
+                      className="w-4 h-4 text-red-600 focus:ring-red-500"
+                    />
+                    <span className="ml-3">{c.label}</span>
+                  </label>
+                ))}
               </div>
             </div>
           </div>

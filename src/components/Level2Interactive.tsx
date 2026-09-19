@@ -3,6 +3,8 @@ import { PlayCircle, CheckCircle2, Calculator, AlertTriangle, ArrowRight } from 
 import { SoundService } from '../services/audio';
 import { ApiService } from '../services/api';
 
+import { LEVEL_2_STRATEGIES } from '../../1_EDIT_CONTENT_HERE/interactive_scenarios';
+
 interface Props {
   onPassLevel: () => void;
   onBackToDashboard?: () => void;
@@ -20,19 +22,10 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
   const [quizAnswer, setQuizAnswer] = useState<string>('');
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error' | 'warning'; message: string; details?: string } | null>(null);
 
-  // คำนวณ ROI
-  let costPerHead = 5;
-  let efficiencyDelta = 9.0;
-  if (strategy === 'oer') {
-    costPerHead = 5;
-    efficiencyDelta = 9.0;
-  } else if (strategy === 'freemium') {
-    costPerHead = 30;
-    efficiencyDelta = 8.0;
-  } else if (strategy === 'commercial') {
-    costPerHead = 350;
-    efficiencyDelta = 7.5;
-  }
+  // คำนวณ ROI โดยดึงค่าจาก LEVEL_2_STRATEGIES
+  const currentStratData = LEVEL_2_STRATEGIES.find(s => s.id === strategy) || LEVEL_2_STRATEGIES[0];
+  const costPerHead = currentStratData.costPerHead;
+  const efficiencyDelta = currentStratData.efficiencyDelta;
   const roiScore = Math.min(99.5, Math.max(15, Math.round(((efficiencyDelta * students) / (costPerHead + 10)) * 2.5)));
 
   const handleSimulateWatch = (videoId: string, title: string) => {

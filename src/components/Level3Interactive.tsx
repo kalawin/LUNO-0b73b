@@ -3,6 +3,8 @@ import { PlayCircle, CheckCircle2, AlertTriangle, HeartHandshake } from 'lucide-
 import { SoundService } from '../services/audio';
 import { ApiService } from '../services/api';
 
+import { LEVEL_3_CASE } from '../../1_EDIT_CONTENT_HERE/interactive_scenarios';
+
 interface Props {
   onPassLevel: () => void;
   onBackToDashboard?: () => void;
@@ -29,15 +31,17 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
     });
   };
 
-  const handleSelectScenario = async (choice: 'A' | 'B' | 'C') => {
-    setSelectedChoice(choice);
+  const handleSelectScenario = async (choiceId: string) => {
+    setSelectedChoice(choiceId);
+    const chosen = LEVEL_3_CASE.choices.find(c => c.id === choiceId);
+    if (!chosen) return;
 
-    if (choice === 'B') {
+    if (chosen.type === 'success') {
       SoundService.playSuccess();
       setFeedback({
         type: 'success',
-        title: 'การตัดสินใจระดับยอดเยี่ยม! (Empathetic Coaching)',
-        message: 'การจัดระบบเพื่อนคู่คิด (Buddy System) และการที่ผู้บริหารร่วมเรียนรู้ไปพร้อมกัน ช่วยลดความกังวล (Tech Anxiety) สร้างความไว้วางใจ และทำให้ครูอาวุโสรู้สึกว่าตนเองมีคุณค่าและได้รับการสนับสนุนอย่างแท้จริง'
+        title: chosen.feedbackTitle,
+        message: chosen.feedbackMessage
       });
 
       // ส่ง Telemetry ด่าน 3 เข้าชีท data1
@@ -49,19 +53,12 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
       setTimeout(() => {
         onPassLevel();
       }, 2400);
-    } else if (choice === 'A') {
-      SoundService.playError();
-      setFeedback({
-        type: 'warning',
-        title: 'การใช้อำนาจสั่งการ (Authoritarian Leadership)',
-        message: 'การออกคำสั่งเด็ดขาดอาจได้งานตามกำหนด แต่สร้างความกดดัน ความหวาดกลัว และทำลายวัฒนธรรมความร่วมมือในระยะยาว โปรดพิจารณาทางเลือกที่สร้างขวัญกำลังใจ'
-      });
     } else {
       SoundService.playError();
       setFeedback({
         type: 'warning',
-        title: 'การหลีกเลี่ยงปัญหา (Avoidance Behavior)',
-        message: 'การให้ครูธุรการทำแทนทั้งหมดแม้จะแก้ปัญหาเฉพาะหน้าได้ แต่ไม่ได้ช่วยพัฒนาสมรรถนะของครู และสร้างความเหลื่อมล้ำในการทำงาน โปรดพิจารณาทางเลือกอื่น'
+        title: chosen.feedbackTitle,
+        message: chosen.feedbackMessage
       });
     }
   };
@@ -157,77 +154,36 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
 
         <div className="p-5 rounded-2xl bg-zinc-950/80 border border-zinc-800 text-zinc-200 text-sm leading-relaxed space-y-2.5">
           <p>
-            <strong>บริบทสถานการณ์:</strong> โรงเรียนกำลังเริ่มใช้ระบบบันทึกผลการเรียนดิจิทัลเพื่อลดกระดาษ แต่ครูมาลีซึ่งเป็นครูชำนาญการพิเศษใกล้เกษียณ มีความวิตกกังวลสูง กลัวทำข้อมูลสูญหาย และเริ่มมีท่าทีปฏิเสธการประชุมชี้แจง
+            <strong>บริบทสถานการณ์:</strong> {LEVEL_3_CASE.context}
           </p>
           <p className="text-red-300 font-medium">
-            คำถาม: ในฐานะผู้นำที่เป็น "ต้นแบบทีมงาน" ทางเลือกใดแสดงถึงภาวะผู้นำที่สร้างผลลัพธ์เชิงบวกและยั่งยืนที่สุด?
+            คำถาม: {LEVEL_3_CASE.question}
           </p>
         </div>
 
         {/* 3 Decision Option Cards */}
         <div className="space-y-3">
-          <button
-            onClick={() => handleSelectScenario('A')}
-            className={`w-full text-left p-4 rounded-2xl border transition cursor-pointer ${
-              selectedChoice === 'A'
-                ? 'bg-red-950/60 border-red-500'
-                : 'bg-zinc-950/60 hover:bg-zinc-800/80 border-zinc-800 hover:border-zinc-700'
-            }`}
-          >
-            <div className="flex items-start gap-3">
-              <span className="w-7 h-7 rounded-lg bg-red-500/20 text-red-300 flex items-center justify-center font-bold text-sm flex-shrink-0">
-                A
-              </span>
-              <div>
-                <div className="font-bold text-white text-sm sm:text-base">ออกหนังสือคำสั่งราชการกำหนดเส้นตายที่ชัดเจน</div>
-                <div className="text-xs text-zinc-400 mt-1">
-                  ใช้อำนาจตามสายบังคับบัญชา หากใครไม่ปฏิบัติตามจะถูกตัดคะแนนประเมินความดีความชอบ
+          {LEVEL_3_CASE.choices.map((choice) => (
+            <button
+              key={choice.id}
+              onClick={() => handleSelectScenario(choice.id)}
+              className={`w-full text-left p-4 rounded-2xl border transition cursor-pointer ${
+                selectedChoice === choice.id
+                  ? 'bg-red-950/60 border-red-500'
+                  : 'bg-zinc-950/60 hover:bg-zinc-800/80 border-zinc-800 hover:border-zinc-700'
+              }`}
+            >
+              <div className="flex items-start gap-3">
+                <span className="w-7 h-7 rounded-lg bg-red-500/20 text-red-300 flex items-center justify-center font-bold text-sm flex-shrink-0">
+                  {choice.id}
+                </span>
+                <div>
+                  <div className="font-bold text-white text-sm sm:text-base">{choice.title}</div>
+                  <div className="text-xs text-zinc-400 mt-1">{choice.desc}</div>
                 </div>
               </div>
-            </div>
-          </button>
-
-          <button
-            onClick={() => handleSelectScenario('B')}
-            className={`w-full text-left p-4 rounded-2xl border transition cursor-pointer ${
-              selectedChoice === 'B'
-                ? 'bg-red-950/60 border-red-500'
-                : 'bg-zinc-950/60 hover:bg-zinc-800/80 border-zinc-800 hover:border-red-400/50'
-            }`}
-          >
-            <div className="flex items-start gap-3">
-              <span className="w-7 h-7 rounded-lg bg-red-500/20 text-red-300 flex items-center justify-center font-bold text-sm flex-shrink-0">
-                B
-              </span>
-              <div>
-                <div className="font-bold text-white text-sm sm:text-base">จัดระบบเพื่อนคู่คิด (Buddy System) และ ผอ. ร่วมเรียนรู้ไปพร้อมกัน</div>
-                <div className="text-xs text-zinc-400 mt-1">
-                  ให้ครูรุ่นใหม่นั่งประกบช่วยเหลือแบบไม่ตัดสิน ผอ. แสดงให้เห็นว่าความผิดพลาดสามารถแก้ไขได้ และชื่นชมทุกก้าวของความพยายาม
-                </div>
-              </div>
-            </div>
-          </button>
-
-          <button
-            onClick={() => handleSelectScenario('C')}
-            className={`w-full text-left p-4 rounded-2xl border transition cursor-pointer ${
-              selectedChoice === 'C'
-                ? 'bg-red-950/60 border-red-500'
-                : 'bg-zinc-950/60 hover:bg-zinc-800/80 border-zinc-800 hover:border-zinc-700'
-            }`}
-          >
-            <div className="flex items-start gap-3">
-              <span className="w-7 h-7 rounded-lg bg-red-500/20 text-red-300 flex items-center justify-center font-bold text-sm flex-shrink-0">
-                C
-              </span>
-              <div>
-                <div className="font-bold text-white text-sm sm:text-base">มอบหมายให้ครูธุรการทำหน้าที่แทนทั้งหมดเพื่อตัดปัญหา</div>
-                <div className="text-xs text-zinc-400 mt-1">
-                  ให้ครูมาลีส่งกระดาษเหมือนเดิม เพื่อความสะดวกและไม่สร้างความขัดแย้ง
-                </div>
-              </div>
-            </div>
-          </button>
+            </button>
+          ))}
         </div>
 
         {/* Feedback Alert Box */}
