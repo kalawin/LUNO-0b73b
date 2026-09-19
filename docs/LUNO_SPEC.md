@@ -12,7 +12,7 @@
 * **GitHub Repository (Private):** [https://github.com/atsadatan/LUNO](https://github.com/atsadatan/LUNO)
 * **Google Apps Script Web App (API):** `https://script.google.com/macros/s/AKfycbxXzOQjibeWZCDTXHscNihZZp3e3C4Gm4EvjOJJ5LcZ_1-TCsUh9ji7HHNTbaauCMLQ/exec`
 * **Google Sheet Database:** [https://docs.google.com/spreadsheets/d/1LeSBKpY0HW3jjsoRdWmynbQnJGuWE6TyJV5PIq8Zyzk/edit](https://docs.google.com/spreadsheets/d/1LeSBKpY0HW3jjsoRdWmynbQnJGuWE6TyJV5PIq8Zyzk/edit)
-* **Google Apps Script Dashboard:** [https://script.google.com](https://script.google.com)
+* **Google Apps Script Editor:** [https://script.google.com/home/projects/17fgQia1Be4McPJWRm619IKI0ZJ2HqdUqcj_x6RQ-BEBCxSxtTpEm585t/edit](https://script.google.com/home/projects/17fgQia1Be4McPJWRm619IKI0ZJ2HqdUqcj_x6RQ-BEBCxSxtTpEm585t/edit)
 
 ---
 
