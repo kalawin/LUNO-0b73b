@@ -41,6 +41,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
 
     SoundService.playSuccess();
 
+    ApiService.saveLocalProfile(newProfile);
+    const initialProg = ApiService.getLocalProgress();
+    await ApiService.syncProgressToCloud(initialProg);
+
     // บันทึก Telemetry การลงทะเบียนเข้าชีท data1
     await ApiService.sendTelemetry({
       user_id: newProfile.id,

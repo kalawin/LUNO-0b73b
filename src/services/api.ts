@@ -119,15 +119,18 @@ export class ApiService {
       ...data
     };
 
-    try {
-      await this.sendJsonp({
-        action: 'saveData1',
-        sheetName: 'data1',
-        data: payload
-      });
-    } catch (err) {
-      console.warn('Telemetry send failed (cached locally):', err);
-    }
+    // 1. ส่งเข้าแท็บ data1 (ถ้า script มีฟังก์ชัน handleSaveData1)
+    this.sendJsonp({
+      action: 'saveData1',
+      sheetName: 'data1',
+      data: payload
+    }).catch(err => {
+      console.warn('Telemetry data1 send:', err);
+    });
+
+    // 2. ซิงก์สถานะความก้าวหน้าเข้าแท็บ users_progress เสมอ
+    const currentProg = this.getLocalProgress();
+    this.syncProgressToCloud(currentProg);
   }
 
   static async submitQuizScores(quizType: 'pre' | 'post', score: number, answers: Record<number, number>): Promise<void> {
@@ -157,7 +160,7 @@ export class ApiService {
       });
     }
 
-    // ซิงก์ขึ้นตาราง quiz_scores ด้วย
+    // ซิงก์ขึ้นตาราง quiz_scores ด้วย JSONP
     const gasUrl = this.getGasUrl();
     if (!gasUrl) return;
 
@@ -231,7 +234,7 @@ export class ApiService {
     }
   }
 
-  // ส่งข้อมูลเข้า GAS ด้วย JSONP Script Injection
+  // ส่งข้อมูลเข้า GAS ด้วย JSONP Script Injection (เสถียรที่สุด ข้าม CORS 100%)
   private static sendJsonp(params: { action?: string; sheetName?: string; data: any }): Promise<any> {
     return new Promise((resolve) => {
       const baseUrl = this.getGasUrl();
@@ -266,43 +269,34 @@ export class ApiService {
       (window as any)[callbackName] = function(response: any) {
         clearTimeout(timer);
         cleanup();
+        console.log(`[Luno GAS Sync] Action: ${params.action || 'saveProgress'} =>`, response);
         resolve(response);
       };
 
       script.onerror = () => {
         clearTimeout(timer);
         cleanup();
+        console.warn(`[Luno GAS Sync Error] Action: ${params.action}`);
         resolve({ status: 'error' });
       };
 
       const queryParams = new URLSearchParams({
         callback: callbackName,
-        action: params.action || 'saveData1',
-        sheetName: params.sheetName || 'data1',
+        action: params.action || 'saveProgress',
         data: JSON.stringify(params.data)
       });
+      if (params.sheetName) {
+        queryParams.set('sheetName', params.sheetName);
+      }
 
       script.src = `${baseUrl}?${queryParams.toString()}`;
       document.body.appendChild(script);
     });
   }
 
-  // ส่งข้อมูลเข้า GAS รองรับทั้ง sendBeacon และ Image/Script JSONP
+  // ใช้ sendJsonp แทน fetch เพื่อแก้ปัญหา CORS redirect ของ Google Apps Script บนทุก Browser
   private static async sendToGas(action: string, data: any): Promise<any> {
-    const baseUrl = this.getGasUrl();
-    if (!baseUrl) return;
-
-    const fullUrl = `${baseUrl}?action=${encodeURIComponent(action)}&data=${encodeURIComponent(JSON.stringify(data))}`;
-    
-    // ใช้ no-cors fetch เพื่อ bypass CORS redirect ของ Google Apps Script
-    try {
-      await fetch(fullUrl, {
-        method: 'GET',
-        mode: 'no-cors'
-      });
-    } catch (err) {
-      console.log('GAS pinged with no-cors:', err);
-    }
+    return this.sendJsonp({ action, data });
   }
 
   static clearSession(): void {
