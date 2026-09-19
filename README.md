@@ -10,7 +10,7 @@
 | รายการ | ลิงก์ (URL) | หมายเหตุ |
 |---|---|---|
 | 🐙 **GitHub Repository** | [https://github.com/atsadatan/LUNO](https://github.com/atsadatan/LUNO) | คลังโค้ดหลักของโปรเจกต์ (Private) |
-| 🌐 **Apps Script Web App (API)** | `https://script.google.com/macros/s/AKfycbxXzOQjibeWZCDTXHscNihZZp3e3C4Gm4EvjOJJ5LcZ_1-TCsUh9ji7HHNTbaauCMLQ/exec` | Endpoint เชื่อมต่อรับ-ส่งข้อมูลกับ Google Sheets |
+| 🌐 **Apps Script Web App (API)** | `https://script.google.com/macros/s/AKfycbxFx_OGc4YO8XFu-KVh0toM4Lse0pwcCttTeEXTwc3XbF11DljJ8NrbqHiDZxo3KxUM/exec` | Endpoint เชื่อมต่อรับ-ส่งข้อมูลกับ Google Sheets |
 | 📊 **Google Sheet Database** | [คลิกเปิด Google Sheet ของโปรเจกต์](https://docs.google.com/spreadsheets/d/1LeSBKpY0HW3jjsoRdWmynbQnJGuWE6TyJV5PIq8Zyzk/edit) | ชีทเก็บผลคะแนนและข้อมูลงานวิจัย 3 แท็บ |
 | ⚙️ **Google Apps Script Editor** | [https://script.google.com/home/projects/17fgQia1Be4McPJWRm619IKI0ZJ2HqdUqcj_x6RQ-BEBCxSxtTpEm585t/edit](https://script.google.com/home/projects/17fgQia1Be4McPJWRm619IKI0ZJ2HqdUqcj_x6RQ-BEBCxSxtTpEm585t/edit) | พื้นที่แก้ไขโค้ด backend ของสคริปต์ (เปิดโปรเจกต์โดยตรง) |
 | 💻 **Local Development** | [http://127.0.0.1:5173/](http://127.0.0.1:5173/) | หน้าเว็บทดสอบบนเครื่อง Local |

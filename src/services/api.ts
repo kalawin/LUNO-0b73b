@@ -1,7 +1,7 @@
 import type { UserProfile, UserProgress, StepId } from '../types';
 
 // URL ของ Google Apps Script Web App ที่เชื่อมต่อกับ Google Sheet ใหม่ของ Luno
-const DEFAULT_GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxXzOQjibeWZCDTXHscNihZZp3e3C4Gm4EvjOJJ5LcZ_1-TCsUh9ji7HHNTbaauCMLQ/exec"; 
+const DEFAULT_GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxFx_OGc4YO8XFu-KVh0toM4Lse0pwcCttTeEXTwc3XbF11DljJ8NrbqHiDZxo3KxUM/exec"; 
 
 const STORAGE_KEYS = {
   USER_PROFILE: 'luno_user_profile',
