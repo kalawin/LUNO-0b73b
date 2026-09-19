@@ -12,7 +12,12 @@ const STORAGE_KEYS = {
 export class ApiService {
   // บันทึก/ดึง Custom GAS URL
   static getGasUrl(): string {
-    return localStorage.getItem(STORAGE_KEYS.GAS_URL) || DEFAULT_GAS_ENDPOINT;
+    const custom = localStorage.getItem(STORAGE_KEYS.GAS_URL);
+    if (!custom || custom.includes('AKfycbxXzOQjibeWZCDTXHscNihZZp3e3C4Gm4EvjOJJ5LcZ_1-TCsUh9ji7HHNTbaauCMLQ')) {
+      localStorage.setItem(STORAGE_KEYS.GAS_URL, DEFAULT_GAS_ENDPOINT);
+      return DEFAULT_GAS_ENDPOINT;
+    }
+    return custom;
   }
 
   static setGasUrl(url: string): void {
