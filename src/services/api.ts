@@ -1,7 +1,7 @@
 import type { UserProfile, UserProgress, StepId } from '../types';
 
-// URL ของ Google Apps Script Web App (สามารถใส่ URL ที่ Deploy ได้จริง หรือปล่อยว่างไว้เพื่อใช้ LocalStorage Mode)
-const DEFAULT_GAS_ENDPOINT = ""; 
+// URL ของ Google Apps Script Web App ที่เชื่อมต่อกับ Google Sheet ใหม่ของ Luno
+const DEFAULT_GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxXzOQjibeWZCDTXHscNihZZp3e3C4Gm4EvjOJJ5LcZ_1-TCsUh9ji7HHNTbaauCMLQ/exec"; 
 
 const STORAGE_KEYS = {
   USER_PROFILE: 'luno_user_profile',
