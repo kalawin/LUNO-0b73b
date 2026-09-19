@@ -12,6 +12,8 @@ export type StepId =
 export interface UserProfile {
   id: string;
   name: string;
+  firstname?: string;
+  lastname?: string;
   school: string;
   phone?: string;
   loginAt: string;
@@ -30,7 +32,7 @@ export interface LevelInfo {
   title: string;
   subtitle: string;
   durationMinutes: number;
-  videoUrl: string; // YouTube embed or video URL
+  videoUrl: string;
   videoDurationSeconds: number;
   description: string;
   keyTakeaways: string[];
@@ -39,12 +41,23 @@ export interface LevelInfo {
 
 export interface UserProgress {
   currentStep: StepId;
-  completedSteps: string[]; // e.g. ['pre-test', 'level-1']
+  completedSteps: string[];
   preTestScore?: number;
   postTestScore?: number;
   preTestAnswers?: Record<number, number>;
   postTestAnswers?: Record<number, number>;
   evaluationAnswers?: Record<string, number>;
+  evaluationScores?: {
+    eval1: number;
+    eval2: number;
+    eval3: number;
+    avg: string;
+  };
   evaluationComments?: string;
+  watchedVideos?: Record<string, boolean>;
+  visionStatement?: string;
+  certCode?: string;
+  completionDate?: string;
   lastUpdated: string;
 }
+

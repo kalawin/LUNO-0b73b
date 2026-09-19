@@ -21,7 +21,8 @@ function getSpreadsheet() {
 const SHEETS = {
   USERS_PROGRESS: "users_progress",
   QUIZ_SCORES: "quiz_scores",
-  MODEL_EVALUATION: "model_evaluation"
+  MODEL_EVALUATION: "model_evaluation",
+  DATA1: "data1"
 };
 
 /**
@@ -61,7 +62,18 @@ function setupDatabase() {
   ];
   setupSheetHeaders(eSheet, eHeaders, "#831843"); // สีชมพู/แดงเข้ม
 
-  Logger.log("✅ Setup Luno Database เสร็จสมบูรณ์แล้วทุกแท็บ!");
+  // 4. ตั้งค่าแท็บ data1 (สำหรับเก็บข้อมูล Telemetry ทั้งหมดตาม Canvas ของผู้บริหาร)
+  let dSheet = ss.getSheetByName(SHEETS.DATA1);
+  if (!dSheet) dSheet = ss.insertSheet(SHEETS.DATA1);
+  const dHeaders = [
+    "user_id", "ชื่อ", "นามสกุล", "โรงเรียน", "กิจกรรมล่าสุด",
+    "คะแนนก่อนเรียน", "คะแนนหลังเรียน", "อัตราพัฒนาการ",
+    "สถานะด่าน1", "สถานะด่าน2", "สถานะด่าน3", "สถานะด่าน4",
+    "วิสัยทัศน์ที่สร้าง", "ความพึงพอใจเฉลี่ย", "รหัสเกียรติบัตร", "เวลาบันทึกล่าสุด"
+  ];
+  setupSheetHeaders(dSheet, dHeaders, "#991b1b"); // สีแดงเข้มตามธีม Luno
+
+  Logger.log("✅ Setup Luno Database เสร็จสมบูรณ์แล้วทุกแท็บ (รวมถึง data1)!");
 }
 
 function setupSheetHeaders(sheet, headers, bgColor) {
@@ -115,6 +127,11 @@ function handleRequest(e) {
         result.message = "Luno Backend API is active and ready.";
         break;
 
+      case "saveData1":
+      case "telemetry":
+        result.data = handleSaveData1(ss, payload, (e && e.parameter && e.parameter.sheetName) || "data1");
+        break;
+
       case "saveProgress":
         result.data = handleSaveProgress(ss, payload);
         break;
@@ -133,8 +150,13 @@ function handleRequest(e) {
         break;
 
       default:
-        result.status = "error";
-        result.message = "Unknown action: " + action;
+        // หากส่ง sheetName มา หรือเป็นข้อมูลดิบ ให้ใช้ handleSaveData1
+        if (e && e.parameter && e.parameter.sheetName) {
+          result.data = handleSaveData1(ss, payload, e.parameter.sheetName);
+        } else {
+          result.status = "error";
+          result.message = "Unknown action: " + action;
+        }
     }
 
     return createResponse(result, callback);
@@ -319,6 +341,118 @@ function handleSubmitEvaluation(ss, data) {
   ]);
 
   return { recorded: true, user_id: data.user_id, total_avg: totalAvg };
+}
+
+/**
+ * บันทึกข้อมูลลงชีท data1 (หรือชีทที่ระบุ) แบบ Dynamic Upsert
+ * หากมีรายชื่อนี้อยู่แล้ว จะอัปเดตแถวเดิมให้เป็นสถานะล่าสุด
+ * หากยังไม่มี จะเพิ่มแถวใหม่ให้ทันที
+ */
+function handleSaveData1(ss, data, sheetName) {
+  const targetSheetName = sheetName || SHEETS.DATA1;
+  let sheet = ss.getSheetByName(targetSheetName);
+  
+  // หากยังไม่มีชีท ให้สร้างใหม่พร้อม header อัตโนมัติ
+  if (!sheet) {
+    sheet = ss.insertSheet(targetSheetName);
+  }
+
+  // ดึง Headers แถวแรก
+  let lastCol = Math.max(1, sheet.getLastColumn());
+  let headers = [];
+  if (sheet.getLastRow() >= 1) {
+    headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(h => String(h).trim());
+  }
+
+  // หากชีทยังว่างเปล่า ให้สร้าง Headers พื้นฐาน
+  if (headers.length === 0 || headers[0] === "") {
+    headers = [
+      "user_id", "ชื่อ", "นามสกุล", "โรงเรียน", "กิจกรรมล่าสุด",
+      "คะแนนก่อนเรียน", "คะแนนหลังเรียน", "อัตราพัฒนาการ",
+      "สถานะด่าน1", "สถานะด่าน2", "สถานะด่าน3", "สถานะด่าน4",
+      "วิสัยทัศน์ที่สร้าง", "ความพึงพอใจเฉลี่ย", "รหัสเกียรติบัตร", "เวลาบันทึกล่าสุด"
+    ];
+    setupSheetHeaders(sheet, headers, "#991b1b");
+  }
+
+  // หากข้อมูลที่ส่งมามี key แปลกใหม่ที่ยังไม่มีใน header ให้ขยาย header เพิ่ม
+  const dataKeys = Object.keys(data);
+  let headersUpdated = false;
+  for (let i = 0; i < dataKeys.length; i++) {
+    const k = dataKeys[i];
+    if (k && headers.indexOf(k) === -1) {
+      headers.push(k);
+      headersUpdated = true;
+    }
+  }
+  if (headersUpdated) {
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#991b1b").setFontColor("#ffffff");
+  }
+
+  // ค้นหาแถวของผู้ใช้คนนี้ (ค้นหาจาก user_id หรือ ชื่อ+นามสกุล)
+  const uid = String(data.user_id || "").trim();
+  const fname = String(data["ชื่อ"] || data.firstname || "").trim();
+  const lname = String(data["นามสกุล"] || data.lastname || "").trim();
+
+  let targetRow = -1;
+  const lastRow = sheet.getLastRow();
+
+  if (lastRow > 1) {
+    const allData = sheet.getRange(2, 1, lastRow - 1, headers.length).getValues();
+    const uidIdx = headers.indexOf("user_id");
+    const fnameIdx = headers.indexOf("ชื่อ");
+    const lnameIdx = headers.indexOf("นามสกุล");
+
+    for (let r = 0; r < allData.length; r++) {
+      const row = allData[r];
+      const matchUid = (uid && uidIdx !== -1 && String(row[uidIdx]).trim() === uid);
+      const matchName = (fname && lname && fnameIdx !== -1 && lnameIdx !== -1 &&
+        String(row[fnameIdx]).trim() === fname && String(row[lnameIdx]).trim() === lname);
+
+      if (matchUid || matchName) {
+        targetRow = r + 2;
+        break;
+      }
+    }
+  }
+
+  // สร้างแถวข้อมูลตามลำดับ Header
+  const rowValues = [];
+  for (let c = 0; c < headers.length; c++) {
+    const headerName = headers[c];
+    let val = data[headerName];
+    if (val === undefined || val === null) {
+      // fallback mapping ถ้า key สะกดต่างกันเล็กน้อย
+      if (headerName === "เวลาบันทึกล่าสุด" && !val) {
+        val = new Date().toLocaleString("th-TH");
+      } else {
+        val = "";
+      }
+    }
+    rowValues.push(val);
+  }
+
+  if (targetRow > 0) {
+    // อัปเดตแถวเดิม โดยคงค่าเดิมไว้หากค่าใหม่เป็นค่าว่าง
+    const existingRow = sheet.getRange(targetRow, 1, 1, headers.length).getValues()[0];
+    for (let c = 0; c < rowValues.length; c++) {
+      if ((rowValues[c] === "" || rowValues[c] === undefined) && existingRow[c] !== "" && existingRow[c] !== undefined) {
+        rowValues[c] = existingRow[c];
+      }
+    }
+    sheet.getRange(targetRow, 1, 1, headers.length).setValues([rowValues]);
+  } else {
+    // เพิ่มแถวใหม่
+    sheet.appendRow(rowValues);
+  }
+
+  return {
+    saved: true,
+    sheet: targetSheetName,
+    row: targetRow > 0 ? targetRow : sheet.getLastRow(),
+    user: fname + " " + lname
+  };
 }
 
 function createResponse(data, callback) {

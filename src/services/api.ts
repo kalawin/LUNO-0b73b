@@ -104,6 +104,32 @@ export class ApiService {
     }
   }
 
+  // ส่งข้อมูล Telemetry เข้าแท็บ data1 ของ Google Sheet แบบเรียลไทม์
+  static async sendTelemetry(data: Record<string, any>): Promise<void> {
+    const profile = this.getLocalProfile();
+    const gasUrl = this.getGasUrl();
+    if (!gasUrl) return;
+
+    const payload = {
+      user_id: profile?.id || '',
+      ชื่อ: profile?.firstname || profile?.name || '',
+      นามสกุล: profile?.lastname || '',
+      โรงเรียน: profile?.school || '',
+      เวลาบันทึกล่าสุด: new Date().toLocaleString('th-TH'),
+      ...data
+    };
+
+    try {
+      await this.sendJsonp({
+        action: 'saveData1',
+        sheetName: 'data1',
+        data: payload
+      });
+    } catch (err) {
+      console.warn('Telemetry send failed (cached locally):', err);
+    }
+  }
+
   static async submitQuizScores(quizType: 'pre' | 'post', score: number, answers: Record<number, number>): Promise<void> {
     const profile = this.getLocalProfile();
     if (!profile) return;
@@ -111,11 +137,27 @@ export class ApiService {
     // บันทึก Local ทันที
     if (quizType === 'pre') {
       this.saveLocalProgress({ preTestScore: score, preTestAnswers: answers });
+      // บันทึกลง data1
+      await this.sendTelemetry({
+        กิจกรรมล่าสุด: "ส่งแบบทดสอบก่อนเรียน (Pre-test)",
+        คะแนนก่อนเรียน: score,
+        คะแนนหลังเรียน: "-",
+        สถานะด่าน1: "ปลดล็อกแล้ว"
+      });
     } else {
+      const current = this.getLocalProgress();
+      const preScore = current.preTestScore || 0;
+      const diff = score - preScore;
       this.saveLocalProgress({ postTestScore: score, postTestAnswers: answers });
+      await this.sendTelemetry({
+        กิจกรรมล่าสุด: "ส่งแบบทดสอบหลังเรียน (Post-test)",
+        คะแนนก่อนเรียน: preScore,
+        คะแนนหลังเรียน: score,
+        อัตราพัฒนาการ: `${diff >= 0 ? '+' : ''}${diff}`
+      });
     }
 
-    // ซิงก์ขึ้น Google Sheet
+    // ซิงก์ขึ้นตาราง quiz_scores ด้วย
     const gasUrl = this.getGasUrl();
     if (!gasUrl) return;
 
@@ -136,9 +178,38 @@ export class ApiService {
     const profile = this.getLocalProfile();
     if (!profile) return;
 
+    const current = this.getLocalProgress();
+    const certCode = current.certCode || `LUNO-${Math.floor(100000 + Math.random() * 900000)}`;
+    const today = new Date();
+    const thMonths = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+    const compDate = current.completionDate || `${today.getDate()} ${thMonths[today.getMonth()]} ${today.getFullYear() + 543}`;
+    const totalAvg = ((averages.propriety + averages.feasibility + averages.utility) / 3).toFixed(2);
+
     this.saveLocalProgress({
       evaluationAnswers: details,
-      evaluationComments: comments
+      evaluationComments: comments,
+      certCode: certCode,
+      completionDate: compDate,
+      evaluationScores: {
+        eval1: averages.propriety,
+        eval2: averages.feasibility,
+        eval3: averages.utility,
+        avg: totalAvg
+      }
+    });
+
+    // ส่ง Telemetry สรุปเสร็จสมบูรณ์ลง data1
+    await this.sendTelemetry({
+      กิจกรรมล่าสุด: "สำเร็จโปรแกรม Luno สมบูรณ์",
+      คะแนนก่อนเรียน: current.preTestScore || 0,
+      คะแนนหลังเรียน: current.postTestScore || 0,
+      อัตราพัฒนาการ: `${(current.postTestScore || 0) - (current.preTestScore || 0) >= 0 ? '+' : ''}${(current.postTestScore || 0) - (current.preTestScore || 0)}`,
+      สถานะด่าน1: "ผ่านสมบูรณ์",
+      สถานะด่าน2: "ผ่านสมบูรณ์",
+      สถานะด่าน3: "ผ่านสมบูรณ์",
+      สถานะด่าน4: "ผ่านสมบูรณ์",
+      ความพึงพอใจเฉลี่ย: totalAvg,
+      รหัสเกียรติบัตร: certCode
     });
 
     const gasUrl = this.getGasUrl();
@@ -158,6 +229,62 @@ export class ApiService {
     } catch (err) {
       console.warn('Submit evaluation to Sheet failed:', err);
     }
+  }
+
+  // ส่งข้อมูลเข้า GAS ด้วย JSONP Script Injection
+  private static sendJsonp(params: { action?: string; sheetName?: string; data: any }): Promise<any> {
+    return new Promise((resolve) => {
+      const baseUrl = this.getGasUrl();
+      if (!baseUrl) {
+        resolve({ status: 'no_url' });
+        return;
+      }
+
+      const callbackName = 'jsonp_cb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+      const script = document.createElement('script');
+      let isHandled = false;
+
+      const cleanup = () => {
+        if (!isHandled) {
+          isHandled = true;
+          if ((window as any)[callbackName]) {
+            try {
+              delete (window as any)[callbackName];
+            } catch {
+              (window as any)[callbackName] = undefined;
+            }
+          }
+          if (script.parentNode) script.parentNode.removeChild(script);
+        }
+      };
+
+      const timer = setTimeout(() => {
+        cleanup();
+        resolve({ status: 'timeout' });
+      }, 10000);
+
+      (window as any)[callbackName] = function(response: any) {
+        clearTimeout(timer);
+        cleanup();
+        resolve(response);
+      };
+
+      script.onerror = () => {
+        clearTimeout(timer);
+        cleanup();
+        resolve({ status: 'error' });
+      };
+
+      const queryParams = new URLSearchParams({
+        callback: callbackName,
+        action: params.action || 'saveData1',
+        sheetName: params.sheetName || 'data1',
+        data: JSON.stringify(params.data)
+      });
+
+      script.src = `${baseUrl}?${queryParams.toString()}`;
+      document.body.appendChild(script);
+    });
   }
 
   // ส่งข้อมูลเข้า GAS รองรับทั้ง sendBeacon และ Image/Script JSONP

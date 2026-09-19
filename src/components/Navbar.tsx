@@ -1,111 +1,191 @@
 import React from 'react';
 import type { UserProfile, UserProgress, StepId } from '../types';
-import { LogOut, CheckCircle2, Database } from 'lucide-react';
+import { RotateCcw, Lock, CheckCircle2, TrendingUp, Settings, User } from 'lucide-react';
 
 interface NavbarProps {
   profile: UserProfile | null;
   progress: UserProgress;
+  onNavigateStep?: (step: StepId) => void;
   onLogout: () => void;
   onOpenSettings: () => void;
+  onResetProgress?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ profile, progress, onLogout, onOpenSettings }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  profile,
+  progress,
+  onNavigateStep,
+  onLogout,
+  onOpenSettings,
+  onResetProgress
+}) => {
   // คำนวณ % ความก้าวหน้า
-  const stepWeights: Record<StepId, number> = {
-    'login': 0,
-    'pre-test': 10,
-    'level-1': 25,
-    'level-2': 45,
-    'level-3': 65,
-    'level-4': 85,
-    'post-test': 92,
-    'evaluation': 97,
-    'completed': 100
+  let stepsCompleted = 0;
+  if (profile) stepsCompleted += 1;
+  if (progress.completedSteps.includes('pre-test')) stepsCompleted += 1;
+  if (progress.completedSteps.includes('level-1')) stepsCompleted += 1;
+  if (progress.completedSteps.includes('level-2')) stepsCompleted += 1;
+  if (progress.completedSteps.includes('level-3')) stepsCompleted += 1;
+  if (progress.completedSteps.includes('level-4')) stepsCompleted += 1;
+  if (progress.completedSteps.includes('post-test') || progress.completedSteps.includes('evaluation') || progress.currentStep === 'completed') stepsCompleted += 1;
+
+  const currentPercent = Math.round((stepsCompleted / 7) * 100);
+
+  // สิทธิ์ในการเข้าถึงด่านต่างๆ
+  const isUnlocked = (step: StepId) => {
+    if (step === 'login') return true;
+    if (step === 'pre-test') return !!profile;
+    if (step === 'level-1') return progress.completedSteps.includes('pre-test');
+    if (step === 'level-2') return progress.completedSteps.includes('level-1');
+    if (step === 'level-3') return progress.completedSteps.includes('level-2');
+    if (step === 'level-4') return progress.completedSteps.includes('level-3');
+    if (step === 'post-test' || step === 'completed') return progress.completedSteps.includes('level-4');
+    return false;
   };
 
-  const currentPercent = stepWeights[progress.currentStep] || 0;
+  const navTabs: { id: StepId; label: string }[] = [
+    { id: 'login', label: 'แนะนำ & ข้อมูล' },
+    { id: 'pre-test', label: 'ก่อนเรียน (Pre-test)' },
+    { id: 'level-1', label: 'ด่าน 1: นักสื่อสาร' },
+    { id: 'level-2', label: 'ด่าน 2: นักออกแบบ' },
+    { id: 'level-3', label: 'ด่าน 3: ต้นแบบทีม' },
+    { id: 'level-4', label: 'ด่าน 4: ผู้นำค่านิยม' },
+    { id: 'post-test', label: 'หลังเรียน & วุฒิบัตร' },
+  ];
+
+  const handleTabClick = (tabId: StepId) => {
+    if (!isUnlocked(tabId)) {
+      alert('ด่านนี้ยังถูกล็อกอยู่ กรุณาทำกิจกรรมในด่านก่อนหน้าให้สำเร็จเพื่อปลดล็อก');
+      return;
+    }
+    if (onNavigateStep) {
+      if (tabId === 'post-test' && (progress.completedSteps.includes('evaluation') || progress.currentStep === 'completed')) {
+        onNavigateStep('completed');
+      } else {
+        onNavigateStep(tabId);
+      }
+    }
+  };
 
   return (
-    <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-xs">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
-        
-        {/* Brand */}
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-800 to-indigo-600 flex items-center justify-center text-white shadow-sm font-bold text-xl">
+    <header className="sticky top-0 z-50 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800 shadow-2xl">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+        {/* Brand & Title */}
+        <div
+          onClick={() => handleTabClick('login')}
+          className="flex items-center space-x-3 cursor-pointer select-none"
+        >
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-red-600 via-rose-600 to-red-700 flex items-center justify-center text-white shadow-lg shadow-red-600/30 text-xl font-bold border border-red-400/40">
             L
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <span className="font-heading font-bold text-xl tracking-tight text-slate-900">Luno</span>
-              <span className="text-xs bg-indigo-50 text-indigo-700 font-semibold px-2 py-0.5 rounded-full border border-indigo-200/60">
-                Digital Leadership
+            <div className="flex items-center space-x-2">
+              <span className="text-xl sm:text-2xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-rose-200 to-white">
+                LUNO
+              </span>
+              <span className="text-[11px] px-2 py-0.5 rounded-full bg-red-950 text-red-300 border border-red-500/40 font-medium">
+                รร.ขนาดเล็ก
               </span>
             </div>
-            <p className="text-xs text-slate-500 hidden sm:block">
-              โปรแกรมพัฒนาภาวะผู้นำดิจิทัลสำหรับผู้บริหารสถานศึกษาขนาดเล็ก
+            <p className="text-xs text-zinc-400 hidden sm:block">
+              โปรแกรมพัฒนาภาวะผู้นำดิจิทัล 4 ด่านต่อเนื่อง
             </p>
           </div>
         </div>
 
-        {/* User Info & Actions */}
+        {/* Overall Learning Progress */}
         {profile && (
-          <div className="flex items-center gap-3 sm:gap-4">
-            {/* Progress overview */}
-            <div className="hidden md:flex flex-col items-end">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                <span>ความก้าวหน้า: {currentPercent}%</span>
-              </div>
-              <div className="w-28 h-2 bg-slate-100 rounded-full overflow-hidden mt-1 border border-slate-200">
-                <div 
-                  className="h-full bg-emerald-500 transition-all duration-500" 
-                  style={{ width: `${currentPercent}%` }}
-                />
-              </div>
+          <div className="flex-1 max-w-xs sm:max-w-sm mx-2 hidden md:block">
+            <div className="flex justify-between items-center text-xs mb-1">
+              <span className="text-zinc-300 font-medium flex items-center gap-1">
+                <TrendingUp className="w-3.5 h-3.5 text-red-400" />
+                ความก้าวหน้าสะสม
+              </span>
+              <span className="text-red-300 font-bold">{currentPercent}%</span>
             </div>
-
-            {/* Profile pill */}
-            <div className="flex items-center gap-2 bg-slate-100/80 px-3 py-1.5 rounded-lg border border-slate-200 text-left">
-              <div className="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs">
-                {profile.name ? profile.name.charAt(0) : 'ผ'}
-              </div>
-              <div className="text-xs leading-tight">
-                <p className="font-semibold text-slate-800 line-clamp-1">{profile.name}</p>
-                <p className="text-slate-500 text-[11px] line-clamp-1">{profile.school}</p>
-              </div>
+            <div className="w-full bg-zinc-900 rounded-full h-2.5 overflow-hidden p-0.5 border border-zinc-700">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-red-600 via-rose-500 to-zinc-200 transition-all duration-500"
+                style={{ width: `${currentPercent}%` }}
+              />
             </div>
-
-            {/* Settings button */}
-            <button
-              onClick={onOpenSettings}
-              title="ตั้งค่า Google Sheet"
-              className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition"
-            >
-              <Database className="w-4 h-4" />
-            </button>
-
-            {/* Logout button */}
-            <button
-              onClick={onLogout}
-              title="ออกจากระบบ"
-              className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
           </div>
         )}
 
-      </div>
-      
-      {/* Mobile progress bar */}
-      {profile && (
-        <div className="md:hidden h-1 bg-slate-100 w-full overflow-hidden">
-          <div 
-            className="h-full bg-emerald-500 transition-all duration-500" 
-            style={{ width: `${currentPercent}%` }}
-          />
+        {/* User Profile & Actions */}
+        <div className="flex items-center space-x-2 sm:space-x-3">
+          {profile && (
+            <div className="hidden sm:flex items-center space-x-2 bg-zinc-900/90 px-3 py-1.5 rounded-xl border border-zinc-700 text-xs text-zinc-200">
+              <User className="w-4 h-4 text-red-400" />
+              <span className="font-medium truncate max-w-[150px]">
+                {profile.name}
+              </span>
+            </div>
+          )}
+
+          {onResetProgress && (
+            <button
+              onClick={onResetProgress}
+              title="รีเซ็ตข้อมูลเริ่มต้น"
+              className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-zinc-850 hover:bg-red-950/60 text-zinc-300 hover:text-red-300 border border-zinc-700 hover:border-red-500/50 transition flex items-center text-xs gap-1 cursor-pointer"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">รีเซ็ต</span>
+            </button>
+          )}
+
+          <button
+            onClick={onOpenSettings}
+            title="ตั้งค่า Google Sheet"
+            className="p-2 rounded-xl bg-zinc-850 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-700 transition cursor-pointer"
+          >
+            <Settings className="w-4 h-4" />
+          </button>
+
+          {profile && (
+            <button
+              onClick={onLogout}
+              title="ออกจากระบบ"
+              className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-zinc-850 hover:bg-red-950/60 text-zinc-400 hover:text-red-300 border border-zinc-700 hover:border-red-500/50 transition flex items-center text-xs gap-1 cursor-pointer"
+            >
+              <span className="hidden sm:inline">ออก</span>
+            </button>
+          )}
         </div>
-      )}
+      </div>
+
+      {/* Horizontal Nav Tabs */}
+      <div className="bg-zinc-950 border-t border-zinc-800/80 px-4 overflow-x-auto py-2 scrollbar-none">
+        <div className="max-w-7xl mx-auto flex items-center space-x-2 min-w-max text-xs sm:text-sm">
+          {navTabs.map(tab => {
+            const unlocked = isUnlocked(tab.id);
+            const isCurrent = progress.currentStep === tab.id ||
+              (tab.id === 'post-test' && (progress.currentStep === 'evaluation' || progress.currentStep === 'completed')) ||
+              (tab.id === 'login' && !profile);
+
+            return (
+              <button
+                key={tab.id}
+                onClick={() => handleTabClick(tab.id)}
+                className={`px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5 cursor-pointer ${
+                  isCurrent
+                    ? 'bg-red-600/30 text-red-200 border border-red-500/50 shadow-xs'
+                    : unlocked
+                    ? 'text-zinc-300 hover:text-white hover:bg-zinc-900'
+                    : 'text-zinc-600 hover:text-zinc-500'
+                }`}
+              >
+                {!unlocked ? (
+                  <Lock className="w-3.5 h-3.5 text-zinc-600" />
+                ) : progress.completedSteps.includes(tab.id) ? (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-red-400" />
+                ) : null}
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </header>
   );
 };
