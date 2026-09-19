@@ -1,10 +1,21 @@
 /**
  * Luno E-Learning Platform - Google Apps Script Backend
  * รองรับการทำงานวิจัยระยะที่ 3-4 (โปรแกรมพัฒนาภาวะผู้นำดิจิทัล 4 ด่านต่อเนื่อง)
- * Google Sheet ID: 1LeSBKpY0HW3jjsoRdWmynbQnJGuWE6TyJV5PIq8Zyzk
  */
 
-const TARGET_SPREADSHEET_ID = "1LeSBKpY0HW3jjsoRdWmynbQnJGuWE6TyJV5PIq8Zyzk";
+// หากสร้าง Apps Script จากเมนู "ส่วนขยาย -> Apps Script" ในชีท ระบบจะเชื่อมต่อกับชีทนั้นให้อัตโนมัติ
+// หรือระบุ Spreadsheet ID หากต้องการเชื่อมต่อจากภายนอก
+const BACKUP_SPREADSHEET_ID = "1LeSBKpY0HW3jjsoRdWmynbQnJGuWE6TyJV5PIq8Zyzk";
+
+function getSpreadsheet() {
+  try {
+    const active = SpreadsheetApp.getActiveSpreadsheet();
+    if (active) return active;
+  } catch (e) {
+    // fallback
+  }
+  return SpreadsheetApp.openById(BACKUP_SPREADSHEET_ID);
+}
 
 // รายชื่อแท็บฐานข้อมูล
 const SHEETS = {
@@ -18,7 +29,8 @@ const SHEETS = {
  * วิธีใช้: เปิด Google Apps Script Editor แล้วกด Run ฟังก์ชัน setupDatabase()
  */
 function setupDatabase() {
-  const ss = SpreadsheetApp.openById(TARGET_SPREADSHEET_ID);
+  const ss = getSpreadsheet();
+
   
   // 1. ตั้งค่าแท็บ users_progress
   let pSheet = ss.getSheetByName(SHEETS.USERS_PROGRESS);
@@ -95,7 +107,7 @@ function handleRequest(e) {
       payload = {};
     }
 
-    const ss = SpreadsheetApp.openById(TARGET_SPREADSHEET_ID);
+    const ss = getSpreadsheet();
     let result = { status: "success", action: action, timestamp: new Date().toISOString() };
 
     switch (action) {
