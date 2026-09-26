@@ -135,7 +135,7 @@ export function App() {
   // หากยังไม่ลงทะเบียน
   if (!profile) {
     return (
-      <div className="min-h-screen flex flex-col justify-between">
+      <div className="min-h-screen flex flex-col justify-between bg-slate-50 text-slate-900 selection:bg-teal-500 selection:text-white">
         <Navbar
           profile={null}
           progress={progress}
@@ -145,11 +145,11 @@ export function App() {
         <main className="flex-1 flex items-center justify-center">
           <LoginScreen onLogin={handleLogin} />
         </main>
-        <footer className="text-center py-6 text-xs text-zinc-500 border-t border-zinc-900">
-          <p className="font-medium text-zinc-400 mb-1">
+        <footer className="text-center py-6 text-xs text-slate-500 border-t border-slate-200 bg-white/60">
+          <p className="font-semibold text-slate-700 mb-1">
             Luno Digital Leadership Development Program © 2026 — เพื่อการวิจัยและพัฒนาทางการศึกษา
           </p>
-          <p className="text-[11px] text-zinc-600">
+          <p className="text-[12px] text-slate-500">
             ผู้พัฒนา: กาลวิน อดทน, ณัฎฐธิดา ใจอักษร, บุษยา ศรีเพชร์ คณะศึกษาศาสตร์ มข.
           </p>
         </footer>
@@ -256,7 +256,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between selection:bg-red-600 selection:text-white">
+    <div className="min-h-screen flex flex-col justify-between bg-slate-50 text-slate-900 selection:bg-teal-500 selection:text-white">
       <Navbar
         profile={profile}
         progress={progress}
@@ -271,7 +271,7 @@ export function App() {
         <div className="print:hidden max-w-5xl mx-auto px-4 pt-3 w-full flex justify-end">
           <button
             onClick={() => setActiveView(prev => prev === 'flow' ? 'step' : 'flow')}
-            className="text-xs font-semibold text-red-300 hover:text-white bg-red-950/60 border border-red-500/40 px-3.5 py-1.5 rounded-full transition cursor-pointer"
+            className="text-xs font-semibold text-teal-800 hover:text-teal-900 bg-white hover:bg-teal-50 border border-teal-200 shadow-2xs px-4 py-2 rounded-full transition cursor-pointer flex items-center gap-1.5"
           >
             {activeView === 'flow' ? '← กลับไปทำด่านปัจจุบัน' : '🗺️ แผนผังการเรียนรู้ 4 ด่าน'}
           </button>
@@ -282,11 +282,11 @@ export function App() {
         {renderCurrentStep()}
       </main>
 
-      <footer className="print:hidden text-center py-6 text-xs text-zinc-500 border-t border-zinc-900 mt-12">
-        <p className="font-medium text-zinc-400 mb-1">
+      <footer className="print:hidden text-center py-6 text-xs text-slate-500 border-t border-slate-200 mt-12 bg-white/60">
+        <p className="font-semibold text-slate-700 mb-1">
           Luno: โปรแกรมพัฒนาภาวะผู้นำดิจิทัลสำหรับผู้บริหารสถานศึกษาขนาดเล็ก
         </p>
-        <p className="text-[11px] text-zinc-500">
+        <p className="text-[12px] text-slate-500">
           © 2026 กาลวิน อดทน, ณัฎฐธิดา ใจอักษร, บุษยา ศรีเพชร์ คณะศึกษาศาสตร์ มข. — เพื่อการวิจัยและพัฒนาทางการศึกษา
         </p>
       </footer>
