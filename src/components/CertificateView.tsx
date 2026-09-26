@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import type { UserProfile, UserProgress } from '../types';
 import { Award, Printer, TrendingUp, BarChart3, Radar, Home } from 'lucide-react';
-import { Chart, BarController, BarElement, CategoryScale, LinearScale, RadarController, RadialLinearScale, PointElement, LineElement, Tooltip, Legend } from 'chart.js';
+import { Chart, BarController, BarElement, CategoryScale, LinearScale, RadarController, RadialLinearScale, PointElement, LineElement, Tooltip, Legend, Filler } from 'chart.js';
 
 // Register Chart.js components
-Chart.register(BarController, BarElement, CategoryScale, LinearScale, RadarController, RadialLinearScale, PointElement, LineElement, Tooltip, Legend);
+Chart.register(BarController, BarElement, CategoryScale, LinearScale, RadarController, RadialLinearScale, PointElement, LineElement, Tooltip, Legend, Filler);
 
 interface CertificateViewProps {
   profile: UserProfile;

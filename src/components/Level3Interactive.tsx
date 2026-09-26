@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { PlayCircle, CheckCircle2, AlertTriangle, HeartHandshake } from 'lucide-react';
+import { PlayCircle, CheckCircle2, AlertTriangle, HeartHandshake, BookOpen } from 'lucide-react';
 import { SoundService } from '../services/audio';
 import { ApiService } from '../services/api';
+import { CurriculumModal } from './CurriculumModal';
 
 import { LEVEL_3_CASE } from '../../1_EDIT_CONTENT_HERE/interactive_scenarios';
 
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashboard }) => {
+  const [showCurriculumModal, setShowCurriculumModal] = useState(false);
   const [watchedVideos, setWatchedVideos] = useState<Record<string, boolean>>(() => {
     const prog = ApiService.getLocalProgress();
     return prog.watchedVideos || {};
@@ -71,9 +73,18 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
           <span className="px-3.5 py-1 rounded-full bg-red-950 text-red-300 border border-red-500/40 text-xs font-semibold">
             ด่านที่ 3 จาก 4
           </span>
-          <span className="text-xs sm:text-sm text-zinc-300 bg-zinc-800/80 px-3 py-1 rounded-xl border border-zinc-700">
-            สถานะ: <span className="text-red-400 font-medium">กำลังศึกษา</span>
-          </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowCurriculumModal(true)}
+              className="text-xs font-semibold text-red-300 hover:text-white bg-red-950/80 hover:bg-red-900/80 px-3 py-1.5 rounded-xl border border-red-500/40 transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-red-400" />
+              <span>สาระ & เกณฑ์รูบริก 10 คะแนน</span>
+            </button>
+            <span className="text-xs sm:text-sm text-zinc-300 bg-zinc-800/80 px-3 py-1 rounded-xl border border-zinc-700">
+              สถานะ: <span className="text-red-400 font-medium">กำลังศึกษา</span>
+            </span>
+          </div>
         </div>
         <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight flex items-center gap-3">
           <span>🤝</span> ต้นแบบทีมงาน (Role Model & Team Collaborator)
@@ -94,15 +105,15 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
             <div>
               <div className="flex justify-between text-xs text-red-400 font-semibold mb-2">
                 <span>ตอนที่ 3.1</span>
-                <span>⏱️ 3 นาที</span>
+                <span>⏱️ 4 นาที</span>
               </div>
-              <h4 className="font-bold text-white text-sm sm:text-base mb-1.5">การเป็นแบบอย่างที่ดีในการใช้ดิจิทัล (Walk the Talk)</h4>
+              <h4 className="font-bold text-white text-sm sm:text-base mb-1.5">การเป็นผู้นำต้นแบบและพลเมืองดิจิทัล (Role Model & Digital Citizenship)</h4>
               <p className="text-xs text-zinc-400 leading-relaxed mb-4">
-                ผู้นำที่เปิดใจเรียนรู้พร้อมครู ไม่กลัวความผิดพลาด และส่งเสริมความปลอดภัยข้อมูล
+                ผู้นำที่เปิดใจเรียนรู้พร้อมครู เป็นแบบอย่างการใช้เทคโนโลยีอย่างปลอดภัย มีจริยธรรม และถูกกฎหมาย
               </p>
             </div>
             <button
-              onClick={() => handleSimulateWatch('l3_v1', 'การเป็นแบบอย่างที่ดี')}
+              onClick={() => handleSimulateWatch('l3_v1', 'การเป็นผู้นำต้นแบบและพลเมืองดิจิทัล')}
               className={`w-full py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer border ${
                 watchedVideos['l3_v1']
                   ? 'bg-red-950/80 text-red-200 border-red-500/50'
@@ -110,7 +121,7 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
               }`}
             >
               {watchedVideos['l3_v1'] ? <CheckCircle2 className="w-4 h-4 text-red-400" /> : <PlayCircle className="w-4 h-4 text-red-400" />}
-              {watchedVideos['l3_v1'] ? 'รับชมแล้ว' : 'ทำความเข้าใจแล้ว (3 นาที)'}
+              {watchedVideos['l3_v1'] ? 'รับชมแล้ว' : 'ทำความเข้าใจแล้ว (4 นาที)'}
             </button>
           </div>
 
@@ -118,7 +129,7 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
             <div>
               <div className="flex justify-between text-xs text-red-400 font-semibold mb-2">
                 <span>ตอนที่ 3.2</span>
-                <span>⏱️ 3 นาที</span>
+                <span>⏱️ 4 นาที</span>
               </div>
               <h4 className="font-bold text-white text-sm sm:text-base mb-1.5">การทำงานเป็นทีมและระบบพี่เลี้ยงดิจิทัล (Buddy Coaching)</h4>
               <p className="text-xs text-zinc-400 leading-relaxed mb-4">
@@ -134,7 +145,7 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
               }`}
             >
               {watchedVideos['l3_v2'] ? <CheckCircle2 className="w-4 h-4 text-red-400" /> : <PlayCircle className="w-4 h-4 text-red-400" />}
-              {watchedVideos['l3_v2'] ? 'รับชมแล้ว' : 'ทำความเข้าใจแล้ว (3 นาที)'}
+              {watchedVideos['l3_v2'] ? 'รับชมแล้ว' : 'ทำความเข้าใจแล้ว (4 นาที)'}
             </button>
           </div>
         </div>
@@ -213,6 +224,13 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
           </div>
         )}
       </div>
+
+      {/* Curriculum Modal for Module 3 */}
+      <CurriculumModal
+        isOpen={showCurriculumModal}
+        onClose={() => setShowCurriculumModal(false)}
+        initialModule={3}
+      />
     </div>
   );
 };

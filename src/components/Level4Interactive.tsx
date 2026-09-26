@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { PlayCircle, CheckCircle2, AlertTriangle, ArrowRight, Lightbulb } from 'lucide-react';
+import { PlayCircle, CheckCircle2, AlertTriangle, ArrowRight, Lightbulb, BookOpen } from 'lucide-react';
 import { SoundService } from '../services/audio';
 import { ApiService } from '../services/api';
 import { LEVEL_4_VISION_PARTS, LEVEL_4_QUIZ } from '../../1_EDIT_CONTENT_HERE/interactive_scenarios';
+import { CurriculumModal } from './CurriculumModal';
 
 interface Props {
   onPassLevel: () => void;
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashboard }) => {
+  const [showCurriculumModal, setShowCurriculumModal] = useState(false);
   const [watchedVideos, setWatchedVideos] = useState<Record<string, boolean>>(() => {
     const prog = ApiService.getLocalProgress();
     return prog.watchedVideos || {};
@@ -42,7 +44,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
       setFeedback({
         type: 'warning',
         message: 'กรุณาเลือกคำตอบ',
-        details: 'โปรดเลือกแนวปฏิบัติด้าน PDPA และการเผยแพร่สื่อในด่านที่ 4'
+        details: 'โปรดเลือกแนวทางการสร้างเจตคติเชิงบวกต่อเทคโนโลยีในด่านที่ 4'
       });
       return;
     }
@@ -85,15 +87,24 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
           <span className="px-3.5 py-1 rounded-full bg-red-950 text-red-300 border border-red-500/40 text-xs font-semibold">
             ด่านที่ 4 จาก 4
           </span>
-          <span className="text-xs sm:text-sm text-zinc-300 bg-zinc-800/80 px-3 py-1 rounded-xl border border-zinc-700">
-            สถานะ: <span className="text-red-400 font-medium">กำลังศึกษา</span>
-          </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowCurriculumModal(true)}
+              className="text-xs font-semibold text-red-300 hover:text-white bg-red-950/80 hover:bg-red-900/80 px-3 py-1.5 rounded-xl border border-red-500/40 transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-red-400" />
+              <span>สาระ & เกณฑ์รูบริก 10 คะแนน</span>
+            </button>
+            <span className="text-xs sm:text-sm text-zinc-300 bg-zinc-800/80 px-3 py-1 rounded-xl border border-zinc-700">
+              สถานะ: <span className="text-red-400 font-medium">กำลังศึกษา</span>
+            </span>
+          </div>
         </div>
         <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight flex items-center gap-3">
           <span>🛡️</span> ผู้นำค่านิยมดิจิทัล (Digital Value Leader)
         </h2>
         <p className="text-zinc-300 text-sm sm:text-base mt-2 leading-relaxed">
-          กำหนดวิสัยทัศน์ วางแนวปฏิบัติด้านความปลอดภัยทางไซเบอร์ จริยธรรมดิจิทัล และสร้างความยั่งยืนในสถานศึกษาขนาดเล็ก
+          กำหนดวิสัยทัศน์ร่วมกัน สร้างเจตคติเชิงบวกต่อเทคโนโลยี (TAM) และขับเคลื่อนวัฒนธรรมดิจิทัลที่ยั่งยืนในสถานศึกษาขนาดเล็ก
         </p>
       </div>
 
@@ -108,7 +119,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
             <div>
               <div className="flex justify-between text-xs text-red-400 font-semibold mb-2">
                 <span>ตอนที่ 4.1</span>
-                <span>⏱️ 3 นาที</span>
+                <span>⏱️ 4 นาที</span>
               </div>
               <h4 className="font-bold text-white text-sm sm:text-base mb-1.5">การสร้างวิสัยทัศน์ดิจิทัลที่จับต้องได้</h4>
               <p className="text-xs text-zinc-400 leading-relaxed mb-4">
@@ -124,7 +135,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
               }`}
             >
               {watchedVideos['l4_v1'] ? <CheckCircle2 className="w-4 h-4 text-red-400" /> : <PlayCircle className="w-4 h-4 text-red-400" />}
-              {watchedVideos['l4_v1'] ? 'รับชมแล้ว' : 'ทำความเข้าใจแล้ว (3 นาที)'}
+              {watchedVideos['l4_v1'] ? 'รับชมแล้ว' : 'ทำความเข้าใจแล้ว (4 นาที)'}
             </button>
           </div>
 
@@ -132,15 +143,15 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
             <div>
               <div className="flex justify-between text-xs text-red-400 font-semibold mb-2">
                 <span>ตอนที่ 4.2</span>
-                <span>⏱️ 3 นาที</span>
+                <span>⏱️ 4 นาที</span>
               </div>
-              <h4 className="font-bold text-white text-sm sm:text-base mb-1.5">จริยธรรมดิจิทัลและความปลอดภัยไซเบอร์ในโรงเรียน</h4>
+              <h4 className="font-bold text-white text-sm sm:text-base mb-1.5">การสร้างเจตคติเชิงบวกต่อเทคโนโลยี (TAM)</h4>
               <p className="text-xs text-zinc-400 leading-relaxed mb-4">
-                การปกป้องข้อมูลส่วนบุคคลของเด็กนักเรียน (PDPA) และการรู้เท่าทันสื่อดิจิทัล
+                ประยุกต์ใช้โมเดล TAM (Davis, 1989) เน้นการรับรู้ประโยชน์และความง่าย เริ่มจาก Quick Wins ลดงานเอกสารสร้างแรงจูงใจ
               </p>
             </div>
             <button
-              onClick={() => handleSimulateWatch('l4_v2', 'จริยธรรมและความปลอดภัยไซเบอร์')}
+              onClick={() => handleSimulateWatch('l4_v2', 'สร้างเจตคติเชิงบวกต่อเทคโนโลยี')}
               className={`w-full py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer border ${
                 watchedVideos['l4_v2']
                   ? 'bg-red-950/80 text-red-200 border-red-500/50'
@@ -148,7 +159,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
               }`}
             >
               {watchedVideos['l4_v2'] ? <CheckCircle2 className="w-4 h-4 text-red-400" /> : <PlayCircle className="w-4 h-4 text-red-400" />}
-              {watchedVideos['l4_v2'] ? 'รับชมแล้ว' : 'ทำความเข้าใจแล้ว (3 นาที)'}
+              {watchedVideos['l4_v2'] ? 'รับชมแล้ว' : 'ทำความเข้าใจแล้ว (4 นาที)'}
             </button>
           </div>
         </div>
@@ -228,7 +239,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
           </div>
         </div>
 
-        {/* Level 4 Scenario Question (PDPA) */}
+        {/* Level 4 Scenario Question (Positive Attitude & TAM) */}
         <div className="p-6 rounded-2xl bg-zinc-950/70 border border-zinc-800 space-y-4">
           <div className="flex items-start gap-3">
             <span className="w-7 h-7 rounded-full bg-red-500/20 text-red-400 border border-red-500/40 flex items-center justify-center font-bold text-sm flex-shrink-0">
@@ -299,6 +310,13 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
           )}
         </div>
       </div>
+
+      {/* Curriculum Modal for Module 4 */}
+      <CurriculumModal
+        isOpen={showCurriculumModal}
+        onClose={() => setShowCurriculumModal(false)}
+        initialModule={4}
+      />
     </div>
   );
 };

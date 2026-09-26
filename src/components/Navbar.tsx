@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { UserProfile, UserProgress, StepId } from '../types';
-import { RotateCcw, Lock, CheckCircle2, TrendingUp, Settings, User } from 'lucide-react';
+import { RotateCcw, Lock, CheckCircle2, TrendingUp, Settings, User, BookOpen } from 'lucide-react';
+import { CurriculumModal } from './CurriculumModal';
 
 interface NavbarProps {
   profile: UserProfile | null;
@@ -19,6 +20,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenSettings,
   onResetProgress
 }) => {
+  const [showCurriculumModal, setShowCurriculumModal] = useState(false);
+
   // คำนวณ % ความก้าวหน้า
   let stepsCompleted = 0;
   if (profile) stepsCompleted += 1;
@@ -123,6 +126,17 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           )}
 
+          {/* View Full Curriculum 100 pts */}
+          <button
+            onClick={() => setShowCurriculumModal(true)}
+            title="ดูโครงสร้างหลักสูตร 10 องค์ประกอบย่อย (100 คะแนนเต็ม)"
+            className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-red-950/70 hover:bg-red-900/80 text-red-200 border border-red-500/40 hover:border-red-400 transition flex items-center text-xs font-semibold gap-1.5 cursor-pointer shadow-xs"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-red-400" />
+            <span className="hidden sm:inline">เกณฑ์หลักสูตร (100 คะแนน)</span>
+            <span className="sm:hidden">หลักสูตร</span>
+          </button>
+
           {onResetProgress && (
             <button
               onClick={onResetProgress}
@@ -186,6 +200,12 @@ export const Navbar: React.FC<NavbarProps> = ({
           })}
         </div>
       </div>
+
+      {/* Curriculum Modal */}
+      <CurriculumModal
+        isOpen={showCurriculumModal}
+        onClose={() => setShowCurriculumModal(false)}
+      />
     </header>
   );
 };

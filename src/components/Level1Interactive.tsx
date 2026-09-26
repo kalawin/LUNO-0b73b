@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { PlayCircle, CheckCircle2, RotateCcw, AlertTriangle, Smartphone, FolderSync, Share2 } from 'lucide-react';
+import { PlayCircle, CheckCircle2, RotateCcw, AlertTriangle, Smartphone, FolderSync, Share2, BookOpen } from 'lucide-react';
 import { SoundService } from '../services/audio';
 import { ApiService } from '../services/api';
+import { CurriculumModal } from './CurriculumModal';
 
 import { LEVEL_1_CHANNELS } from '../../1_EDIT_CONTENT_HERE/interactive_scenarios';
 
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashboard }) => {
+  const [showCurriculumModal, setShowCurriculumModal] = useState(false);
   // สถานะการดูคลิปวิดีโอ 3 ตอน
   const [watchedVideos, setWatchedVideos] = useState<Record<string, boolean>>(() => {
     const prog = ApiService.getLocalProgress();
@@ -130,9 +132,18 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
           <span className="px-3.5 py-1 rounded-full bg-red-950 text-red-300 border border-red-500/40 text-xs font-semibold">
             ด่านที่ 1 จาก 4
           </span>
-          <span className="text-xs sm:text-sm text-zinc-300 bg-zinc-800/80 px-3 py-1 rounded-xl border border-zinc-700">
-            สถานะ: <span className="text-red-400 font-medium">กำลังศึกษา</span>
-          </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowCurriculumModal(true)}
+              className="text-xs font-semibold text-red-300 hover:text-white bg-red-950/80 hover:bg-red-900/80 px-3 py-1.5 rounded-xl border border-red-500/40 transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-red-400" />
+              <span>สาระ & เกณฑ์รูบริก 10 คะแนน</span>
+            </button>
+            <span className="text-xs sm:text-sm text-zinc-300 bg-zinc-800/80 px-3 py-1 rounded-xl border border-zinc-700">
+              สถานะ: <span className="text-red-400 font-medium">กำลังศึกษา</span>
+            </span>
+          </div>
         </div>
         <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight flex items-center gap-3">
           <span>📢</span> นักสื่อสารดิจิทัล (Digital Communicator)
@@ -206,13 +217,13 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                 <span>ตอนที่ 1.3</span>
                 <span>⏱️ 3 นาที</span>
               </div>
-              <h4 className="font-bold text-white text-sm sm:text-base mb-1.5">ยกระดับภาพลักษณ์ด้วย Storytelling</h4>
+              <h4 className="font-bold text-white text-sm sm:text-base mb-1.5">ยกระดับภาพลักษณ์ด้วย Storytelling & PDPA</h4>
               <p className="text-xs text-zinc-400 leading-relaxed mb-4">
-                การสื่อสารความสำเร็จของนักเรียนและคุณครูให้ชุมชนร่วมภาคภูมิใจและสนับสนุน
+                การสื่อสารผลงานผ่านสื่อดิจิทัลอย่างมืออาชีพ ควบคู่กับการปฏิบัติตาม PDPA และเคารพลิขสิทธิ์สื่อ
               </p>
             </div>
             <button
-              onClick={() => handleSimulateWatch('l1_v3', 'ยกระดับภาพลักษณ์ด้วย Storytelling')}
+              onClick={() => handleSimulateWatch('l1_v3', 'ยกระดับภาพลักษณ์ด้วย Storytelling และ PDPA')}
               className={`w-full py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer border ${
                 watchedVideos['l1_v3']
                   ? 'bg-red-950/80 text-red-200 border-red-500/50'
@@ -423,6 +434,13 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
           )}
         </div>
       </div>
+
+      {/* Curriculum Modal for Module 1 */}
+      <CurriculumModal
+        isOpen={showCurriculumModal}
+        onClose={() => setShowCurriculumModal(false)}
+        initialModule={1}
+      />
     </div>
   );
 };

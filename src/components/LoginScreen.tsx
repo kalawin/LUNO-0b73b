@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import type { UserProfile } from '../types';
-import { BadgeCheck, ArrowRight, Building2, User } from 'lucide-react';
+import { BadgeCheck, ArrowRight, Building2, User, BookOpen } from 'lucide-react';
 import { SoundService } from '../services/audio';
 import { ApiService } from '../services/api';
+import { CurriculumModal } from './CurriculumModal';
 
 interface LoginScreenProps {
   onLogin: (profile: UserProfile) => void;
@@ -13,6 +14,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
   const [lastname, setLastname] = useState('');
   const [school, setSchool] = useState('');
   const [error, setError] = useState('');
+  const [showCurriculumModal, setShowCurriculumModal] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,6 +113,18 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
               <div className="text-[11px] text-zinc-400">ผู้นำค่านิยมดิจิทัล</div>
             </div>
           </div>
+
+          {/* Curriculum Structure Button */}
+          <div className="mt-5 text-center sm:text-left">
+            <button
+              type="button"
+              onClick={() => setShowCurriculumModal(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900/90 hover:bg-zinc-850 text-red-300 hover:text-white border border-red-500/40 hover:border-red-400 text-xs sm:text-sm font-semibold transition cursor-pointer shadow-md"
+            >
+              <BookOpen className="w-4 h-4 text-red-400" />
+              <span>ดูโครงสร้างหลักสูตรฉบับปรับปรุง 10 องค์ประกอบย่อย (100 คะแนนเต็ม)</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -189,6 +203,11 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
           </div>
         </form>
       </div>
+
+      <CurriculumModal
+        isOpen={showCurriculumModal}
+        onClose={() => setShowCurriculumModal(false)}
+      />
     </div>
   );
 };

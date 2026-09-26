@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { UserProgress, StepId } from '../types';
 import { COURSE_LEVELS } from '../data/courseData';
 import { 
@@ -6,8 +6,10 @@ import {
   Lock, 
   PlayCircle, 
   Sparkles, 
-  ArrowRight
+  ArrowRight,
+  BookOpen
 } from 'lucide-react';
+import { CurriculumModal } from './CurriculumModal';
 
 interface DashboardFlowProps {
   progress: UserProgress;
@@ -15,6 +17,7 @@ interface DashboardFlowProps {
 }
 
 export const DashboardFlow: React.FC<DashboardFlowProps> = ({ progress, onSelectStep }) => {
+  const [showCurriculumModal, setShowCurriculumModal] = useState(false);
   const isCompleted = (step: string) => progress.completedSteps.includes(step);
   const isCurrent = (step: string) => progress.currentStep === step;
 
@@ -80,13 +83,23 @@ export const DashboardFlow: React.FC<DashboardFlowProps> = ({ progress, onSelect
             หากติดภารกิจสามารถปิดและกลับมาทำต่อจากจุดเดิมได้ตลอดเวลา
           </p>
 
-          <button
-            onClick={() => onSelectStep(progress.currentStep)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-sm shadow-lg shadow-red-600/30 transition cursor-pointer border border-red-500/40"
-          >
-            <PlayCircle className="w-5 h-5" />
-            <span>ทำต่อจากจุดล่าสุดทันที</span>
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => onSelectStep(progress.currentStep)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-bold text-sm shadow-lg shadow-red-600/30 transition cursor-pointer border border-red-500/40"
+            >
+              <PlayCircle className="w-5 h-5" />
+              <span>ทำต่อจากจุดล่าสุดทันที</span>
+            </button>
+
+            <button
+              onClick={() => setShowCurriculumModal(true)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 text-zinc-200 hover:text-white font-semibold text-sm border border-zinc-700 hover:border-red-500/50 transition cursor-pointer shadow-md"
+            >
+              <BookOpen className="w-4 h-4 text-red-400" />
+              <span>โครงสร้างหลักสูตร 10 องค์ประกอบ (100 คะแนน)</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -196,6 +209,10 @@ export const DashboardFlow: React.FC<DashboardFlowProps> = ({ progress, onSelect
         })}
       </div>
 
+      <CurriculumModal
+        isOpen={showCurriculumModal}
+        onClose={() => setShowCurriculumModal(false)}
+      />
     </div>
   );
 };
