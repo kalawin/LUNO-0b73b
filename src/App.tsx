@@ -146,7 +146,12 @@ export function App() {
           <LoginScreen onLogin={handleLogin} />
         </main>
         <footer className="text-center py-6 text-xs text-zinc-500 border-t border-zinc-900">
-          Luno Digital Leadership Development Program © 2026 — เพื่อการวิจัยและพัฒนาทางการศึกษา
+          <p className="font-medium text-zinc-400 mb-1">
+            Luno Digital Leadership Development Program © 2026 — เพื่อการวิจัยและพัฒนาทางการศึกษา
+          </p>
+          <p className="text-[11px] text-zinc-600">
+            ผู้พัฒนา: กาลวิน อดทน, ณัฎฐธิดา ใจอักษร, บุษยา ศรีเพชร์ คณะศึกษาศาสตร์ มข.
+          </p>
         </footer>
         <SettingsModal
           isOpen={showSettings}
@@ -281,8 +286,8 @@ export function App() {
         <p className="font-medium text-zinc-400 mb-1">
           Luno: โปรแกรมพัฒนาภาวะผู้นำดิจิทัลสำหรับผู้บริหารสถานศึกษาขนาดเล็ก
         </p>
-        <p className="text-[11px] text-zinc-600">
-          © 2026 กาลวิน อดทน คณะศึกษาศาสตร์ มข. — เพื่อการวิจัยและพัฒนาทางการศึกษา
+        <p className="text-[11px] text-zinc-500">
+          © 2026 กาลวิน อดทน, ณัฎฐธิดา ใจอักษร, บุษยา ศรีเพชร์ คณะศึกษาศาสตร์ มข. — เพื่อการวิจัยและพัฒนาทางการศึกษา
         </p>
       </footer>
 

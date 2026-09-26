@@ -253,8 +253,10 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ profile, progr
             </div>
 
             <div className="text-center">
-              <div className="font-serif italic text-white text-sm mb-1">(กาลวิน อดทน)</div>
-              <div className="border-t border-zinc-700 pt-1 text-zinc-300">ผู้พัฒนาโปรแกรม Luno</div>
+              <div className="font-serif italic text-white text-xs sm:text-sm mb-1">
+                (กาลวิน อดทน, ณัฎฐธิดา ใจอักษร, บุษยา ศรีเพชร์)
+              </div>
+              <div className="border-t border-zinc-700 pt-1 text-zinc-300">คณะผู้พัฒนาโปรแกรม Luno</div>
             </div>
           </div>
         </div>
