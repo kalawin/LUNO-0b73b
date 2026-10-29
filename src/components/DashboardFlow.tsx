@@ -1,234 +1,409 @@
 import React, { useState } from 'react';
-import type { UserProgress, StepId } from '../types';
-import { COURSE_LEVELS } from '../data/courseData';
+import type { UserProgress, StepId, UserProfile } from '../types';
 import { 
-  CheckCircle2, 
-  Lock, 
-  PlayCircle, 
-  Sparkles, 
+  Search, 
+  Bell, 
+  BookOpen, 
+  Clock, 
+  Award, 
   ArrowRight,
-  BookOpen
+  ChevronDown
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { CurriculumModal } from './CurriculumModal';
 
 interface DashboardFlowProps {
   progress: UserProgress;
+  profile: UserProfile | null;
   onSelectStep: (step: StepId) => void;
 }
 
-export const DashboardFlow: React.FC<DashboardFlowProps> = ({ progress, onSelectStep }) => {
+export const DashboardFlow: React.FC<DashboardFlowProps> = ({ progress, profile, onSelectStep }) => {
   const [showCurriculumModal, setShowCurriculumModal] = useState(false);
-  const isCompleted = (step: string) => progress.completedSteps.includes(step);
-  const isCurrent = (step: string) => progress.currentStep === step;
+  const [courseFilter, setCourseFilter] = useState<'ongoing' | 'completed'>('ongoing');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // รายการขั้นตอนทั้งหมดใน Journey
-  const stages = [
+  const completedUnits = progress.completedUnits || [];
+  const completedCount = completedUnits.length;
+  const overallPercent = Math.round((completedCount / 10) * 100);
+
+  // คำนวณความก้าวหน้าของแต่ละ Module
+  const m1Units = ['1.1', '1.2', '1.3'];
+  const m2Units = ['2.1', '2.2', '2.3'];
+  const m3Units = ['3.1', '3.2'];
+  const m4Units = ['4.1', '4.2'];
+
+  const m1Done = m1Units.filter(u => completedUnits.includes(u)).length;
+  const m2Done = m2Units.filter(u => completedUnits.includes(u)).length;
+  const m3Done = m3Units.filter(u => completedUnits.includes(u)).length;
+  const m4Done = m4Units.filter(u => completedUnits.includes(u)).length;
+
+  const m1Pct = Math.round((m1Done / 3) * 100);
+  const m2Pct = Math.round((m2Done / 3) * 100);
+  const m3Pct = Math.round((m3Done / 2) * 100);
+  const m4Pct = Math.round((m4Done / 2) * 100);
+
+  const modules = [
     {
-      id: 'pre-test' as StepId,
-      stepNumber: 0,
-      title: 'แบบทดสอบก่อนเรียน (Pre-test)',
-      desc: 'วัดระดับความเข้าใจพื้นฐาน 4 มิติ (จำนวน 4 ข้อ ไม่จำกัดเวลา)',
-      duration: '3–5 นาที',
-      type: 'quiz'
+      id: 'level-1' as StepId,
+      code: 'Module 1',
+      title: 'การสื่อสารเชิงดิจิทัล (Digital Communication)',
+      desc: 'หน่วย 1.1, 1.2, 1.3 · แผนสื่อสาร 4 ช่อง เครือข่ายพันธมิตร และภาพลักษณ์ PDPA',
+      duration: '3.2 ชม.',
+      colorBg: 'bg-[#fff9e6]',
+      colorBorder: 'border-[#fdeec3]',
+      barColor: 'bg-amber-400',
+      badgeColor: 'text-amber-800 bg-amber-100',
+      percent: m1Pct,
+      doneCount: m1Done,
+      totalCount: 3
     },
-    ...COURSE_LEVELS.map(lvl => ({
-      id: lvl.id as StepId,
-      stepNumber: lvl.levelNumber,
-      title: lvl.title,
-      desc: lvl.subtitle,
-      duration: `${lvl.durationMinutes} นาที`,
-      type: 'level'
-    })),
     {
-      id: 'post-test' as StepId,
-      stepNumber: 5,
-      title: 'แบบทดสอบหลังเรียน (Post-test)',
-      desc: 'วัดผลสัมฤทธิ์ทางการเรียนรู้ 4 มิติ (จำนวน 4 ข้อ)',
-      duration: '3–5 นาที',
-      type: 'quiz'
+      id: 'level-2' as StepId,
+      code: 'Module 2',
+      title: 'การสร้างวิถีการเรียนรู้เชิงดิจิทัล (Digital Learning Culture)',
+      desc: 'หน่วย 2.1, 2.2, 2.3 · แผนโค้ชครู 3 ครั้ง สภาพแวดล้อม Quick Wins และ Data Decision',
+      duration: '2.8 ชม.',
+      colorBg: 'bg-[#f4f3ff]',
+      colorBorder: 'border-[#e4dfff]',
+      barColor: 'bg-indigo-500',
+      badgeColor: 'text-indigo-800 bg-indigo-100',
+      percent: m2Pct,
+      doneCount: m2Done,
+      totalCount: 3
     },
     {
-      id: 'evaluation' as StepId,
-      stepNumber: 6,
-      title: 'แบบประเมินรูปแบบการพัฒนา Luno',
-      desc: 'ประเมินความเหมาะสม ความเป็นไปได้ และความเป็นประโยชน์ (5 ระดับ)',
-      duration: '2 นาที',
-      type: 'eval'
+      id: 'level-3' as StepId,
+      code: 'Module 3',
+      title: 'การทำงานร่วมกันและผู้นำต้นแบบดิจิทัล (Collaboration & Role Model)',
+      desc: 'หน่วย 3.1, 3.2 · Micro-journal ผู้นำต้นแบบ 1 วัน และผังการทำงานทีมบน Cloud',
+      duration: '1.2 ชม.',
+      colorBg: 'bg-[#eaf8f5]',
+      colorBorder: 'border-[#d2f1eb]',
+      barColor: 'bg-teal-500',
+      badgeColor: 'text-teal-800 bg-teal-100',
+      percent: m3Pct,
+      doneCount: m3Done,
+      totalCount: 2
     },
     {
-      id: 'completed' as StepId,
-      stepNumber: 7,
-      title: 'สรุปผลสัมฤทธิ์ & เกียรติบัตรรับรองสมรรถนะ',
-      desc: 'วิเคราะห์ผลคะแนนเปรียบเทียบ กราฟสมรรถนะ 4 มิติ และพิมพ์เกียรติบัตร PDF',
-      duration: 'สำเร็จ',
-      type: 'cert'
+      id: 'level-4' as StepId,
+      code: 'Module 4',
+      title: 'การสร้างค่านิยมเชิงดิจิทัล (Digital Values & Culture)',
+      desc: 'หน่วย 4.1, 4.2 · วิสัยทัศน์ดิจิทัล 3-4 ประโยค และกิจกรรมสร้างแรงจูงใจ TAM Model',
+      duration: '1.5 ชม.',
+      colorBg: 'bg-[#fff2f0]',
+      colorBorder: 'border-[#fde2de]',
+      barColor: 'bg-rose-500',
+      badgeColor: 'text-rose-800 bg-rose-100',
+      percent: m4Pct,
+      doneCount: m4Done,
+      totalCount: 2
     }
   ];
 
+  const filteredModules = modules.filter(m => {
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      if (!m.title.toLowerCase().includes(q) && !m.desc.toLowerCase().includes(q)) {
+        return false;
+      }
+    }
+    if (courseFilter === 'completed') {
+      return m.percent === 100;
+    }
+    return true;
+  });
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="max-w-4xl mx-auto px-4 py-8 space-y-8"
-    >
-      {/* Intro Box */}
-      <div className="rounded-3xl p-6 sm:p-8 bg-gradient-to-br from-white via-emerald-50/20 to-teal-50/40 border border-slate-200/90 shadow-lg shadow-teal-500/5 relative overflow-hidden backdrop-blur-md">
-        <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/80 text-xs font-semibold mb-3 shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-            <span>เส้นทางการเรียนรู้ 4 ด่านต่อเนื่อง (ไม่ผูกเวลา)</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 mb-2">
-            แผนผังการเรียนรู้ภาวะผู้นำดิจิทัล Luno
+    <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-7 bg-white">
+      {/* Top Header Greeting Bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Hello {profile?.firstname || profile?.name?.split(' ')[0] || 'Leader'}!
           </h1>
-          <p className="text-slate-600 text-sm sm:text-base leading-relaxed mb-6">
-            ระบบจะเปิดด่านถัดไปให้อัตโนมัติเมื่อท่านผ่านเงื่อนไขในแต่ละด่าน 
-            หากติดภารกิจสามารถปิดและกลับมาทำต่อจากจุดเดิมได้ตลอดเวลา
+          <p className="text-sm text-slate-400 font-medium mt-0.5">
+            Let's learn something new today! (ยินดีต้อนรับสู่โปรแกรม LUNO)
           </p>
+        </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => onSelectStep(progress.currentStep)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-sky-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm shadow-md shadow-teal-600/20 transition cursor-pointer border border-teal-500/30"
-            >
-              <PlayCircle className="w-5 h-5" />
-              <span>ทำต่อจากจุดล่าสุดทันที</span>
-            </motion.button>
+        {/* Search & Notification Bar */}
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search from courses..."
+              className="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200/80 rounded-2xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 w-52 sm:w-64 transition"
+            />
+          </div>
 
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setShowCurriculumModal(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-teal-50 text-teal-800 border border-teal-300 font-semibold text-sm transition cursor-pointer shadow-xs"
-            >
-              <BookOpen className="w-4 h-4 text-teal-600" />
-              <span>โครงสร้างหลักสูตร 10 องค์ประกอบ (100 คะแนน)</span>
-            </motion.button>
+          <button
+            type="button"
+            className="w-10 h-10 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition relative"
+          >
+            <Bell className="w-4 h-4" />
+            <span className="w-2 h-2 rounded-full bg-rose-500 absolute top-2.5 right-2.5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Top 3 Pastel Metric Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* Card 1: Lessons / Units (Pastel Purple) */}
+        <div className="bg-[#eef0ff] border border-[#dcdfff] rounded-3xl p-5 flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-white shadow-xs flex items-center justify-center text-indigo-600">
+              <BookOpen className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-indigo-900 uppercase tracking-wider">
+                Lessons (หน่วย)
+              </div>
+              <div className="text-2xl font-black text-slate-900 mt-0.5">
+                {completedCount} <span className="text-xs font-semibold text-slate-400">/ 10 หน่วย</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 2: Hours Spent (Pastel Sky) */}
+        <div className="bg-[#e6f6fe] border border-[#c8edf9] rounded-3xl p-5 flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-white shadow-xs flex items-center justify-center text-sky-600">
+              <Clock className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-sky-900 uppercase tracking-wider">
+                Hours (เวลาสะสม)
+              </div>
+              <div className="text-2xl font-black text-slate-900 mt-0.5">
+                8.7 <span className="text-xs font-semibold text-slate-400">ชม. ตามแผน</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 3: Certificates / Progress (Pastel Pink) */}
+        <div className="bg-[#fceef5] border border-[#fad7e8] rounded-3xl p-5 flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-white shadow-xs flex items-center justify-center text-pink-600">
+              <Award className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-pink-900 uppercase tracking-wider">
+                Certificates (วุฒิบัตร)
+              </div>
+              <div className="text-2xl font-black text-slate-900 mt-0.5">
+                {overallPercent}% <span className="text-xs font-semibold text-slate-400">เสร็จสมบูรณ์</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Stages Timeline */}
-      <div className="space-y-3.5">
-        {stages.map((stage, idx) => {
-          const completed = isCompleted(stage.id);
-          const current = isCurrent(stage.id);
-          const locked = !completed && !current;
+      {/* Middle Analytics Row: Hours Spent Chart & Performance Speedometer */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-5">
+        {/* Hours Spent / Modules Bar Chart (3 Cols) */}
+        <div className="md:col-span-3 bg-white border border-slate-100 rounded-3xl p-6 shadow-xs space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-extrabold text-base text-slate-900">
+              Hours Spent (ความก้าวหน้า 4 โมดูล)
+            </h3>
+            <div className="flex items-center gap-1 px-3 py-1 bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-600 rounded-xl cursor-pointer">
+              <span>รายโมดูล</span>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+            </div>
+          </div>
 
-          return (
-            <motion.div
-              key={stage.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.05 }}
-              onClick={() => {
-                if (!locked) {
-                  onSelectStep(stage.id);
-                }
-              }}
-              className={`rounded-2xl p-5 border transition-all duration-200 ${
-                current
-                  ? 'bg-white border-2 border-teal-500 shadow-lg shadow-teal-500/10 ring-2 ring-teal-500/20'
-                  : completed
-                  ? 'bg-white/95 border-slate-200/90 hover:border-emerald-300 hover:shadow-md cursor-pointer'
-                  : 'bg-slate-50/70 border-slate-200/60 opacity-60 cursor-not-allowed'
+          {/* Bar Chart Visualization */}
+          <div className="h-44 flex items-end justify-around pt-6 pb-2 px-4 border-b border-dashed border-slate-100">
+            {/* Bar 1 */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="text-[11px] font-bold text-slate-500">{m1Pct}%</div>
+              <div className="w-9 h-32 bg-slate-100 rounded-xl relative overflow-hidden">
+                <div 
+                  style={{ height: `${m1Pct}%` }}
+                  className="w-full bg-[#ff7a59] rounded-xl absolute bottom-0 transition-all duration-500" 
+                />
+              </div>
+              <div className="text-xs font-bold text-slate-600">Mod 1</div>
+            </div>
+
+            {/* Bar 2 */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="text-[11px] font-bold text-slate-500">{m2Pct}%</div>
+              <div className="w-9 h-32 bg-slate-100 rounded-xl relative overflow-hidden">
+                <div 
+                  style={{ height: `${m2Pct}%` }}
+                  className="w-full bg-[#ff7a59] rounded-xl absolute bottom-0 transition-all duration-500" 
+                />
+              </div>
+              <div className="text-xs font-bold text-slate-600">Mod 2</div>
+            </div>
+
+            {/* Bar 3 */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="text-[11px] font-bold text-slate-500">{m3Pct}%</div>
+              <div className="w-9 h-32 bg-slate-100 rounded-xl relative overflow-hidden">
+                <div 
+                  style={{ height: `${m3Pct}%` }}
+                  className="w-full bg-[#ff7a59] rounded-xl absolute bottom-0 transition-all duration-500" 
+                />
+              </div>
+              <div className="text-xs font-bold text-slate-600">Mod 3</div>
+            </div>
+
+            {/* Bar 4 */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="text-[11px] font-bold text-slate-500">{m4Pct}%</div>
+              <div className="w-9 h-32 bg-slate-100 rounded-xl relative overflow-hidden">
+                <div 
+                  style={{ height: `${m4Pct}%` }}
+                  className="w-full bg-[#ff7a59] rounded-xl absolute bottom-0 transition-all duration-500" 
+                />
+              </div>
+              <div className="text-xs font-bold text-slate-600">Mod 4</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Performance Gauge (2 Cols) */}
+        <div className="md:col-span-2 bg-white border border-slate-100 rounded-3xl p-6 shadow-xs flex flex-col justify-between items-center text-center">
+          <div className="w-full text-left">
+            <h3 className="font-extrabold text-base text-slate-900">
+              Performance (สมรรถนะดิจิทัล)
+            </h3>
+          </div>
+
+          {/* Speedometer Gauge SVG */}
+          <div className="relative my-2 flex items-center justify-center">
+            <svg viewBox="0 0 160 100" className="w-44 h-28">
+              {/* Background Arc */}
+              <path
+                d="M 20 85 A 60 60 0 0 1 140 85"
+                fill="none"
+                stroke="#f1f5f9"
+                strokeWidth="14"
+                strokeLinecap="round"
+              />
+              {/* Colored Gauge Arc */}
+              <path
+                d="M 20 85 A 60 60 0 0 1 140 85"
+                fill="none"
+                stroke="url(#gauge-gradient)"
+                strokeWidth="14"
+                strokeLinecap="round"
+                strokeDasharray="188"
+                strokeDashoffset={188 - (188 * (overallPercent / 100))}
+                className="transition-all duration-700"
+              />
+              <defs>
+                <linearGradient id="gauge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="#ff7a59" />
+                  <stop offset="50%" stopColor="#f59e0b" />
+                  <stop offset="100%" stopColor="#10b981" />
+                </linearGradient>
+              </defs>
+              {/* Needle center circle */}
+              <circle cx="80" cy="85" r="7" fill="#0f172a" />
+            </svg>
+          </div>
+
+          <div>
+            <div className="text-xs font-semibold text-slate-400">
+              Your Point: <strong className="text-slate-900 text-sm">{(overallPercent * 0.1).toFixed(2)} / 10</strong>
+            </div>
+            <div className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full inline-block mt-1">
+              {overallPercent >= 80 ? 'ระดับดีเยี่ยม (Excellence)' : overallPercent >= 50 ? 'ระดับปานกลาง (Developing)' : 'กำลังพัฒนา (In Progress)'}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Section: Courses (Ongoing & Completed Tabs) */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="font-extrabold text-xl text-slate-900">Courses (หลักสูตร 4 Modules)</h2>
+          <div className="bg-slate-50 p-1 rounded-xl border border-slate-200/80 flex items-center gap-1 text-xs font-bold">
+            <button
+              type="button"
+              onClick={() => setCourseFilter('ongoing')}
+              className={`px-3 py-1.5 rounded-lg transition ${
+                courseFilter === 'ongoing' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-400 hover:text-slate-700'
               }`}
             >
-              <div className="flex items-start sm:items-center justify-between gap-4">
-                
-                <div className="flex items-start sm:items-center gap-4">
-                  {/* Status Icon */}
-                  <div className="shrink-0 mt-0.5 sm:mt-0">
-                    {completed ? (
-                      <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-bold">
-                        <CheckCircle2 className="w-5 h-5" />
-                      </div>
-                    ) : current ? (
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center font-bold shadow-md shadow-teal-500/30 animate-pulse">
-                        <PlayCircle className="w-5 h-5" />
-                      </div>
-                    ) : (
-                      <div className="w-10 h-10 rounded-xl bg-slate-200/80 text-slate-400 flex items-center justify-center font-bold">
-                        <Lock className="w-4 h-4" />
-                      </div>
-                    )}
-                  </div>
+              Ongoing
+            </button>
+            <button
+              type="button"
+              onClick={() => setCourseFilter('completed')}
+              className={`px-3 py-1.5 rounded-lg transition ${
+                courseFilter === 'completed' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-400 hover:text-slate-700'
+              }`}
+            >
+              Completed
+            </button>
+          </div>
+        </div>
 
-                  {/* Title & Desc */}
-                  <div>
-                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                      <span className="font-bold text-base sm:text-lg text-slate-900">
-                        {stage.title}
-                      </span>
-                      {current && (
-                        <span className="text-xs bg-teal-50 text-teal-800 font-bold px-2.5 py-0.5 rounded-full border border-teal-200">
-                          กำลังทำอยู่
-                        </span>
-                      )}
-                      {completed && (
-                        <span className="text-xs bg-emerald-50 text-emerald-800 font-medium px-2.5 py-0.5 rounded-full border border-emerald-200">
-                          ผ่านแล้ว
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-slate-500 text-xs sm:text-sm line-clamp-1 sm:line-clamp-none">
-                      {stage.desc}
-                    </p>
-                  </div>
+        {/* Modules Cards List */}
+        <div className="space-y-3.5">
+          {filteredModules.map((m) => (
+            <motion.div
+              key={m.id}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+              onClick={() => onSelectStep(m.id)}
+              className={`${m.colorBg} border ${m.colorBorder} rounded-3xl p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 cursor-pointer transition`}
+            >
+              <div className="flex items-center gap-4">
+                {/* Tech Thumbnail Icon */}
+                <div className="w-14 h-14 rounded-2xl bg-slate-900 text-white shadow-md flex items-center justify-center shrink-0">
+                  <BookOpen className="w-6 h-6 text-emerald-400" />
                 </div>
 
-                {/* Right Action / Duration */}
-                <div className="shrink-0 flex items-center gap-3 text-right">
-                  <div className="hidden sm:block text-xs font-semibold text-slate-400">
-                    {stage.duration}
-                  </div>
-
-                  {current ? (
-                    <motion.button
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onSelectStep(stage.id);
-                      }}
-                      className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 shadow-md shadow-teal-600/20 transition cursor-pointer"
-                    >
-                      <span>เข้าสู่ด่านนี้</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </motion.button>
-                  ) : completed ? (
-                    <motion.button
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onSelectStep(stage.id);
-                      }}
-                      className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-200 transition cursor-pointer"
-                    >
-                      ทบทวน
-                    </motion.button>
-                  ) : (
-                    <span className="text-xs text-slate-400 font-medium hidden sm:inline">
-                      ยังไม่ปลดล็อก
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md ${m.badgeColor}`}>
+                      {m.code}
                     </span>
-                  )}
+                    <span className="text-xs text-slate-400 font-semibold">{m.duration}</span>
+                  </div>
+                  <h3 className="font-extrabold text-base sm:text-lg text-slate-900 leading-snug">
+                    {m.title}
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">
+                    {m.desc}
+                  </p>
                 </div>
+              </div>
 
+              {/* Progress Pill Bar */}
+              <div className="shrink-0 flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                <div className="w-32 bg-white/80 rounded-full h-3 overflow-hidden border border-slate-200/60 relative">
+                  <div
+                    style={{ width: `${m.percent}%` }}
+                    className={`h-full ${m.barColor} rounded-full transition-all duration-500`}
+                  />
+                </div>
+                <span className="text-xs font-bold text-slate-700 min-w-10 text-right">
+                  {m.percent}%
+                </span>
+                <ArrowRight className="w-4 h-4 text-slate-400 hidden sm:block" />
               </div>
             </motion.div>
-          );
-        })}
+          ))}
+        </div>
       </div>
 
       <CurriculumModal
         isOpen={showCurriculumModal}
         onClose={() => setShowCurriculumModal(false)}
       />
-    </motion.div>
+    </div>
   );
 };

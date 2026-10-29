@@ -1,10 +1,20 @@
 import React, { useState } from 'react';
-import { PlayCircle, CheckCircle2, AlertTriangle, HeartHandshake, BookOpen } from 'lucide-react';
-import { SoundService } from '../services/audio';
+import type { UserProfile, UnitSubmission } from '../types';
 import { ApiService } from '../services/api';
+import { UNITS_DATA } from '../data/modulesData';
+import { ActivityFlowContainer } from './ActivityFlowContainer';
 import { CurriculumModal } from './CurriculumModal';
-
-import { LEVEL_3_CASE } from '../../1_EDIT_CONTENT_HERE/interactive_scenarios';
+import { 
+  CheckCircle2, 
+  BookOpen, 
+  ArrowRight, 
+  Award, 
+  FolderSync, 
+  Sparkles,
+  Users,
+  Clock,
+  Share2
+} from 'lucide-react';
 
 interface Props {
   onPassLevel: () => void;
@@ -12,225 +22,415 @@ interface Props {
 }
 
 export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashboard }) => {
+  const [profile] = useState<UserProfile | null>(() => ApiService.getLocalProfile());
+  const [activeUnitId, setActiveUnitId] = useState<'3.1' | '3.2'>('3.1');
   const [showCurriculumModal, setShowCurriculumModal] = useState(false);
-  const [watchedVideos, setWatchedVideos] = useState<Record<string, boolean>>(() => {
+
+  const [submissions, setSubmissions] = useState<Record<string, UnitSubmission>>(() => {
     const prog = ApiService.getLocalProgress();
-    return prog.watchedVideos || {};
+    return prog.unitSubmissions || {};
   });
 
-  const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error' | 'warning'; title: string; message: string } | null>(null);
+  // State 3.1: ผู้นำต้นแบบแบบวันเดียว (Micro-journal 3 ช่อง + แผนสอนสั้น 10 นาที)
+  const [form3_1, setForm3_1] = useState(() => {
+    const saved = submissions['3.1']?.formData || {};
+    return {
+      toolAndGoal: saved['เครื่องมือและเป้าหมาย'] || 'Canva: ทำป้ายประกาศประชุมผู้ปกครองให้เสร็จใน 15 นาที',
+      journalAction: saved['บันทึกช่อง1_ทำอะไรและได้ผลอย่างไร'] || 'ทดลองทำป้ายประกาศประชุมผู้ปกครองได้ 1 แบบสำเร็จใน 20 นาที ตัวหนังสืออ่านง่ายและสวยงาม',
+      journalObstacle: saved['บันทึกช่อง2_ติดขัดตรงไหน'] || 'หาแม่แบบฟอนต์ภาษาไทยที่เข้ากับงานยาก ต้องปรับแต่งขนาดและสีตัวอักษรเอง',
+      journalEthics: saved['บันทึกช่อง3_จริยธรรมดิจิทัลและวิธีแก้'] || 'พบภาพตัวอย่างในเน็ตสวยแต่อาจติดลิขสิทธิ์ จึงเปลี่ยนมาใช้ภาพถ่ายกิจกรรมจริงของโรงเรียน และใส่เครดิตไอคอนที่นำมาใช้',
+      microTeachingPlan: saved['แผนถ่ายทอดให้ทีม10นาที'] || 'ที่ประชุมครูวันศุกร์ (10 นาที): สาธิตการเลือกแม่แบบ Canva และเปลี่ยนข้อความเป็นภาษาไทยให้ครู 5 คนดู'
+    };
+  });
 
-  const handleSimulateWatch = (videoId: string, title: string) => {
-    const updated = { ...watchedVideos, [videoId]: true };
-    setWatchedVideos(updated);
-    ApiService.saveLocalProgress({ watchedVideos: updated });
-    SoundService.playSuccess();
-    setFeedback({
-      type: 'success',
-      title: 'เรียนรู้สำเร็จ!',
-      message: `ท่านได้รับชมบทเรียน "${title}" เรียบร้อยแล้ว`
-    });
-  };
+  // State 3.2: ผังการทำงานทีม 3 เสาหลัก
+  const [form3_2, setForm3_2] = useState(() => {
+    const saved = submissions['3.2']?.formData || {};
+    return {
+      teamTask: saved['ชื่องานและบทบาทสมาชิก'] || 'การจัดทำรายงานการประเมินตนเองของสถานศึกษา (SAR): ผอ. ดูภาพรวม / ครูวิชาการ รวบรวมไฟล์กลาง / ครูประจำชั้น ส่งผลสัมฤทธิ์',
+      commWorkflow: saved['เสาหลัก1_การสื่อสาร'] || 'ครูวิชาการ แจ้งกำหนดส่งหลักฐานและข้อแนะนำผ่าน LINE กลุ่มงานวิชาการ ทุกวันจันทร์ 08.30 น.',
+      driveWorkflow: saved['เสาหลัก2_การแบ่งปันไฟล์'] || 'Google Drive โฟลเดอร์ "SAR-2569" มีโฟลเดอร์ย่อย 3 มาตรฐาน / ตั้งชื่อไฟล์: มาตรฐาน_กลุ่มสาระ_ฉบับที่ / เจ้าของไฟล์กลาง: ครูวิชาการ',
+      trackingWorkflow: saved['เสาหลัก3_การติดตามงาน'] || 'แผ่นตาราง Google Sheets แปะลิงก์ในโน้ตกลุ่มไลน์ แสดง checklist สถานะ (รอส่ง / ส่งแล้ว / ตรวจผ่าน) กำหนดส่งทุกวันศุกร์'
+    };
+  });
 
-  const handleSelectScenario = async (choiceId: string) => {
-    setSelectedChoice(choiceId);
-    const chosen = LEVEL_3_CASE.choices.find(c => c.id === choiceId);
-    if (!chosen) return;
+  const isCompleted3_1 = !!submissions['3.1'];
+  const isCompleted3_2 = !!submissions['3.2'];
+  const allCompleted = isCompleted3_1 && isCompleted3_2;
 
-    if (chosen.type === 'success') {
-      SoundService.playSuccess();
-      setFeedback({
-        type: 'success',
-        title: chosen.feedbackTitle,
-        message: chosen.feedbackMessage
-      });
+  const handleUnitSubmit = (sub: UnitSubmission) => {
+    const updatedProg = ApiService.saveUnitSubmission(sub);
+    setSubmissions(updatedProg.unitSubmissions || {});
 
-      // ส่ง Telemetry ด่าน 3 เข้าชีท data1
-      await ApiService.sendTelemetry({
-        กิจกรรมล่าสุด: "ผ่านด่าน 3 - ต้นแบบทีมงาน",
-        สถานะด่าน3: "ผ่านสมบูรณ์ (Buddy Coaching)"
-      });
-
-      setTimeout(() => {
-        onPassLevel();
-      }, 2400);
-    } else {
-      SoundService.playError();
-      setFeedback({
-        type: 'warning',
-        title: chosen.feedbackTitle,
-        message: chosen.feedbackMessage
-      });
+    const completedUnits = updatedProg.completedUnits || [];
+    if (completedUnits.includes('3.1') && completedUnits.includes('3.2')) {
+      ApiService.completeStep('level-3', 'level-4');
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8 space-y-8 animate-fade-in">
-      {/* Header Banner */}
-      <div className="rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-red-950/80 via-zinc-900 to-zinc-950 border border-red-500/30 shadow-xl">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-3">
-          <span className="px-3.5 py-1 rounded-full bg-red-950 text-red-300 border border-red-500/40 text-xs font-semibold">
-            ด่านที่ 3 จาก 4
-          </span>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowCurriculumModal(true)}
-              className="text-xs font-semibold text-red-300 hover:text-white bg-red-950/80 hover:bg-red-900/80 px-3 py-1.5 rounded-xl border border-red-500/40 transition flex items-center gap-1.5 cursor-pointer shadow-xs"
-            >
-              <BookOpen className="w-3.5 h-3.5 text-red-400" />
-              <span>สาระ & เกณฑ์รูบริก 10 คะแนน</span>
-            </button>
-            <span className="text-xs sm:text-sm text-zinc-300 bg-zinc-800/80 px-3 py-1 rounded-xl border border-zinc-700">
-              สถานะ: <span className="text-red-400 font-medium">กำลังศึกษา</span>
-            </span>
-          </div>
-        </div>
-        <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight flex items-center gap-3">
-          <span>🤝</span> ต้นแบบทีมงาน (Role Model & Team Collaborator)
-        </h2>
-        <p className="text-zinc-300 text-sm sm:text-base mt-2 leading-relaxed">
-          สร้างความร่วมมือ สร้างความมั่นใจให้แก่ครูทุกวัย และเป็นแบบอย่างในการประยุกต์ใช้เทคโนโลยีด้วยความเข้าใจ (Empathy)
-        </p>
-      </div>
-
-      {/* Video Micro-Learning Modules (2 clips) */}
-      <div className="rounded-3xl p-6 bg-zinc-900/80 border border-zinc-800 space-y-5 shadow-lg">
-        <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
-          <PlayCircle className="w-5 h-5 text-red-500" />
-          วิดีโอชุดการเรียนรู้ (Micro-Learning Modules)
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-zinc-950/70 rounded-2xl p-4 border border-zinc-800 flex flex-col justify-between hover:border-zinc-700 transition">
-            <div>
-              <div className="flex justify-between text-xs text-red-400 font-semibold mb-2">
-                <span>ตอนที่ 3.1</span>
-                <span>⏱️ 4 นาที</span>
-              </div>
-              <h4 className="font-bold text-white text-sm sm:text-base mb-1.5">การเป็นผู้นำต้นแบบและพลเมืองดิจิทัล (Role Model & Digital Citizenship)</h4>
-              <p className="text-xs text-zinc-400 leading-relaxed mb-4">
-                ผู้นำที่เปิดใจเรียนรู้พร้อมครู เป็นแบบอย่างการใช้เทคโนโลยีอย่างปลอดภัย มีจริยธรรม และถูกกฎหมาย
-              </p>
+    <div className="max-w-5xl mx-auto space-y-6 pb-16">
+      {/* Top Banner Navigation between Sub-units (Soft Modern Style) */}
+      <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="px-3 py-1 rounded-full text-xs font-black bg-rose-50 text-rose-800 border border-rose-200">
+                MODULE 3
+              </span>
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                การทำงานร่วมกันและผู้นำต้นแบบดิจิทัล
+              </h1>
             </div>
-            <button
-              onClick={() => handleSimulateWatch('l3_v1', 'การเป็นผู้นำต้นแบบและพลเมืองดิจิทัล')}
-              className={`w-full py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer border ${
-                watchedVideos['l3_v1']
-                  ? 'bg-red-950/80 text-red-200 border-red-500/50'
-                  : 'bg-zinc-800 hover:bg-red-600/20 text-zinc-300 hover:text-white border-zinc-700'
-              }`}
-            >
-              {watchedVideos['l3_v1'] ? <CheckCircle2 className="w-4 h-4 text-red-400" /> : <PlayCircle className="w-4 h-4 text-red-400" />}
-              {watchedVideos['l3_v1'] ? 'รับชมแล้ว' : 'ทำความเข้าใจแล้ว (4 นาที)'}
-            </button>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
+              พัฒนาความเป็นผู้นำต้นแบบด้วย Micro-journal บันทึกจริยธรรม และผังการทำงานร่วมกัน 3 เสาหลักบน Cloud
+            </p>
           </div>
 
-          <div className="bg-zinc-950/70 rounded-2xl p-4 border border-zinc-800 flex flex-col justify-between hover:border-zinc-700 transition">
-            <div>
-              <div className="flex justify-between text-xs text-red-400 font-semibold mb-2">
-                <span>ตอนที่ 3.2</span>
-                <span>⏱️ 4 นาที</span>
-              </div>
-              <h4 className="font-bold text-white text-sm sm:text-base mb-1.5">การทำงานเป็นทีมและระบบพี่เลี้ยงดิจิทัล (Buddy Coaching)</h4>
-              <p className="text-xs text-zinc-400 leading-relaxed mb-4">
-                จับคู่ครูรุ่นใหม่กับครูอาวุโสเพื่อแลกเปลี่ยนประสบการณ์การสอนและการใช้เทคโนโลยี
-              </p>
-            </div>
-            <button
-              onClick={() => handleSimulateWatch('l3_v2', 'การทำงานเป็นทีมและระบบพี่เลี้ยง')}
-              className={`w-full py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer border ${
-                watchedVideos['l3_v2']
-                  ? 'bg-red-950/80 text-red-200 border-red-500/50'
-                  : 'bg-zinc-800 hover:bg-red-600/20 text-zinc-300 hover:text-white border-zinc-700'
-              }`}
-            >
-              {watchedVideos['l3_v2'] ? <CheckCircle2 className="w-4 h-4 text-red-400" /> : <PlayCircle className="w-4 h-4 text-red-400" />}
-              {watchedVideos['l3_v2'] ? 'รับชมแล้ว' : 'ทำความเข้าใจแล้ว (4 นาที)'}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Case-based Scenario Simulation */}
-      <div className="rounded-3xl p-6 sm:p-8 bg-zinc-900/90 border border-red-500/30 space-y-6 shadow-xl">
-        <div>
-          <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-red-950 text-red-300 border border-red-500/40">
-            สถานการณ์จำลองเพื่อการตัดสินใจ (Case-based Scenario)
-          </span>
-          <h3 className="text-xl sm:text-2xl font-bold text-white mt-1 flex items-center gap-2">
-            <HeartHandshake className="w-6 h-6 text-red-400" />
-            เหตุการณ์จำลอง: "ครูมาลี อายุ 56 ปี กังวลต่อการกรอกระบบคะแนนออนไลน์"
-          </h3>
+          <button
+            type="button"
+            onClick={() => setShowCurriculumModal(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs border border-slate-200 transition cursor-pointer self-start sm:self-auto"
+          >
+            <BookOpen className="w-4 h-4 text-rose-600" /> โครงสร้างหลักสูตร
+          </button>
         </div>
 
-        <div className="p-5 rounded-2xl bg-zinc-950/80 border border-zinc-800 text-zinc-200 text-sm leading-relaxed space-y-2.5">
-          <p>
-            <strong>บริบทสถานการณ์:</strong> {LEVEL_3_CASE.context}
-          </p>
-          <p className="text-red-300 font-medium">
-            คำถาม: {LEVEL_3_CASE.question}
-          </p>
-        </div>
-
-        {/* 3 Decision Option Cards */}
-        <div className="space-y-3">
-          {LEVEL_3_CASE.choices.map((choice) => (
-            <button
-              key={choice.id}
-              onClick={() => handleSelectScenario(choice.id)}
-              className={`w-full text-left p-4 rounded-2xl border transition cursor-pointer ${
-                selectedChoice === choice.id
-                  ? 'bg-red-950/60 border-red-500'
-                  : 'bg-zinc-950/60 hover:bg-zinc-800/80 border-zinc-800 hover:border-zinc-700'
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                <span className="w-7 h-7 rounded-lg bg-red-500/20 text-red-300 flex items-center justify-center font-bold text-sm flex-shrink-0">
-                  {choice.id}
+        {/* Sub-unit Tabs */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
+          <button
+            type="button"
+            onClick={() => setActiveUnitId('3.1')}
+            className={`p-4 rounded-2xl border text-left transition cursor-pointer ${
+              activeUnitId === '3.1'
+                ? 'bg-[#fff5f5] border-rose-400 ring-2 ring-rose-400/20 text-slate-900 shadow-xs'
+                : 'bg-slate-50 border-slate-200/80 hover:border-slate-300 text-slate-600'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-extrabold text-rose-700">หน่วย 3.1 (1 วัน / 11 น.)</span>
+              {isCompleted3_1 ? (
+                <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> ผ่านแล้ว ({submissions['3.1']?.totalScore}/10)
                 </span>
+              ) : (
+                <span className="text-[11px] font-semibold text-slate-400 bg-white px-2 py-0.5 rounded-full border border-slate-200">รอส่งงาน</span>
+              )}
+            </div>
+            <div className="text-sm font-bold text-slate-800">ผู้นำต้นแบบด้านดิจิทัลในทีม (แบบวันเดียว)</div>
+            <div className="text-xs text-slate-500 mt-1 line-clamp-1">Micro-journal 3 ช่อง จริยธรรมดิจิทัล และแผนสอน 10 นาที</div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveUnitId('3.2')}
+            className={`p-4 rounded-2xl border text-left transition cursor-pointer ${
+              activeUnitId === '3.2'
+                ? 'bg-[#fff5f5] border-rose-400 ring-2 ring-rose-400/20 text-slate-900 shadow-xs'
+                : 'bg-slate-50 border-slate-200/80 hover:border-slate-300 text-slate-600'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-extrabold text-rose-700">หน่วย 3.2 (60 น.)</span>
+              {isCompleted3_2 ? (
+                <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> ผ่านแล้ว ({submissions['3.2']?.totalScore}/10)
+                </span>
+              ) : (
+                <span className="text-[11px] font-semibold text-slate-400 bg-white px-2 py-0.5 rounded-full border border-slate-200">รอส่งงาน</span>
+              )}
+            </div>
+            <div className="text-sm font-bold text-slate-800">การทำงานร่วมกันด้วยเทคโนโลยีดิจิทัล (ทีม)</div>
+            <div className="text-xs text-slate-500 mt-1 line-clamp-1">ผังขั้นตอนการทำงานร่วมกัน 3 เสาหลัก: สื่อสาร - ไฟล์กลาง - ติดตามงาน</div>
+          </button>
+        </div>
+      </div>
+
+      {/* Module 3 Celebration Banner */}
+      {allCompleted && (
+        <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-slate-50 border border-emerald-300 rounded-3xl p-6 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-700 flex-shrink-0">
+              <CheckCircle2 className="w-7 h-7" />
+            </div>
+            <div>
+              <div className="font-extrabold text-slate-900 text-lg">ยอดเยี่ยม! ท่านผ่าน Module 3 ครบทั้ง 2 หน่วยแล้ว</div>
+              <p className="text-xs font-medium text-slate-600 mt-0.5">
+                คะแนนรวม: {(submissions['3.1']?.totalScore || 0) + (submissions['3.2']?.totalScore || 0)} / 20 คะแนน · ปลดล็อก Module 4 แล้ว
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onPassLevel}
+            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-sm transition flex-shrink-0 cursor-pointer"
+          >
+            เข้าสู่ Module 4 <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* UNIT 3.1 INTERACTIVE FORM */}
+      {activeUnitId === '3.1' && (
+        <ActivityFlowContainer
+          unit={UNITS_DATA['3.1']}
+          profile={profile}
+          existingSubmission={submissions['3.1']}
+          formData={{
+            'เครื่องมือและเป้าหมาย': form3_1.toolAndGoal,
+            'บันทึกช่อง1_ทำอะไรและได้ผลอย่างไร': form3_1.journalAction,
+            'บันทึกช่อง2_ติดขัดตรงไหน': form3_1.journalObstacle,
+            'บันทึกช่อง3_จริยธรรมดิจิทัลและวิธีแก้': form3_1.journalEthics,
+            'แผนถ่ายทอดให้ทีม10นาที': form3_1.microTeachingPlan
+          }}
+          isStep4Valid={!!form3_1.toolAndGoal.trim() && !!form3_1.journalAction.trim() && !!form3_1.journalEthics.trim()}
+          onSubmitUnit={handleUnitSubmit}
+          onNextUnit={() => setActiveUnitId('3.2')}
+          onBackToDashboard={onBackToDashboard}
+          childrenStep4={
+            <div className="space-y-6">
+              <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-xs">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                  <div className="font-bold text-slate-900 text-base flex items-center gap-2">
+                    <Award className="w-5 h-5 text-rose-600" /> แบบบันทึก Micro-journal 3 ช่อง (ทดลองกับงานจริง)
+                  </div>
+                  <span className="text-xs bg-rose-50 text-rose-800 border border-rose-200 px-3 py-1 rounded-full font-bold">
+                    หน่วย 3.1
+                  </span>
+                </div>
+
+                {/* Field 1: Tool & Goal */}
                 <div>
-                  <div className="font-bold text-white text-sm sm:text-base">{choice.title}</div>
-                  <div className="text-xs text-zinc-400 mt-1">{choice.desc}</div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-rose-600" /> เครื่องมือดิจิทัลที่เลือก + เป้าหมายการใช้งาน 1 ข้อ:
+                    </label>
+                    <span className="text-[11px] text-slate-400 font-medium">คลิกข้อความด้านล่างเพื่อเลือกแบบด่วน</span>
+                  </div>
+                  <input
+                    type="text"
+                    value={form3_1.toolAndGoal}
+                    onChange={(e) => setForm3_1({ ...form3_1, toolAndGoal: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200/50"
+                  />
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {[
+                      'Canva: ทำป้ายประกาศประชุมผู้ปกครองให้เสร็จใน 15 นาที',
+                      'Google Sheets: สร้างตารางเช็คชื่อนักเรียนออนไลน์ที่สรุปยอดอัตโนมัติ',
+                      'ChatGPT / Gemini: ช่วยร่างหนังสือราชการขอความอนุเคราะห์วิทยากร',
+                      'Padlet: สร้างกระดานระดมความคิดเห็นของคุณครูในการพัฒนาโรงเรียน'
+                    ].map((example, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setForm3_1({ ...form3_1, toolAndGoal: example })}
+                        className="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-rose-100 text-slate-700 hover:text-rose-900 border border-slate-200 transition"
+                      >
+                        {example.split(':')[0]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 3-Column Micro-journal Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                  {/* Column 1 */}
+                  <div className="bg-[#f0fbf7] p-4 rounded-2xl border border-emerald-200 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-extrabold text-emerald-800 uppercase tracking-wider">
+                        ช่องที่ 1: ทำอะไรและได้ผลอย่างไร
+                      </label>
+                      <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">ผลลัพธ์</span>
+                    </div>
+                    <p className="text-[11px] text-emerald-700">งานจริงที่ทดลองทำ + สิ่งที่สำเร็จ</p>
+                    <textarea
+                      rows={3}
+                      value={form3_1.journalAction}
+                      onChange={(e) => setForm3_1({ ...form3_1, journalAction: e.target.value })}
+                      className="w-full bg-white border border-emerald-300 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                    />
+                  </div>
+
+                  {/* Column 2 */}
+                  <div className="bg-[#fff9e6] p-4 rounded-2xl border border-amber-200 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-extrabold text-amber-800 uppercase tracking-wider">
+                        ช่องที่ 2: ติดขัดตรงไหน
+                      </label>
+                      <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold">อุปสรรค</span>
+                    </div>
+                    <p className="text-[11px] text-amber-700">จุดที่สะดุดหรือฟังก์ชันที่ยังไม่คล่อง</p>
+                    <textarea
+                      rows={3}
+                      value={form3_1.journalObstacle}
+                      onChange={(e) => setForm3_1({ ...form3_1, journalObstacle: e.target.value })}
+                      className="w-full bg-white border border-amber-300 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-200"
+                    />
+                  </div>
+
+                  {/* Column 3 */}
+                  <div className="bg-[#eff6ff] p-4 rounded-2xl border border-blue-200 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-extrabold text-blue-800 uppercase tracking-wider">
+                        ช่องที่ 3: จริยธรรมและวิธีแก้
+                      </label>
+                      <span className="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full font-bold">จริยธรรม</span>
+                    </div>
+                    <p className="text-[11px] text-blue-700">ลิขสิทธิ์ / PDPA / ข้อมูลนักเรียน และวิธีจัดการ</p>
+                    <textarea
+                      rows={3}
+                      value={form3_1.journalEthics}
+                      onChange={(e) => setForm3_1({ ...form3_1, journalEthics: e.target.value })}
+                      className="w-full bg-white border border-blue-300 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    />
+                  </div>
+                </div>
+
+                {/* Field 3: Micro-teaching Plan */}
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-rose-600" /> แผนถ่ายทอดให้ทีม 10 นาที (เวลา, กลุ่มเป้าหมาย, สิ่งที่จะสาธิต):
+                    </label>
+                  </div>
+                  <input
+                    type="text"
+                    value={form3_1.microTeachingPlan}
+                    onChange={(e) => setForm3_1({ ...form3_1, microTeachingPlan: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200/50"
+                  />
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {[
+                      'ที่ประชุมครูวันศุกร์ (10 นาที): สาธิตการเลือกแม่แบบ Canva และเปลี่ยนข้อความเป็นภาษาไทยให้ครู 5 คนดู',
+                      'ช่วงพักเที่ยงห้องพักครู: สอนครูประจำชั้นกรอกคะแนนใน Google Sheets แบบออนไลน์ไม่ต้องรอส่งแฟลชไดรฟ์',
+                      'ก่อนเริ่มประชุมสัปดาห์หน้า: เปิดคลิปสั้น 3 นาทีวิธีบันทึกเสียงเป็นข้อความด้วย Google Voice Typing'
+                    ].map((example, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setForm3_1({ ...form3_1, microTeachingPlan: example })}
+                        className="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-rose-100 text-slate-700 hover:text-rose-900 border border-slate-200 transition"
+                      >
+                        ตัวอย่าง {i + 1}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </button>
-          ))}
-        </div>
-
-        {/* Feedback Alert Box */}
-        {feedback && (
-          <div className={`p-4 rounded-2xl border text-sm transition ${
-            feedback.type === 'success'
-              ? 'bg-emerald-950/70 border-emerald-500/50 text-emerald-200'
-              : 'bg-amber-950/70 border-amber-500/50 text-amber-200'
-          }`}>
-            <div className="font-bold flex items-center gap-2 mb-1">
-              {feedback.type === 'success' ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <AlertTriangle className="w-4 h-4 text-amber-400" />}
-              <span>{feedback.title}</span>
             </div>
-            <p className="text-xs opacity-90 mt-1 leading-relaxed">{feedback.message}</p>
-          </div>
-        )}
+          }
+        />
+      )}
 
-        {/* Action Link to overview if needed */}
-        {onBackToDashboard && (
-          <div className="pt-2 flex justify-end">
-            <button
-              onClick={onBackToDashboard}
-              className="py-2.5 px-4 rounded-xl text-xs font-semibold text-zinc-400 hover:text-white bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition cursor-pointer"
-            >
-              ดูแผนผังภาพรวม
-            </button>
-          </div>
-        )}
-      </div>
+      {/* UNIT 3.2 INTERACTIVE FORM */}
+      {activeUnitId === '3.2' && (
+        <ActivityFlowContainer
+          unit={UNITS_DATA['3.2']}
+          profile={profile}
+          existingSubmission={submissions['3.2']}
+          formData={{
+            'ชื่องานและบทบาทสมาชิก': form3_2.teamTask,
+            'เสาหลัก1_การสื่อสาร': form3_2.commWorkflow,
+            'เสาหลัก2_การแบ่งปันไฟล์': form3_2.driveWorkflow,
+            'เสาหลัก3_การติดตามงาน': form3_2.trackingWorkflow
+          }}
+          isStep4Valid={!!form3_2.teamTask.trim() && !!form3_2.driveWorkflow.trim()}
+          onSubmitUnit={handleUnitSubmit}
+          onBackToDashboard={onBackToDashboard}
+          childrenStep4={
+            <div className="space-y-6">
+              <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-xs">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                  <div className="font-bold text-slate-900 text-base flex items-center gap-2">
+                    <FolderSync className="w-5 h-5 text-rose-600" /> ผังขั้นตอนการทำงานร่วมกัน 3 เสาหลัก
+                  </div>
+                  <span className="text-xs bg-rose-50 text-rose-800 border border-rose-200 px-3 py-1 rounded-full font-bold">
+                    หน่วย 3.2
+                  </span>
+                </div>
 
-      {/* Curriculum Modal for Module 3 */}
-      <CurriculumModal
-        isOpen={showCurriculumModal}
-        onClose={() => setShowCurriculumModal(false)}
-        initialModule={3}
-      />
+                {/* Team Task */}
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                      <Users className="w-3.5 h-3.5 text-rose-600" /> 1. งานทีมจริง 1 เรื่อง พร้อมบทบาทสมาชิก:
+                    </label>
+                  </div>
+                  <input
+                    type="text"
+                    value={form3_2.teamTask}
+                    onChange={(e) => setForm3_2({ ...form3_2, teamTask: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200/50"
+                  />
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {[
+                      'การจัดทำรายงาน SAR: ผอ. ดูภาพรวม / ครูวิชาการ รวบรวมไฟล์กลาง / ครูประจำชั้น ส่งผลสัมฤทธิ์',
+                      'การจัดงานวันวิชาการ/Open House: ครูแกนนำ จัดตารางกิจกรรม / ครูธุรการ ทำงบประมาณ / ผอ. ตรวจสอบ',
+                      'การจัดสอบปลายภาค: หัวหน้าฝ่ายวัดผล จัดตารางสอบ / ครูประจำวิชา ส่งข้อสอบเข้าไดรฟ์กลาง'
+                    ].map((example, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setForm3_2({ ...form3_2, teamTask: example })}
+                        className="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-rose-100 text-slate-700 hover:text-rose-900 border border-slate-200 transition"
+                      >
+                        {example.split(':')[0]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 3 Pillars */}
+                <div className="space-y-4 pt-2">
+                  {/* Pillar 1 */}
+                  <div className="bg-[#f0fbf7] p-4 rounded-2xl border border-emerald-200 space-y-2">
+                    <label className="text-xs font-extrabold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
+                      <Share2 className="w-4 h-4 text-emerald-600" /> เสาหลักที่ 1: ขั้นตอนการสื่อสาร (ใคร – แจ้งอะไร – ช่องทาง – เมื่อไร)
+                    </label>
+                    <input
+                      type="text"
+                      value={form3_2.commWorkflow}
+                      onChange={(e) => setForm3_2({ ...form3_2, commWorkflow: e.target.value })}
+                      className="w-full bg-white border border-emerald-300 rounded-xl px-4 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                    />
+                  </div>
+
+                  {/* Pillar 2 */}
+                  <div className="bg-[#eff6ff] p-4 rounded-2xl border border-blue-200 space-y-2">
+                    <label className="text-xs font-extrabold text-blue-800 uppercase tracking-wider flex items-center gap-1.5">
+                      <FolderSync className="w-4 h-4 text-blue-600" /> เสาหลักที่ 2: การแบ่งปันไฟล์บน Cloud (โฟลเดอร์ Google Drive, การตั้งชื่อ, สิทธิ์, เจ้าของไฟล์กลาง)
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={form3_2.driveWorkflow}
+                      onChange={(e) => setForm3_2({ ...form3_2, driveWorkflow: e.target.value })}
+                      className="w-full bg-white border border-blue-300 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    />
+                  </div>
+
+                  {/* Pillar 3 */}
+                  <div className="bg-[#fff9e6] p-4 rounded-2xl border border-amber-200 space-y-2">
+                    <label className="text-xs font-extrabold text-amber-800 uppercase tracking-wider flex items-center gap-1.5">
+                      <Clock className="w-4 h-4 text-amber-600" /> เสาหลักที่ 3: การติดตามความก้าวหน้า (Checklist / ปฏิทิน / ผู้รับผิดชอบ / กำหนดส่ง)
+                    </label>
+                    <input
+                      type="text"
+                      value={form3_2.trackingWorkflow}
+                      onChange={(e) => setForm3_2({ ...form3_2, trackingWorkflow: e.target.value })}
+                      className="w-full bg-white border border-amber-300 rounded-xl px-4 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-200"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        />
+      )}
+
+      {showCurriculumModal && (
+        <CurriculumModal isOpen={showCurriculumModal} onClose={() => setShowCurriculumModal(false)} />
+      )}
     </div>
   );
 };

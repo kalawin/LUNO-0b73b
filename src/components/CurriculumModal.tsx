@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { CURRICULUM_ELEMENTS, type SubElementItem } from '../data/curriculumData';
-import { BookOpen, X, Award, CheckCircle2, ChevronRight, Sparkles, Scale, GraduationCap } from 'lucide-react';
+import { BookOpen, X, Award, CheckCircle2, Sparkles, Scale, GraduationCap } from 'lucide-react';
 
 interface CurriculumModalProps {
   isOpen: boolean;
@@ -233,3 +233,4 @@ export const CurriculumModal: React.FC<CurriculumModalProps> = ({ isOpen, onClos
     </div>
   );
 };
+

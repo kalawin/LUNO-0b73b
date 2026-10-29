@@ -1,4 +1,4 @@
-import type { UserProfile, UserProgress, StepId } from '../types';
+import type { UserProfile, UserProgress, StepId, UnitSubmission } from '../types';
 
 // URL ของ Google Apps Script Web App ที่เชื่อมต่อกับ Google Sheet ใหม่ของ Luno
 const DEFAULT_GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbxFx_OGc4YO8XFu-KVh0toM4Lse0pwcCttTeEXTwc3XbF11DljJ8NrbqHiDZxo3KxUM/exec"; 
@@ -52,6 +52,8 @@ export class ApiService {
     return {
       currentStep: 'pre-test',
       completedSteps: [],
+      completedUnits: [],
+      unitSubmissions: {},
       lastUpdated: new Date().toISOString()
     };
   }
@@ -65,10 +67,46 @@ export class ApiService {
     };
     localStorage.setItem(STORAGE_KEYS.USER_PROGRESS, JSON.stringify(updated));
     
-    // พยายามซิงก์ขึ้น Cloud Google Sheet ในเบื้องหลัง
+    // ซิงก์ขึ้น Cloud Google Sheet ในเบื้องหลัง
     this.syncProgressToCloud(updated);
     
     return updated;
+  }
+
+  // 2.1 บันทึกผลงานประจำหน่วย (Unit Submissions)
+  static saveUnitSubmission(submission: UnitSubmission): UserProgress {
+    const current = this.getLocalProgress();
+    const completedUnits = new Set(current.completedUnits || []);
+    completedUnits.add(submission.unitId);
+    
+    const unitSubmissions = {
+      ...(current.unitSubmissions || {}),
+      [submission.unitId]: submission
+    };
+    
+    const updated = this.saveLocalProgress({
+      completedUnits: Array.from(completedUnits),
+      unitSubmissions
+    });
+    
+    // ส่ง Telemetry สรุปผลงาน
+    this.sendTelemetry({
+      กิจกรรมล่าสุด: `ส่งผลงานหน่วย ${submission.unitId}`,
+      คะแนนรูบริก: `${submission.totalScore}/10`,
+      จำนวนหน่วยที่ผ่าน: completedUnits.size
+    });
+    
+    return updated;
+  }
+
+  static isUnitCompleted(unitId: string): boolean {
+    const current = this.getLocalProgress();
+    return (current.completedUnits || []).includes(unitId);
+  }
+
+  static getUnitSubmission(unitId: string): UnitSubmission | undefined {
+    const current = this.getLocalProgress();
+    return current.unitSubmissions ? current.unitSubmissions[unitId] : undefined;
   }
 
   static completeStep(step: StepId, nextStep: StepId): UserProgress {
@@ -100,12 +138,14 @@ export class ApiService {
         level_3_status: progress.completedSteps.includes('level-3') ? 'COMPLETED' : (progress.currentStep === 'level-3' ? 'IN_PROGRESS' : 'LOCKED'),
         level_4_status: progress.completedSteps.includes('level-4') ? 'COMPLETED' : (progress.currentStep === 'level-4' ? 'IN_PROGRESS' : 'LOCKED'),
         post_test_status: progress.completedSteps.includes('post-test') ? 'COMPLETED' : 'LOCKED',
-        evaluation_status: progress.completedSteps.includes('evaluation') ? 'COMPLETED' : 'LOCKED'
+        evaluation_status: progress.completedSteps.includes('evaluation') ? 'COMPLETED' : 'LOCKED',
+        completed_units: (progress.completedUnits || []).join(','),
+        last_active_at: progress.lastUpdated
       };
 
       await this.sendToGas('saveProgress', payload);
     } catch (err) {
-      console.warn('Sync to Google Sheet failed (Offline/Silent):', err);
+      console.warn('Sync progress to Sheet failed (Offline mode active):', err);
     }
   }
 
@@ -124,7 +164,6 @@ export class ApiService {
       ...data
     };
 
-    // 1. ส่งเข้าแท็บ data1 (ถ้า script มีฟังก์ชัน handleSaveData1)
     this.sendJsonp({
       action: 'saveData1',
       sheetName: 'data1',
@@ -133,7 +172,6 @@ export class ApiService {
       console.warn('Telemetry data1 send:', err);
     });
 
-    // 2. ซิงก์สถานะความก้าวหน้าเข้าแท็บ users_progress เสมอ
     const currentProg = this.getLocalProgress();
     this.syncProgressToCloud(currentProg);
   }
@@ -142,10 +180,8 @@ export class ApiService {
     const profile = this.getLocalProfile();
     if (!profile) return;
 
-    // บันทึก Local ทันที
     if (quizType === 'pre') {
       this.saveLocalProgress({ preTestScore: score, preTestAnswers: answers });
-      // บันทึกลง data1
       await this.sendTelemetry({
         กิจกรรมล่าสุด: "ส่งแบบทดสอบก่อนเรียน (Pre-test)",
         คะแนนก่อนเรียน: score,
@@ -165,7 +201,6 @@ export class ApiService {
       });
     }
 
-    // ซิงก์ขึ้นตาราง quiz_scores ด้วย JSONP
     const gasUrl = this.getGasUrl();
     if (!gasUrl) return;
 
@@ -206,7 +241,6 @@ export class ApiService {
       }
     });
 
-    // ส่ง Telemetry สรุปเสร็จสมบูรณ์ลง data1
     await this.sendTelemetry({
       กิจกรรมล่าสุด: "สำเร็จโปรแกรม Luno สมบูรณ์",
       คะแนนก่อนเรียน: current.preTestScore || 0,
@@ -299,7 +333,6 @@ export class ApiService {
     });
   }
 
-  // ใช้ sendJsonp แทน fetch เพื่อแก้ปัญหา CORS redirect ของ Google Apps Script บนทุก Browser
   private static async sendToGas(action: string, data: any): Promise<any> {
     return this.sendJsonp({ action, data });
   }

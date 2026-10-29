@@ -1,21 +1,21 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Sarabun', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: 'Prompt', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Prompt', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', 'Prompt', system-ui, -apple-system, sans-serif;
 }
 
 @layer base {
   :root {
-    --font-sans: 'Sarabun', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-heading: 'Prompt', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-sans: 'Prompt', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-heading: 'Plus Jakarta Sans', 'Prompt', system-ui, -apple-system, sans-serif;
   }
 
   body {
     font-family: var(--font-sans);
     margin: 0;
     padding: 0;
-    background-color: #f8fafc;
+    background-color: #eef2f6;
     color: #0f172a;
     min-height: 100vh;
     -webkit-tap-highlight-color: transparent;
@@ -23,17 +23,17 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
   }
 }
 
-/* Custom modern light scrollbar */
+/* Custom Soft Modern scrollbar */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
@@ -43,24 +43,18 @@
   background: #94a3b8;
 }
 
-/* Print certificate styles */
+/* Print styling for 1-page artifact */
 @media print {
-  body * {
-    visibility: hidden;
+  body {
+    background-color: #ffffff !important;
   }
-  #certificate-printable, #certificate-printable * {
-    visibility: visible;
+  .print\:hidden {
+    display: none !important;
   }
-  #certificate-printable {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 32px;
-    background: #ffffff !important;
-    color: #0f172a !important;
-    border: 3px double #d97706 !important;
+  #printable-artifact {
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
     box-shadow: none !important;
   }
 }

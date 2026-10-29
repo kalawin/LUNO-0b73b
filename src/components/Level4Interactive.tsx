@@ -1,9 +1,21 @@
 import React, { useState } from 'react';
-import { PlayCircle, CheckCircle2, AlertTriangle, ArrowRight, Lightbulb, BookOpen } from 'lucide-react';
-import { SoundService } from '../services/audio';
+import type { UserProfile, UnitSubmission } from '../types';
 import { ApiService } from '../services/api';
-import { LEVEL_4_VISION_PARTS, LEVEL_4_QUIZ } from '../../1_EDIT_CONTENT_HERE/interactive_scenarios';
+import { UNITS_DATA } from '../data/modulesData';
+import { ActivityFlowContainer } from './ActivityFlowContainer';
 import { CurriculumModal } from './CurriculumModal';
+import { 
+  CheckCircle2, 
+  BookOpen, 
+  ArrowRight, 
+  Compass, 
+  HeartHandshake, 
+  Sparkles,
+  Target,
+  GraduationCap,
+  Users,
+  Building2
+} from 'lucide-react';
 
 interface Props {
   onPassLevel: () => void;
@@ -11,312 +23,450 @@ interface Props {
 }
 
 export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashboard }) => {
+  const [profile] = useState<UserProfile | null>(() => ApiService.getLocalProfile());
+  const [activeUnitId, setActiveUnitId] = useState<'4.1' | '4.2'>('4.1');
   const [showCurriculumModal, setShowCurriculumModal] = useState(false);
-  const [watchedVideos, setWatchedVideos] = useState<Record<string, boolean>>(() => {
+
+  const [submissions, setSubmissions] = useState<Record<string, UnitSubmission>>(() => {
     const prog = ApiService.getLocalProgress();
-    return prog.watchedVideos || {};
+    return prog.unitSubmissions || {};
   });
 
-  // Vision Builder states (ดึงค่าเริ่มต้นจาก 1_EDIT_CONTENT_HERE/interactive_scenarios.ts)
-  const [part1, setPart1] = useState(LEVEL_4_VISION_PARTS.pillars[0] || '');
-  const [part2, setPart2] = useState(LEVEL_4_VISION_PARTS.actionDrivers[0] || '');
-  const [part3, setPart3] = useState(LEVEL_4_VISION_PARTS.impacts[0] || '');
+  // State 4.1: วิสัยทัศน์ดิจิทัล (Guided Prompts + Vision 3-4 ประโยค + เวทีระดมความเห็น)
+  const [form4_1, setForm4_1] = useState(() => {
+    const saved = submissions['4.1']?.formData || {};
+    return {
+      promptStudent: saved['คำตอบนำทาง_ด้านผู้เรียน'] || 'นักเรียนทุกคนได้เรียนรู้ผ่านสื่อดิจิทัลและฝึกทักษะการสืบค้นอย่างสนุกสนาน',
+      promptTeacher: saved['คำตอบนำทาง_ด้านครู'] || 'ครูใช้เทคโนโลยีลดภาระงานเอกสาร และมีเวลาดูแลนักเรียนมากขึ้น',
+      promptCommunity: saved['คำตอบนำทาง_ด้านชุมชน'] || 'ผู้ปกครองและชุมชนเข้าถึงข้อมูลผลงานโรงเรียนและร่วมสนับสนุนอย่างใกล้ชิด',
+      visionStatement: saved['วิสัยทัศน์ดิจิทัล'] || 'ภายใน 3 ปี โรงเรียนจะขับเคลื่อนการจัดการเรียนรู้เชิงรุกด้วยเทคโนโลยีดิจิทัล ครูทุกคนใช้สื่อดิจิทัลในการสอนอย่างน้อยสัปดาห์ละ 2 คาบ นักเรียนชั้น ป.4-6 ใช้คอมพิวเตอร์สืบค้นและนำเสนอผลงานได้ทุกคน และผู้ปกครองรับทราบข้อมูลข่าวสารผ่านช่องทางดิจิทัลอย่างสม่ำเสมอ',
+      forumPlan: saved['แผนเวทีระดมความเห็น'] || 'ที่ประชุมครูต้นภาคเรียน (30 นาที): เปิดคำถาม "เทคโนโลยีอะไรจะช่วยลดงานเอกสารของท่านได้มากที่สุด?"',
+      commVisionChannel: saved['ช่องทางสื่อสารวิสัยทัศน์'] || 'กลุ่มไลน์ครู, แผ่นป้ายประชาสัมพันธ์ห้องประชุม, และชี้แจงในวันประชุมผู้ปกครอง'
+    };
+  });
 
-  const [quizAnswer, setQuizAnswer] = useState<string>('');
-  const [feedback, setFeedback] = useState<{ type: 'success' | 'error' | 'warning'; message: string; details?: string } | null>(null);
+  // State 4.2: เจตคติเชิงบวกต่อเทคโนโลยี (TAM Model & Quick Win)
+  const [form4_2, setForm4_2] = useState(() => {
+    const saved = submissions['4.2']?.formData || {};
+    return {
+      targetGroupConcern: saved['กลุ่มเป้าหมายและความกังวล'] || 'ครูอาวุโสและครูที่ยังไม่คุ้นเคยกับเทคโนโลยี กังวลว่าจะทำคอมพิวเตอร์พังหรือเสียเวลาทำงานเอกสารเพิ่ม',
+      activityFormat: saved['รูปแบบกิจกรรม'] || 'Tech Coffee Break (เวิร์กช็อปสั้น 15 นาทีช่วงพักบ่าย พร้อมชากาแฟ)',
+      quickWinDetail: saved['QuickWinที่เห็นผลครั้งเดียว'] || 'ทดลองใช้ Google Docs Voice Typing พิมพ์ข้อความบันทึกข้อความด้วยเสียงพูด ช่วยลดเวลาพิมพ์งานได้ทันที 50%',
+      frequencySchedule: saved['ความถี่และผู้รับผิดชอบ'] || 'จัดสัปดาห์ละ 1 ครั้ง (วันพุธบ่าย) ผู้รับผิดชอบ: ผู้อำนวยการร่วมกับครูแกนนำดิจิทัล',
+      metricQuantity: saved['ตัวชี้วัดเชิงปริมาณ'] || 'ครูเข้าร่วมกิจกรรมอย่างน้อย 80% และทดลองใช้เครื่องมือสำเร็จทุกคนในครั้งแรก',
+      metricQuality: saved['ตัวชี้วัดเชิงคุณภาพ'] || 'ครูมีความมั่นใจเพิ่มขึ้น และมีความรู้สึกเชิงบวกว่าเทคโนโลยีช่วยลดภาระงานได้จริง'
+    };
+  });
 
-  const fullVisionStatement = `"${part1} ${part2} ${part3}"`;
+  const isCompleted4_1 = !!submissions['4.1'];
+  const isCompleted4_2 = !!submissions['4.2'];
+  const allCompleted = isCompleted4_1 && isCompleted4_2;
 
-  const handleSimulateWatch = (videoId: string, title: string) => {
-    const updated = { ...watchedVideos, [videoId]: true };
-    setWatchedVideos(updated);
-    ApiService.saveLocalProgress({ watchedVideos: updated });
-    SoundService.playSuccess();
-    setFeedback({
-      type: 'success',
-      message: `เรียนรู้สำเร็จ! ท่านได้รับชมบทเรียน "${title}" เรียบร้อยแล้ว`
-    });
-  };
+  const handleUnitSubmit = (sub: UnitSubmission) => {
+    const updatedProg = ApiService.saveUnitSubmission(sub);
+    setSubmissions(updatedProg.unitSubmissions || {});
 
-  const handleCheckQuiz = async () => {
-    if (!quizAnswer) {
-      SoundService.playError();
-      setFeedback({
-        type: 'warning',
-        message: 'กรุณาเลือกคำตอบ',
-        details: 'โปรดเลือกแนวทางการสร้างเจตคติเชิงบวกต่อเทคโนโลยีในด่านที่ 4'
-      });
-      return;
+    // หากบันทึกวิสัยทัศน์ ให้บันทึกไว้ใน UserProgress ด้วย
+    if (sub.unitId === '4.1' && form4_1.visionStatement) {
+      ApiService.saveLocalProgress({ visionStatement: form4_1.visionStatement });
     }
 
-    const selected = LEVEL_4_QUIZ.choices.find(c => c.id === quizAnswer);
-    if (selected && selected.isCorrect) {
-      SoundService.playSuccess();
-      setFeedback({
-        type: 'success',
-        message: LEVEL_4_QUIZ.correctFeedback.message,
-        details: LEVEL_4_QUIZ.correctFeedback.details
-      });
-
-      // บันทึกวิสัยทัศน์ที่สร้างลงเครื่องและส่ง Telemetry เข้าชีท data1
-      ApiService.saveLocalProgress({ visionStatement: fullVisionStatement });
-      await ApiService.sendTelemetry({
-        กิจกรรมล่าสุด: "ผ่านด่าน 4 - ผู้นำค่านิยมดิจิทัล",
-        สถานะด่าน4: "ผ่านสมบูรณ์",
-        วิสัยทัศน์ที่สร้าง: fullVisionStatement
-      });
-
-      setTimeout(() => {
-        onPassLevel();
-      }, 2200);
-    } else {
-      SoundService.playError();
-      setFeedback({
-        type: 'error',
-        message: LEVEL_4_QUIZ.incorrectFeedback.message,
-        details: LEVEL_4_QUIZ.incorrectFeedback.details
-      });
+    const completedUnits = updatedProg.completedUnits || [];
+    if (completedUnits.includes('4.1') && completedUnits.includes('4.2')) {
+      ApiService.completeStep('level-4', 'post-test');
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8 space-y-8 animate-fade-in">
-      {/* Header Banner */}
-      <div className="rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-red-950/80 via-zinc-900 to-zinc-950 border border-red-500/30 shadow-xl">
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-3">
-          <span className="px-3.5 py-1 rounded-full bg-red-950 text-red-300 border border-red-500/40 text-xs font-semibold">
-            ด่านที่ 4 จาก 4
-          </span>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowCurriculumModal(true)}
-              className="text-xs font-semibold text-red-300 hover:text-white bg-red-950/80 hover:bg-red-900/80 px-3 py-1.5 rounded-xl border border-red-500/40 transition flex items-center gap-1.5 cursor-pointer shadow-xs"
-            >
-              <BookOpen className="w-3.5 h-3.5 text-red-400" />
-              <span>สาระ & เกณฑ์รูบริก 10 คะแนน</span>
-            </button>
-            <span className="text-xs sm:text-sm text-zinc-300 bg-zinc-800/80 px-3 py-1 rounded-xl border border-zinc-700">
-              สถานะ: <span className="text-red-400 font-medium">กำลังศึกษา</span>
-            </span>
-          </div>
-        </div>
-        <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight flex items-center gap-3">
-          <span>🛡️</span> ผู้นำค่านิยมดิจิทัล (Digital Value Leader)
-        </h2>
-        <p className="text-zinc-300 text-sm sm:text-base mt-2 leading-relaxed">
-          กำหนดวิสัยทัศน์ร่วมกัน สร้างเจตคติเชิงบวกต่อเทคโนโลยี (TAM) และขับเคลื่อนวัฒนธรรมดิจิทัลที่ยั่งยืนในสถานศึกษาขนาดเล็ก
-        </p>
-      </div>
-
-      {/* Video Micro-Learning Modules (2 clips) */}
-      <div className="rounded-3xl p-6 bg-zinc-900/80 border border-zinc-800 space-y-5 shadow-lg">
-        <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
-          <PlayCircle className="w-5 h-5 text-red-500" />
-          วิดีโอชุดการเรียนรู้ (Micro-Learning Modules)
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-zinc-950/70 rounded-2xl p-4 border border-zinc-800 flex flex-col justify-between hover:border-zinc-700 transition">
-            <div>
-              <div className="flex justify-between text-xs text-red-400 font-semibold mb-2">
-                <span>ตอนที่ 4.1</span>
-                <span>⏱️ 4 นาที</span>
-              </div>
-              <h4 className="font-bold text-white text-sm sm:text-base mb-1.5">การสร้างวิสัยทัศน์ดิจิทัลที่จับต้องได้</h4>
-              <p className="text-xs text-zinc-400 leading-relaxed mb-4">
-                เปลี่ยนวิสัยทัศน์บนกระดาษสู่เป้าหมายที่ชุมชนและคุณครูทุกคนมีส่วนร่วมสร้าง
-              </p>
-            </div>
-            <button
-              onClick={() => handleSimulateWatch('l4_v1', 'สร้างวิสัยทัศน์ดิจิทัล')}
-              className={`w-full py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer border ${
-                watchedVideos['l4_v1']
-                  ? 'bg-red-950/80 text-red-200 border-red-500/50'
-                  : 'bg-zinc-800 hover:bg-red-600/20 text-zinc-300 hover:text-white border-zinc-700'
-              }`}
-            >
-              {watchedVideos['l4_v1'] ? <CheckCircle2 className="w-4 h-4 text-red-400" /> : <PlayCircle className="w-4 h-4 text-red-400" />}
-              {watchedVideos['l4_v1'] ? 'รับชมแล้ว' : 'ทำความเข้าใจแล้ว (4 นาที)'}
-            </button>
-          </div>
-
-          <div className="bg-zinc-950/70 rounded-2xl p-4 border border-zinc-800 flex flex-col justify-between hover:border-zinc-700 transition">
-            <div>
-              <div className="flex justify-between text-xs text-red-400 font-semibold mb-2">
-                <span>ตอนที่ 4.2</span>
-                <span>⏱️ 4 นาที</span>
-              </div>
-              <h4 className="font-bold text-white text-sm sm:text-base mb-1.5">การสร้างเจตคติเชิงบวกต่อเทคโนโลยี (TAM)</h4>
-              <p className="text-xs text-zinc-400 leading-relaxed mb-4">
-                ประยุกต์ใช้โมเดล TAM (Davis, 1989) เน้นการรับรู้ประโยชน์และความง่าย เริ่มจาก Quick Wins ลดงานเอกสารสร้างแรงจูงใจ
-              </p>
-            </div>
-            <button
-              onClick={() => handleSimulateWatch('l4_v2', 'สร้างเจตคติเชิงบวกต่อเทคโนโลยี')}
-              className={`w-full py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer border ${
-                watchedVideos['l4_v2']
-                  ? 'bg-red-950/80 text-red-200 border-red-500/50'
-                  : 'bg-zinc-800 hover:bg-red-600/20 text-zinc-300 hover:text-white border-zinc-700'
-              }`}
-            >
-              {watchedVideos['l4_v2'] ? <CheckCircle2 className="w-4 h-4 text-red-400" /> : <PlayCircle className="w-4 h-4 text-red-400" />}
-              {watchedVideos['l4_v2'] ? 'รับชมแล้ว' : 'ทำความเข้าใจแล้ว (4 นาที)'}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Vision Statement Builder Tool */}
-      <div className="rounded-3xl p-6 sm:p-8 bg-zinc-900/90 border border-red-500/30 space-y-6 shadow-xl">
-        <div>
-          <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-red-950 text-red-300 border border-red-500/40">
-            เครื่องมือสร้างสรรค์วิสัยทัศน์ (Vision Builder Tool)
-          </span>
-          <h3 className="text-xl sm:text-2xl font-bold text-white mt-1 flex items-center gap-2">
-            <Lightbulb className="w-6 h-6 text-red-400" />
-            ประกอบวิสัยทัศน์ดิจิทัลประจำสถานศึกษาของท่าน
-          </h3>
-        </div>
-
-        <p className="text-zinc-300 text-sm leading-relaxed">
-          เลือกองค์ประกอบ 3 ส่วนเพื่อประกอบเป็นแถลงการณ์วิสัยทัศน์ดิจิทัล (Digital Vision Statement) ที่สอดคล้องกับโรงเรียนของท่าน:
-        </p>
-
-        {/* 3 Component Selectors */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div className="max-w-5xl mx-auto space-y-6 pb-16">
+      {/* Top Banner Navigation between Sub-units (Soft Modern Style) */}
+      <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
           <div>
-            <label className="block text-xs font-semibold text-red-300 mb-1.5">
-              เสาหลักเป้าหมาย (Pillar):
-            </label>
-            <select
-              value={part1}
-              onChange={(e) => setPart1(e.target.value)}
-              className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-700 text-white text-xs sm:text-sm focus:border-red-500 focus:outline-none"
-            >
-              {LEVEL_4_VISION_PARTS.pillars.map((item, idx) => (
-                <option key={idx} value={item}>{item}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-red-300 mb-1.5">
-              กลไกขับเคลื่อน (Action Driver):
-            </label>
-            <select
-              value={part2}
-              onChange={(e) => setPart2(e.target.value)}
-              className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-700 text-white text-xs sm:text-sm focus:border-red-500 focus:outline-none"
-            >
-              {LEVEL_4_VISION_PARTS.actionDrivers.map((item, idx) => (
-                <option key={idx} value={item}>{item}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-red-300 mb-1.5">
-              ผลลัพธ์ปลายทาง (Impact):
-            </label>
-            <select
-              value={part3}
-              onChange={(e) => setPart3(e.target.value)}
-              className="w-full p-3 rounded-xl bg-zinc-950 border border-zinc-700 text-white text-xs sm:text-sm focus:border-red-500 focus:outline-none"
-            >
-              {LEVEL_4_VISION_PARTS.impacts.map((item, idx) => (
-                <option key={idx} value={item}>{item}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Live Vision Statement Display Card */}
-        <div className="p-6 rounded-2xl bg-gradient-to-r from-red-950/70 via-zinc-900 to-zinc-950 border border-red-500/40 text-center shadow-lg">
-          <div className="text-xs uppercase tracking-widest text-red-400 font-bold mb-2">
-            คำแถลงวิสัยทัศน์ดิจิทัลของโรงเรียนท่าน
-          </div>
-          <div className="text-base sm:text-xl font-bold text-white leading-relaxed">
-            {fullVisionStatement}
-          </div>
-        </div>
-
-        {/* Level 4 Scenario Question (Positive Attitude & TAM) */}
-        <div className="p-6 rounded-2xl bg-zinc-950/70 border border-zinc-800 space-y-4">
-          <div className="flex items-start gap-3">
-            <span className="w-7 h-7 rounded-full bg-red-500/20 text-red-400 border border-red-500/40 flex items-center justify-center font-bold text-sm flex-shrink-0">
-              ?
-            </span>
-            <div className="flex-1">
-              <h4 className="text-sm sm:text-base font-bold text-white mb-3">
-                {LEVEL_4_QUIZ.question}
-              </h4>
-              <div className="space-y-2.5">
-                {LEVEL_4_QUIZ.choices.map((c) => (
-                  <label key={c.id} className={`flex items-center p-3 rounded-xl border text-sm cursor-pointer transition ${
-                    quizAnswer === c.id ? 'bg-red-950/60 border-red-500 text-white' : 'bg-zinc-900/60 border-zinc-800 hover:border-zinc-700 text-zinc-200'
-                  }`}>
-                    <input
-                      type="radio"
-                      name="l4_quiz"
-                      value={c.id}
-                      checked={quizAnswer === c.id}
-                      onChange={() => setQuizAnswer(c.id)}
-                      className="w-4 h-4 text-red-600 focus:ring-red-500"
-                    />
-                    <span className="ml-3">{c.label}</span>
-                  </label>
-                ))}
-              </div>
+            <div className="flex items-center gap-2">
+              <span className="px-3 py-1 rounded-full text-xs font-black bg-indigo-50 text-indigo-800 border border-indigo-200">
+                MODULE 4
+              </span>
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                วิสัยทัศน์และเจตคติเชิงดิจิทัล (Digital Vision & Attitude)
+              </h1>
             </div>
+            <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
+              สร้างวิสัยทัศน์ดิจิทัลแบบมีส่วนร่วม 3-4 ประโยค และกิจกรรม Quick Win เสริมเจตคติเชิงบวกตามหลัก TAM
+            </p>
           </div>
-        </div>
 
-        {/* Feedback Alert Box */}
-        {feedback && (
-          <div className={`p-4 rounded-2xl border text-sm transition ${
-            feedback.type === 'success'
-              ? 'bg-emerald-950/70 border-emerald-500/50 text-emerald-200'
-              : feedback.type === 'error'
-              ? 'bg-red-950/70 border-red-500/50 text-red-200'
-              : 'bg-amber-950/70 border-amber-500/50 text-amber-200'
-          }`}>
-            <div className="font-bold flex items-center gap-2 mb-1">
-              {feedback.type === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
-              {feedback.type === 'error' && <AlertTriangle className="w-4 h-4 text-red-400" />}
-              {feedback.type === 'warning' && <AlertTriangle className="w-4 h-4 text-amber-400" />}
-              <span>{feedback.message}</span>
-            </div>
-            {feedback.details && (
-              <p className="text-xs opacity-90 mt-1">{feedback.details}</p>
-            )}
-          </div>
-        )}
-
-        {/* Submit Button */}
-        <div className="pt-2 flex flex-col sm:flex-row gap-3">
           <button
-            onClick={handleCheckQuiz}
-            className="flex-1 py-4 px-6 rounded-2xl font-bold text-base text-white bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-500 hover:to-rose-500 shadow-lg shadow-red-600/30 active:scale-[0.99] transition flex items-center justify-center gap-2 cursor-pointer border border-red-500/40"
+            type="button"
+            onClick={() => setShowCurriculumModal(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs border border-slate-200 transition cursor-pointer self-start sm:self-auto"
           >
-            <span>ยืนยันคำตอบ และปลดล็อกแบบทดสอบหลังเรียน (Post-test)</span>
-            <ArrowRight className="w-5 h-5" />
+            <BookOpen className="w-4 h-4 text-indigo-600" /> โครงสร้างหลักสูตร
           </button>
-          {onBackToDashboard && (
-            <button
-              onClick={onBackToDashboard}
-              className="py-4 px-5 rounded-2xl text-xs font-semibold text-zinc-400 hover:text-white bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition cursor-pointer"
-            >
-              ดูแผนผังภาพรวม
-            </button>
-          )}
+        </div>
+
+        {/* Sub-unit Tabs */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
+          <button
+            type="button"
+            onClick={() => setActiveUnitId('4.1')}
+            className={`p-4 rounded-2xl border text-left transition cursor-pointer ${
+              activeUnitId === '4.1'
+                ? 'bg-[#f5f3ff] border-indigo-400 ring-2 ring-indigo-400/20 text-slate-900 shadow-xs'
+                : 'bg-slate-50 border-slate-200/80 hover:border-slate-300 text-slate-600'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-extrabold text-indigo-700">หน่วย 4.1 (60 น.)</span>
+              {isCompleted4_1 ? (
+                <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> ผ่านแล้ว ({submissions['4.1']?.totalScore}/10)
+                </span>
+              ) : (
+                <span className="text-[11px] font-semibold text-slate-400 bg-white px-2 py-0.5 rounded-full border border-slate-200">รอส่งงาน</span>
+              )}
+            </div>
+            <div className="text-sm font-bold text-slate-800">การสร้างและสื่อสารวิสัยทัศน์ดิจิทัล</div>
+            <div className="text-xs text-slate-500 mt-1 line-clamp-1">คำตอบนำทาง 3 ด้าน, แถลงวิสัยทัศน์ 3-4 ประโยค และแผนเวทีระดมความเห็น</div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveUnitId('4.2')}
+            className={`p-4 rounded-2xl border text-left transition cursor-pointer ${
+              activeUnitId === '4.2'
+                ? 'bg-[#f5f3ff] border-indigo-400 ring-2 ring-indigo-400/20 text-slate-900 shadow-xs'
+                : 'bg-slate-50 border-slate-200/80 hover:border-slate-300 text-slate-600'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-extrabold text-indigo-700">หน่วย 4.2 (60 น.)</span>
+              {isCompleted4_2 ? (
+                <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  <CheckCircle2 className="w-3.5 h-3.5" /> ผ่านแล้ว ({submissions['4.2']?.totalScore}/10)
+                </span>
+              ) : (
+                <span className="text-[11px] font-semibold text-slate-400 bg-white px-2 py-0.5 rounded-full border border-slate-200">รอส่งงาน</span>
+              )}
+            </div>
+            <div className="text-sm font-bold text-slate-800">การส่งเสริมเจตคติเชิงบวกต่อเทคโนโลยี</div>
+            <div className="text-xs text-slate-500 mt-1 line-clamp-1">โมเดล TAM (มีประโยชน์-ใช้ง่าย), Quick Win ใน 1 ครั้ง และตัวชี้วัดความสำเร็จ</div>
+          </button>
         </div>
       </div>
 
-      {/* Curriculum Modal for Module 4 */}
-      <CurriculumModal
-        isOpen={showCurriculumModal}
-        onClose={() => setShowCurriculumModal(false)}
-        initialModule={4}
-      />
+      {/* Module 4 Celebration Banner */}
+      {allCompleted && (
+        <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-slate-50 border border-emerald-300 rounded-3xl p-6 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-700 flex-shrink-0">
+              <CheckCircle2 className="w-7 h-7" />
+            </div>
+            <div>
+              <div className="font-extrabold text-slate-900 text-lg">ยินดีด้วยอย่างยิ่ง! ท่านผ่านครบทั้ง 4 Modules (10 หน่วยสมบูรณ์แล้ว)</div>
+              <p className="text-xs font-medium text-slate-600 mt-0.5">
+                คะแนนรวม: {(submissions['4.1']?.totalScore || 0) + (submissions['4.2']?.totalScore || 0)} / 20 คะแนน · พร้อมทำแบบทดสอบหลังเรียน (Post-test) แล้ว
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onPassLevel}
+            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-sm transition flex-shrink-0 cursor-pointer"
+          >
+            ทำแบบทดสอบหลังเรียน <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
+      {/* UNIT 4.1 INTERACTIVE FORM */}
+      {activeUnitId === '4.1' && (
+        <ActivityFlowContainer
+          unit={UNITS_DATA['4.1']}
+          profile={profile}
+          existingSubmission={submissions['4.1']}
+          formData={{
+            'คำตอบนำทาง_ด้านผู้เรียน': form4_1.promptStudent,
+            'คำตอบนำทาง_ด้านครู': form4_1.promptTeacher,
+            'คำตอบนำทาง_ด้านชุมชน': form4_1.promptCommunity,
+            'วิสัยทัศน์ดิจิทัล': form4_1.visionStatement,
+            'แผนเวทีระดมความเห็น': form4_1.forumPlan,
+            'ช่องทางสื่อสารวิสัยทัศน์': form4_1.commVisionChannel
+          }}
+          isStep4Valid={!!form4_1.visionStatement.trim() && !!form4_1.forumPlan.trim()}
+          onSubmitUnit={handleUnitSubmit}
+          onNextUnit={() => setActiveUnitId('4.2')}
+          onBackToDashboard={onBackToDashboard}
+          childrenStep4={
+            <div className="space-y-6">
+              <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-xs">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                  <div className="font-bold text-slate-900 text-base flex items-center gap-2">
+                    <Compass className="w-5 h-5 text-indigo-600" /> ชุดสร้างวิสัยทัศน์ดิจิทัล 3-4 ประโยค (Vision Builder)
+                  </div>
+                  <span className="text-xs bg-indigo-50 text-indigo-800 border border-indigo-200 px-3 py-1 rounded-full font-bold">
+                    หน่วย 4.1
+                  </span>
+                </div>
+
+                {/* 3 Guided Prompts */}
+                <div className="space-y-3">
+                  <span className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
+                    1. ตอบคำถามนำทาง 3 ด้านเพื่อใช้เป็นวัตถุดิบในการสร้างวิสัยทัศน์:
+                  </span>
+
+                  {/* Student */}
+                  <div className="bg-[#eff6ff] p-3.5 rounded-xl border border-blue-200 space-y-1">
+                    <label className="text-xs font-bold text-blue-800 flex items-center gap-1.5">
+                      <GraduationCap className="w-4 h-4 text-blue-600" /> ด้านผู้เรียน: อีก 3 ปีข้างหน้า นักเรียนของเราจะใช้เทคโนโลยีอย่างไรให้เกิดประโยชน์สูงสุด?
+                    </label>
+                    <input
+                      type="text"
+                      value={form4_1.promptStudent}
+                      onChange={(e) => setForm4_1({ ...form4_1, promptStudent: e.target.value })}
+                      className="w-full bg-white border border-blue-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    />
+                  </div>
+
+                  {/* Teacher */}
+                  <div className="bg-[#f0fbf7] p-3.5 rounded-xl border border-emerald-200 space-y-1">
+                    <label className="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
+                      <Users className="w-4 h-4 text-emerald-600" /> ด้านครู: อีก 3 ปีข้างหน้า เทคโนโลยีจะเข้ามาช่วยสนับสนุนการสอนและลดภาระงานครูอย่างไร?
+                    </label>
+                    <input
+                      type="text"
+                      value={form4_1.promptTeacher}
+                      onChange={(e) => setForm4_1({ ...form4_1, promptTeacher: e.target.value })}
+                      className="w-full bg-white border border-emerald-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                    />
+                  </div>
+
+                  {/* Community */}
+                  <div className="bg-[#fff9e6] p-3.5 rounded-xl border border-amber-200 space-y-1">
+                    <label className="text-xs font-bold text-amber-800 flex items-center gap-1.5">
+                      <Building2 className="w-4 h-4 text-amber-600" /> ด้านชุมชน/ผู้ปกครอง: ชุมชนจะมีส่วนร่วมและรับรู้ข้อมูลผ่านช่องทางดิจิทัลอย่างไร?
+                    </label>
+                    <input
+                      type="text"
+                      value={form4_1.promptCommunity}
+                      onChange={(e) => setForm4_1({ ...form4_1, promptCommunity: e.target.value })}
+                      className="w-full bg-white border border-amber-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-200"
+                    />
+                  </div>
+                </div>
+
+                {/* Final Vision Statement */}
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-indigo-600" /> 2. แถลงวิสัยทัศน์ดิจิทัล (ความยาว 3-4 ประโยค พร้อมระบุระยะเวลาที่ชัดเจน):
+                    </label>
+                  </div>
+                  <textarea
+                    rows={4}
+                    value={form4_1.visionStatement}
+                    onChange={(e) => setForm4_1({ ...form4_1, visionStatement: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200/50 leading-relaxed"
+                  />
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {[
+                      'ภายใน 3 ปี โรงเรียนจะขับเคลื่อนการเรียนรู้เชิงรุกด้วยเทคโนโลยีดิจิทัล ครูทุกคนใช้สื่อดิจิทัลอย่างน้อยสัปดาห์ละ 2 คาบ นักเรียน ป.4-6 ใช้คอมพิวเตอร์สืบค้นและนำเสนอผลงานได้ทุกคน และผู้ปกครองรับข่าวสารผ่านไลน์กลุ่มอย่างสม่ำเสมอ',
+                      'ภายใน 2 ปี ยกระดับโรงเรียนสู่สังคมแห่งการเรียนรู้ดิจิทัลที่ปลอดภัย ครูใช้ระบบ Cloud จัดการเอกสารลดการใช้กระดาษ 50% นักเรียนมีทักษะความฉลาดทางดิจิทัล (DQ) และชุมชนร่วมประเมินผลผ่านระบบออนไลน์'
+                    ].map((example, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setForm4_1({ ...form4_1, visionStatement: example })}
+                        className="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-indigo-100 text-slate-700 hover:text-indigo-900 border border-slate-200 transition"
+                      >
+                        แม่แบบวิสัยทัศน์ {i + 1}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Forum Plan & Communication Channels */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      3. แผนเวทีระดมความเห็นครู (หัวข้อ, เวลา, คำถามกระตุ้น):
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={form4_1.forumPlan}
+                      onChange={(e) => setForm4_1({ ...form4_1, forumPlan: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      4. ช่องทางสื่อสารวิสัยทัศน์ให้ทุกคนรับรู้ (อย่างน้อย 2 ช่องทาง):
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={form4_1.commVisionChannel}
+                      onChange={(e) => setForm4_1({ ...form4_1, commVisionChannel: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        />
+      )}
+
+      {/* UNIT 4.2 INTERACTIVE FORM */}
+      {activeUnitId === '4.2' && (
+        <ActivityFlowContainer
+          unit={UNITS_DATA['4.2']}
+          profile={profile}
+          existingSubmission={submissions['4.2']}
+          formData={{
+            'กลุ่มเป้าหมายและความกังวล': form4_2.targetGroupConcern,
+            'รูปแบบกิจกรรม': form4_2.activityFormat,
+            'QuickWinที่เห็นผลครั้งเดียว': form4_2.quickWinDetail,
+            'ความถี่และผู้รับผิดชอบ': form4_2.frequencySchedule,
+            'ตัวชี้วัดเชิงปริมาณ': form4_2.metricQuantity,
+            'ตัวชี้วัดเชิงคุณภาพ': form4_2.metricQuality
+          }}
+          isStep4Valid={!!form4_2.targetGroupConcern.trim() && !!form4_2.quickWinDetail.trim()}
+          onSubmitUnit={handleUnitSubmit}
+          onBackToDashboard={onBackToDashboard}
+          childrenStep4={
+            <div className="space-y-6">
+              <div className="bg-white border border-slate-200/90 rounded-2xl p-6 space-y-6 shadow-xs">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                  <div className="font-bold text-slate-900 text-base flex items-center gap-2">
+                    <HeartHandshake className="w-5 h-5 text-indigo-600" /> แผนกิจกรรม Quick Win เสริมเจตคติเชิงบวก (TAM Model)
+                  </div>
+                  <span className="text-xs bg-indigo-50 text-indigo-800 border border-indigo-200 px-3 py-1 rounded-full font-bold">
+                    หน่วย 4.2
+                  </span>
+                </div>
+
+                {/* Target Group */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    1. กลุ่มเป้าหมาย + ความกังวลเกี่ยวกับเทคโนโลยีที่มีอยู่:
+                  </label>
+                  <input
+                    type="text"
+                    value={form4_2.targetGroupConcern}
+                    onChange={(e) => setForm4_2({ ...form4_2, targetGroupConcern: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200/50"
+                  />
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {[
+                      'ครูอาวุโส: กังวลว่าจะทำคอมพิวเตอร์พัง หรือจำขั้นตอนการใช้งานไม่ได้',
+                      'ครูประจำชั้น: กังวลว่าการใช้แอพใหม่จะเพิ่มภาระงานและเสียเวลาสอน',
+                      'ครูธุรการ/การเงิน: กังวลเรื่องความถูกต้องของเอกสารและความปลอดภัยของข้อมูล'
+                    ].map((example, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setForm4_2({ ...form4_2, targetGroupConcern: example })}
+                        className="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-indigo-100 text-slate-700 hover:text-indigo-900 border border-slate-200 transition"
+                      >
+                        {example.split(':')[0]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Activity Format & Quick Win */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      2. รูปแบบกิจกรรม (สั้น ไม่เป็นทางการ ไม่สร้างความเครียด):
+                    </label>
+                    <input
+                      type="text"
+                      value={form4_2.activityFormat}
+                      onChange={(e) => setForm4_2({ ...form4_2, activityFormat: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      3. ความถี่และผู้รับผิดชอบ:
+                    </label>
+                    <input
+                      type="text"
+                      value={form4_2.frequencySchedule}
+                      onChange={(e) => setForm4_2({ ...form4_2, frequencySchedule: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                    />
+                  </div>
+                </div>
+
+                {/* Quick Win Detail */}
+                <div className="bg-[#f0fbf7] p-4 rounded-2xl border border-emerald-200 space-y-2">
+                  <label className="text-xs font-extrabold text-emerald-800 uppercase tracking-wider flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-emerald-600" /> 4. รายละเอียด Quick Win ที่เห็นผลสำเร็จทันทีในครั้งเดียว (Useful & Easy to Use):
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={form4_2.quickWinDetail}
+                    onChange={(e) => setForm4_2({ ...form4_2, quickWinDetail: e.target.value })}
+                    className="w-full bg-white border border-emerald-300 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                  />
+                  <div className="flex flex-wrap gap-1.5 pt-1">
+                    {[
+                      'พิมพ์บันทึกข้อความด้วยเสียงใน Google Docs (Voice Typing) ลดเวลาพิมพ์ 50% ทันที',
+                      'สแกนเอกสารด้วยแอป CamScanner หรือ Google Drive บนมือถือ แปลงเป็น PDF ส่งใน 1 นาที',
+                      'ใช้แม่แบบรายงานสำเร็จรูปใน Canva เปลี่ยนรูปและข้อความเสร็จได้เล่มรายงานใน 15 นาที'
+                    ].map((example, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setForm4_2({ ...form4_2, quickWinDetail: example })}
+                        className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-white hover:bg-emerald-100 text-slate-700 hover:text-emerald-900 border border-emerald-200 transition"
+                      >
+                        ตัวอย่าง {i + 1}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Indicators */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-[#eff6ff] p-3.5 rounded-xl border border-blue-200 space-y-1">
+                    <label className="text-xs font-bold text-blue-800 flex items-center gap-1.5">
+                      <Target className="w-4 h-4 text-blue-600" /> ตัวชี้วัดเชิงปริมาณ (เช่น % ผู้เข้าร่วม, ชิ้นงาน):
+                    </label>
+                    <input
+                      type="text"
+                      value={form4_2.metricQuantity}
+                      onChange={(e) => setForm4_2({ ...form4_2, metricQuantity: e.target.value })}
+                      className="w-full bg-white border border-blue-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    />
+                  </div>
+
+                  <div className="bg-[#fff9e6] p-3.5 rounded-xl border border-amber-200 space-y-1">
+                    <label className="text-xs font-bold text-amber-800 flex items-center gap-1.5">
+                      <HeartHandshake className="w-4 h-4 text-amber-600" /> ตัวชี้วัดเชิงคุณภาพ (เจตคติ, ความมั่นใจ, บรรยากาศ):
+                    </label>
+                    <input
+                      type="text"
+                      value={form4_2.metricQuality}
+                      onChange={(e) => setForm4_2({ ...form4_2, metricQuality: e.target.value })}
+                      className="w-full bg-white border border-amber-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-200"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        />
+      )}
+
+      {showCurriculumModal && (
+        <CurriculumModal isOpen={showCurriculumModal} onClose={() => setShowCurriculumModal(false)} />
+      )}
     </div>
   );
 };
