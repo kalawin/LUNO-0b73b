@@ -52,54 +52,71 @@ export const EvaluationView: React.FC<EvaluationViewProps> = ({ onSubmitEvaluati
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-6 animate-fade-in">
+    <div className="max-w-4xl mx-auto space-y-6 animate-fade-in pb-12">
       {/* Header Banner */}
-      <div className="rounded-3xl p-6 sm:p-8 bg-zinc-900/90 border border-red-500/30 shadow-xl">
+      <div className="rounded-[28px] p-6 sm:p-8 bg-white border border-slate-200/80 shadow-xs">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-2">
-          <span className="px-3 py-1 rounded-full bg-red-950 text-red-300 border border-red-500/40 text-xs font-semibold flex items-center gap-1">
-            <Sparkles className="w-3.5 h-3.5" />
-            ด่านประเมินผลสัมฤทธิ์ปลายทาง
+          <span className="px-3 py-1 rounded-full bg-teal-50 text-teal-700 border border-teal-200 text-xs font-bold flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-teal-500" />
+            ด่านประเมินผลสัมฤทธิ์ปลายทาง (Evaluation Phase)
           </span>
           {onBackToDashboard && (
             <button
+              type="button"
               onClick={onBackToDashboard}
-              className="text-xs text-zinc-400 hover:text-white bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-xl border border-zinc-700 transition cursor-pointer"
+              className="text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3.5 py-1.5 rounded-xl transition cursor-pointer"
             >
-              แผนผัง
+              ภาพรวม
             </button>
           )}
         </div>
-        <h2 className="text-2xl sm:text-3xl font-black text-white">
-          แบบประเมินรูปแบบการพัฒนา Luno (5 ระดับ)
+        <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+          แบบประเมินรูปแบบการพัฒนา LUNO (5 ระดับ)
         </h2>
-        <p className="text-zinc-300 text-sm mt-1.5 leading-relaxed">
-          โปรดให้คะแนนความพึงพอใจต่อโปรแกรมเพื่อนำไปปรับปรุงและยืนยันการออกวุฒิบัตร (5 = มากที่สุด, 1 = น้อยที่สุด)
+        <p className="text-slate-500 text-sm mt-1.5 leading-relaxed">
+          โปรดให้คะแนนความคิดเห็นต่อโปรแกรมเพื่อนำไปปรับปรุงและยืนยันการออกวุฒิบัตรรับรองสมรรถนะ
+          <span className="block text-xs text-slate-400 mt-1 font-medium">
+            (เกณฑ์การให้คะแนน: 5 = มากที่สุด, 4 = มาก, 3 = ปานกลาง, 2 = น้อย, 1 = น้อยที่สุด)
+          </span>
         </p>
       </div>
 
       {/* 3 Rating Items */}
-      <div className="rounded-3xl p-6 sm:p-8 bg-zinc-900/90 border border-zinc-800 space-y-4 shadow-xl">
-        {EVALUATION_ITEMS.map((item) => (
+      <div className="rounded-[28px] p-6 sm:p-8 bg-white border border-slate-200/80 space-y-4 shadow-xs">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100 text-xs font-bold text-slate-400 uppercase tracking-wider">
+          <span>ประเด็นการประเมิน (3 มิติหลัก)</span>
+          <span className="hidden sm:inline">ระดับคะแนน (1 - 5)</span>
+        </div>
+
+        {EVALUATION_ITEMS.map((item, idx) => (
           <div
             key={item.id}
-            className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-zinc-950/70 p-4 rounded-2xl border border-zinc-800/80"
+            className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-slate-50/70 p-5 rounded-2xl border border-slate-200/70 hover:border-slate-300 transition-colors"
           >
             <div>
-              <span className="text-zinc-200 text-sm sm:text-base font-medium">{item.text}</span>
-              <span className="text-xs text-zinc-500 block mt-0.5">{item.category}</span>
+              <div className="flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-teal-100 text-teal-800 text-xs font-extrabold flex items-center justify-center shrink-0">
+                  {idx + 1}
+                </span>
+                <span className="text-slate-900 text-sm sm:text-base font-bold">{item.text}</span>
+              </div>
+              <span className="text-xs text-slate-500 block mt-1 ml-8">
+                มิติ: <strong className="text-slate-700">{item.category}</strong>
+              </span>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
               {[5, 4, 3, 2, 1].map((val) => (
                 <button
                   key={val}
                   type="button"
                   onClick={() => handleRate(item.id, val)}
-                  className={`w-10 h-10 rounded-xl border text-sm font-bold transition flex items-center justify-center cursor-pointer active:scale-95 ${
+                  className={`w-11 h-11 rounded-xl text-sm font-bold transition flex items-center justify-center cursor-pointer active:scale-95 ${
                     ratings[item.id] === val
-                      ? 'bg-red-600 border-red-500 text-white shadow-md shadow-red-600/30'
-                      : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700'
+                      ? 'bg-gradient-to-tr from-teal-600 to-emerald-600 border border-teal-600 text-white shadow-md shadow-teal-600/30 ring-2 ring-teal-400/30'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-300 shadow-xs'
                   }`}
+                  title={`${val} คะแนน`}
                 >
                   {val}
                 </button>
@@ -109,28 +126,29 @@ export const EvaluationView: React.FC<EvaluationViewProps> = ({ onSubmitEvaluati
         ))}
 
         {/* Optional Comments */}
-        <div className="pt-2">
-          <label className="block text-xs font-semibold text-zinc-400 mb-2">
-            ข้อเสนอแนะเพิ่มเติมเพื่อการปรับปรุงและพัฒนา:
+        <div className="pt-4 border-t border-slate-100 space-y-2">
+          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+            💭 ข้อเสนอแนะเพิ่มเติมเพื่อการปรับปรุงและพัฒนาแพลตฟอร์ม:
           </label>
           <textarea
             rows={3}
             value={comments}
             onChange={(e) => setComments(e.target.value)}
-            placeholder="ข้อคิดเห็นของท่านมีคุณค่ายิ่งต่อการพัฒนางานวิจัยต่อไป..."
-            className="w-full p-3.5 text-sm rounded-xl border border-zinc-800 bg-zinc-950 text-white placeholder-zinc-500 focus:outline-none focus:border-red-500"
+            placeholder="ข้อคิดเห็นและข้อเสนอแนะของท่านมีคุณค่ายิ่งต่อการพัฒนางานวิจัยทางการศึกษาต่อไป..."
+            className="w-full p-4 text-sm rounded-2xl border border-slate-200 bg-slate-50/70 text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all"
           />
         </div>
 
         {/* Submit */}
         <div className="pt-4">
           <button
+            type="button"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="w-full py-4 px-6 rounded-2xl font-bold text-base sm:text-lg text-white bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-500 hover:to-rose-500 shadow-xl shadow-red-600/30 active:scale-[0.99] transition flex items-center justify-center gap-2 cursor-pointer border border-red-500/40 disabled:opacity-50"
+            className="w-full py-4 px-6 rounded-2xl font-bold text-base sm:text-lg text-white bg-slate-900 hover:bg-slate-800 shadow-xl shadow-slate-900/15 active:scale-[0.99] transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
-            <Award className="w-5 h-5" />
-            <span>{isSubmitting ? 'กำลังประมวลผล...' : 'ส่งแบบประเมิน และประมวลผลวุฒิบัตร'}</span>
+            <Award className="w-5 h-5 text-amber-400" />
+            <span>{isSubmitting ? 'กำลังประมวลผลข้อมูล...' : 'ส่งแบบประเมิน และประมวลผลวุฒิบัตร'}</span>
           </button>
         </div>
       </div>
