@@ -99,34 +99,6 @@ export const DashboardFlow: React.FC<DashboardFlowProps> = ({ progress, profile,
       percent: m4Pct,
       doneCount: m4Done,
       totalCount: 2
-    },
-    {
-      id: 'level-5' as StepId,
-      code: 'Module 5',
-      title: 'หลักสูตรทดสอบ (Test Module)',
-      desc: 'หลักสูตรทดสอบระบบ Auto Deploy · หน้านี้ใช้ตรวจสอบการทำงานของ CI/CD Pipeline',
-      duration: '0 ชม.',
-      colorBg: 'bg-[#f0f4ff]',
-      colorBorder: 'border-[#dce3ff]',
-      barColor: 'bg-blue-500',
-      badgeColor: 'text-blue-800 bg-blue-100',
-      percent: 0,
-      doneCount: 0,
-      totalCount: 1
-    },
-    {
-      id: 'level-6' as StepId,
-      code: 'Module 6',
-      title: 'หลักสูตรทดสอบ 2 (Test Module 2)',
-      desc: 'ทดสอบ Auto Deploy รอบ 2 · ตรวจสอบว่า push → merge → deploy อัตโนมัติทำงานได้',
-      duration: '0 ชม.',
-      colorBg: 'bg-[#fdf4ff]',
-      colorBorder: 'border-[#f5d0fe]',
-      barColor: 'bg-purple-500',
-      badgeColor: 'text-purple-800 bg-purple-100',
-      percent: 0,
-      doneCount: 0,
-      totalCount: 1
     }
   ];
 
@@ -355,7 +327,7 @@ export const DashboardFlow: React.FC<DashboardFlowProps> = ({ progress, profile,
       {/* Bottom Section: Courses (Ongoing & Completed Tabs) */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="font-extrabold text-xl text-slate-900">Courses (หลักสูตร 6 Modules)</h2>
+          <h2 className="font-extrabold text-xl text-slate-900">Courses (หลักสูตร 4 Modules)</h2>
           <div className="bg-slate-50 p-1 rounded-xl border border-slate-200/80 flex items-center gap-1 text-xs font-bold">
             <button
               type="button"
