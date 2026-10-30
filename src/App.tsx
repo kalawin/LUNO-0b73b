@@ -224,6 +224,27 @@ export function App() {
           />
         );
 
+      case 'level-5':
+        return (
+          <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center">
+            <div className="text-6xl">🧪</div>
+            <h1 className="text-3xl font-bold text-slate-800">Module 5 — Test Page</h1>
+            <p className="text-lg text-slate-500 max-w-md">
+              หน้านี้ใช้ทดสอบระบบ Auto Deploy<br />
+              ถ้าเห็นหน้านี้ แสดงว่า deploy สำเร็จ!
+            </p>
+            <p className="text-sm text-slate-400">
+              Deployed at: {new Date().toLocaleString('th-TH')}
+            </p>
+            <button
+              onClick={() => setActiveView('flow')}
+              className="px-6 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors"
+            >
+              ← กลับหน้าหลัก
+            </button>
+          </div>
+        );
+
       case 'post-test':
         return (
           <QuizView
