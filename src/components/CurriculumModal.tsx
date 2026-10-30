@@ -17,7 +17,7 @@ export const CurriculumModal: React.FC<CurriculumModalProps> = ({ isOpen, onClos
   const modules = [
     { num: 1, title: 'Module 1: การสื่อสารเชิงดิจิทัล', subCount: 3, score: 30, kpaFocus: 'เน้นด้านทักษะ (P)' },
     { num: 2, title: 'Module 2: การสร้างวิถีการเรียนรู้เชิงดิจิทัล', subCount: 3, score: 30, kpaFocus: 'เน้นด้านทักษะ (P)' },
-    { num: 3, title: 'Module 3: การพัฒนาการทำงานเป็นทีมสู่ความเป็นมืออาชีพ', subCount: 2, score: 20, kpaFocus: 'สมดุล K-P-A' },
+    { num: 3, title: 'Module 3: การพัฒนาด้านการทำงานเป็นทีมสู่ความเป็นมืออาชีพ (Professional Teamwork)', subCount: 2, score: 20, kpaFocus: 'สมดุล K-P-A' },
     { num: 4, title: 'Module 4: การสร้างค่านิยมเชิงดิจิทัล', subCount: 2, score: 20, kpaFocus: 'เน้นด้านเจตคติ (A)' }
   ];
 

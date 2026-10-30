@@ -79,7 +79,7 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                 MODULE 3
               </span>
               <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                การทำงานร่วมกันและผู้นำต้นแบบดิจิทัล
+                การพัฒนาด้านการทำงานเป็นทีมสู่ความเป็นมืออาชีพ (Professional Teamwork)
               </h1>
             </div>
             <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">

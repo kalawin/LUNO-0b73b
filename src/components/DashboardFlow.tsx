@@ -75,7 +75,7 @@ export const DashboardFlow: React.FC<DashboardFlowProps> = ({ progress, profile,
     {
       id: 'level-3' as StepId,
       code: 'Module 3',
-      title: 'การทำงานร่วมกันและผู้นำต้นแบบดิจิทัล (Collaboration & Role Model)',
+      title: 'การพัฒนาด้านการทำงานเป็นทีมสู่ความเป็นมืออาชีพ (Professional Teamwork)',
       desc: 'หน่วย 3.1, 3.2 · Micro-journal ผู้นำต้นแบบ 1 วัน และผังการทำงานทีมบน Cloud',
       duration: '1.2 ชม.',
       colorBg: 'bg-[#eaf8f5]',

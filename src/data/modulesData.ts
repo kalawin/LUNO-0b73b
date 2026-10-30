@@ -1,4 +1,4 @@
-﻿import type { UnitDefinition } from '../types';
+import type { UnitDefinition } from '../types';
 
 export const UNITS_DATA: Record<string, UnitDefinition> = {
   // =========================================================================
@@ -665,7 +665,7 @@ export const UNITS_DATA: Record<string, UnitDefinition> = {
   },
 
   // =========================================================================
-  // MODULE 3: การทำงานร่วมกันและการเป็นผู้นำต้นแบบดิจิทัล
+  // MODULE 3: การพัฒนาด้านการทำงานเป็นทีมสู่ความเป็นมืออาชีพ (Professional Teamwork)
   // =========================================================================
   '3.1': {
     id: '3.1',
