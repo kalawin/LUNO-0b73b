@@ -14,6 +14,8 @@
 | 📊 **Google Sheet Database** | [คลิกเปิด Google Sheet ของโปรเจกต์](https://docs.google.com/spreadsheets/d/1LeSBKpY0HW3jjsoRdWmynbQnJGuWE6TyJV5PIq8Zyzk/edit) | ชีทเก็บผลคะแนนและข้อมูลงานวิจัย 3 แท็บ |
 | ⚙️ **Google Apps Script Editor** | [https://script.google.com/home/projects/17fgQia1Be4McPJWRm619IKI0ZJ2HqdUqcj_x6RQ-BEBCxSxtTpEm585t/edit](https://script.google.com/home/projects/17fgQia1Be4McPJWRm619IKI0ZJ2HqdUqcj_x6RQ-BEBCxSxtTpEm585t/edit) | พื้นที่แก้ไขโค้ด backend ของสคริปต์ (เปิดโปรเจกต์โดยตรง) |
 | 💻 **Local Development** | [http://127.0.0.1:5173/](http://127.0.0.1:5173/) | หน้าเว็บทดสอบบนเครื่อง Local |
+| 🔍 **UI Diagnosis Report** | [docs/UI_DIAGNOSIS.md](file:///Users/macbook/Desktop/Luno/docs/UI_DIAGNOSIS.md) | รายงานตรวจวินิจฉัยปัญหา UI และแผนปรับปรุง |
+| 💡 **UI Prompt Guide** | [docs/PROMPT_GUIDE_FOR_UI.md](file:///Users/macbook/Desktop/Luno/docs/PROMPT_GUIDE_FOR_UI.md) | ชุด Prompt สำเร็จรูปสำหรับสั่ง AI ปรับแต่ง UI |
 
 ---
 
