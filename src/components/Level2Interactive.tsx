@@ -11,7 +11,8 @@ import {
   GraduationCap, 
   Layers, 
   BarChart3,
-  Sparkles
+  Sparkles,
+  Lock
 } from 'lucide-react';
 
 interface Props {
@@ -29,16 +30,16 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
     return prog.unitSubmissions || {};
   });
 
-  // State 2.1: แผนโค้ชครู 3 ครั้ง
+  // State 2.1: แผนโค้ชครู 3 ครั้ง - เริ่มต้นด้วยค่าว่าง
   const [form2_1, setForm2_1] = useState(() => {
     const saved = submissions['2.1']?.formData || {};
     return {
-      teacherTarget: saved['ครูเป้าหมายและปัญหา'] || 'ครูสมศรี (ครูประจำชั้น ป.2-3 สอนวิชาภาษาไทย ปัญหา: ไม่มีเวลาเตรียมสื่อบัตรคำ นักเรียนอ่านไม่คล่อง)',
-      toolSelected: saved['เครื่องมือดิจิทัลที่เลือก'] || 'Canva for Education (สร้างใบงานและเกมจับคู่คำศัพท์ใน 10 นาที)',
-      coachSession1: saved['โค้ชครั้งที่1_ชวนคุยสาธิต'] || 'สาธิตการค้นหาเทมเพลตภาษาไทยใน Canva และคัดลอกมาปรับใช้ง่ายๆ โดยไม่ต้องเริ่มจากศูนย์ (15 นาที)',
-      coachSession2: saved['โค้ชครั้งที่2_ร่วมออกแบบ'] || 'นั่งข้างๆ ช่วยครูลองทำเกมคำศัพท์ ป.2 ร่วมกัน 1 กิจกรรม และทดลองเปิดบนจอทีวี (20 นาที)',
-      coachSession3: saved['โค้ชครั้งที่3_สังเกตชื่นชม'] || 'เข้าชมห้องเรียน ให้กำลังใจ สังเกตความสนุกของเด็กๆ และกล่าวชื่นชมครูในที่ประชุมประจำสัปดาห์ (15 นาที)',
-      adminSupport: saved['การหนุนเสริมของผู้บริหาร'] || 'จัดหาเครื่องคอมพิวเตอร์ที่เสถียร, อนุญาตให้ใช้เวลาช่วงพัก, และให้เกียรติบัตรครูต้นแบบสื่อดิจิทัล'
+      teacherTarget: saved['ครูเป้าหมายและปัญหา'] || '',
+      toolSelected: saved['เครื่องมือดิจิทัลที่เลือก'] || '',
+      coachSession1: saved['โค้ชครั้งที่1_ชวนคุยสาธิต'] || '',
+      coachSession2: saved['โค้ชครั้งที่2_ร่วมออกแบบ'] || '',
+      coachSession3: saved['โค้ชครั้งที่3_สังเกตชื่นชม'] || '',
+      adminSupport: saved['การหนุนเสริมของผู้บริหาร'] || ''
     };
   });
 
@@ -46,12 +47,12 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
   const [form2_2, setForm2_2] = useState(() => {
     const saved = submissions['2.2']?.formData || {};
     return {
-      hwScore: saved['คะแนนอุปกรณ์ฮาร์ดแวร์'] || 'พอใช้ (มีทีวีในห้องเรียน คอมพิวเตอร์ห้องสมุด 8 เครื่อง)',
-      netScore: saved['คะแนนระบบเครือข่าย'] || 'ต้องปรับปรุง (Wi-Fi หลุดบ่อยในอาคารเรียน 2)',
-      spaceScore: saved['คะแนนแหล่งเรียนรู้'] || 'ดี (มีห้องสมุดดิจิทัลและเปิดสื่อ DLTV สม่ำเสมอ)',
-      quickWin1: saved['QuickWin_1'] || 'ติดตั้งตัวขยายสัญญาณ Wi-Fi Mesh ประจำอาคาร 2 ใช้งบผ้าป่าการศึกษา 1,500 บาท',
-      quickWin2: saved['QuickWin_2'] || 'จัดตารางสลับเวลาเข้าใช้ห้องคอมพิวเตอร์เพื่อลดความแออัด',
-      quickWin3: saved['QuickWin_3'] || 'ขอรับบริจาคจอภาพคอมพิวเตอร์มือสองจากศิษย์เก่า'
+      hwScore: saved['คะแนนอุปกรณ์ฮาร์ดแวร์'] || 'พอใช้ (มีทีวีในห้องเรียน คอมพิวเตอร์ห้องสมุด)',
+      netScore: saved['คะแนนระบบเครือข่าย'] || 'ต้องปรับปรุง (Wi-Fi หลุดบ่อยในอาคารเรียน)',
+      spaceScore: saved['คะแนนแหล่งเรียนรู้'] || 'ดี (มีห้องสมุดดิจิทัลและเปิดสื่อ DLTV)',
+      quickWin1: saved['QuickWin_1'] || '',
+      quickWin2: saved['QuickWin_2'] || '',
+      quickWin3: saved['QuickWin_3'] || ''
     };
   });
 
@@ -59,10 +60,10 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
   const [form2_3, setForm2_3] = useState(() => {
     const saved = submissions['2.3']?.formData || {};
     return {
-      surveyTopic: saved['หัวข้อแบบสำรวจดิจิทัล'] || 'แบบสำรวจความพึงพอใจการจัดอาหารกลางวันและกิจกรรมพัฒนาผู้เรียน',
-      targetRespondents: saved['กลุ่มผู้ตอบ'] || 'นักเรียนชั้น ป.4-6 และผู้ปกครอง (ตอบผ่านมือถือ)',
-      questionsDraft: saved['รายการข้อคำถาม'] || '1) ปริมาณอาหารเพียงพอหรือไม่ (คะแนน 1-5)\n2) ความสะอาดและรสชาติ (คะแนน 1-5)\n3) เมนูที่อยากให้ปรับปรุง (เลือกตอบ)\n4) ข้อเสนอแนะเพิ่มเติม (สั้นๆ)',
-      dataDecision: saved['การตัดสินใจเชิงบริหารจากข้อมูล'] || 'หากผลชี้ว่ารสชาติเค็มเกินไป ผู้บริหารจะประชุมแม่ครัวปรับลดปริมาณเกลือและซอสปรุงรสทันทีในสัปดาห์ถัดไป'
+      surveyTopic: saved['หัวข้อแบบสำรวจดิจิทัล'] || '',
+      targetRespondents: saved['กลุ่มผู้ตอบ'] || '',
+      questionsDraft: saved['รายการข้อคำถาม'] || '',
+      dataDecision: saved['การตัดสินใจเชิงบริหารจากข้อมูล'] || ''
     };
   });
 
@@ -132,7 +133,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   <CheckCircle2 className="w-3.5 h-3.5" /> ผ่านแล้ว ({submissions['2.1']?.totalScore}/10)
                 </span>
               ) : (
-                <span className="text-[11px] text-slate-400">รอส่งงาน</span>
+                <span className="text-[11px] text-slate-400">พร้อมทำ</span>
               )}
             </div>
             <div className="text-sm font-extrabold text-slate-900">การจัดการเรียนการสอนฯ (โค้ชครู)</div>
@@ -140,11 +141,19 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
 
           <button
             type="button"
-            onClick={() => setActiveUnitId('2.2')}
-            className={`p-4 rounded-2xl border text-left transition cursor-pointer ${
-              activeUnitId === '2.2'
-                ? 'bg-[#f4f3ff] border-indigo-400 ring-2 ring-indigo-400/20 text-slate-900 shadow-xs'
-                : 'bg-slate-50 border-slate-200/80 hover:border-slate-300 text-slate-600'
+            onClick={() => {
+              if (!isCompleted2_1) {
+                alert('🔒 กรุณาทำแบบฝึกหัดหน่วย 2.1 ให้ผ่านเกณฑ์ก่อนเข้าสู่หน่วย 2.2 ครับ');
+                return;
+              }
+              setActiveUnitId('2.2');
+            }}
+            className={`p-4 rounded-2xl border text-left transition ${
+              !isCompleted2_1
+                ? 'bg-slate-100 border-slate-200 opacity-60 cursor-not-allowed text-slate-400'
+                : activeUnitId === '2.2'
+                ? 'bg-[#f4f3ff] border-indigo-400 ring-2 ring-indigo-400/20 text-slate-900 shadow-xs cursor-pointer'
+                : 'bg-slate-50 border-slate-200/80 hover:border-slate-300 text-slate-600 cursor-pointer'
             }`}
           >
             <div className="flex items-center justify-between mb-1">
@@ -153,8 +162,12 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                 <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-700">
                   <CheckCircle2 className="w-3.5 h-3.5" /> ผ่านแล้ว ({submissions['2.2']?.totalScore}/10)
                 </span>
+              ) : !isCompleted2_1 ? (
+                <span className="flex items-center gap-1 text-[11px] font-bold text-slate-400">
+                  <Lock className="w-3 h-3" /> ล็อกอยู่
+                </span>
               ) : (
-                <span className="text-[11px] text-slate-400">รอส่งงาน</span>
+                <span className="text-[11px] text-slate-400">พร้อมทำ</span>
               )}
             </div>
             <div className="text-sm font-extrabold text-slate-900">การจัดสภาพแวดล้อมฯ (Quick Wins)</div>
@@ -162,11 +175,19 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
 
           <button
             type="button"
-            onClick={() => setActiveUnitId('2.3')}
-            className={`p-4 rounded-2xl border text-left transition cursor-pointer ${
-              activeUnitId === '2.3'
-                ? 'bg-[#f4f3ff] border-indigo-400 ring-2 ring-indigo-400/20 text-slate-900 shadow-xs'
-                : 'bg-slate-50 border-slate-200/80 hover:border-slate-300 text-slate-600'
+            onClick={() => {
+              if (!isCompleted2_2) {
+                alert('🔒 กรุณาทำแบบฝึกหัดหน่วย 2.2 ให้ผ่านเกณฑ์ก่อนเข้าสู่หน่วย 2.3 ครับ');
+                return;
+              }
+              setActiveUnitId('2.3');
+            }}
+            className={`p-4 rounded-2xl border text-left transition ${
+              !isCompleted2_2
+                ? 'bg-slate-100 border-slate-200 opacity-60 cursor-not-allowed text-slate-400'
+                : activeUnitId === '2.3'
+                ? 'bg-[#f4f3ff] border-indigo-400 ring-2 ring-indigo-400/20 text-slate-900 shadow-xs cursor-pointer'
+                : 'bg-slate-50 border-slate-200/80 hover:border-slate-300 text-slate-600 cursor-pointer'
             }`}
           >
             <div className="flex items-center justify-between mb-1">
@@ -175,8 +196,12 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                 <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-700">
                   <CheckCircle2 className="w-3.5 h-3.5" /> ผ่านแล้ว ({submissions['2.3']?.totalScore}/10)
                 </span>
+              ) : !isCompleted2_2 ? (
+                <span className="flex items-center gap-1 text-[11px] font-bold text-slate-400">
+                  <Lock className="w-3 h-3" /> ล็อกอยู่
+                </span>
               ) : (
-                <span className="text-[11px] text-slate-400">รอส่งงาน</span>
+                <span className="text-[11px] text-slate-400">พร้อมทำ</span>
               )}
             </div>
             <div className="text-sm font-extrabold text-slate-900">การวัดและประเมินผลดิจิทัล</div>

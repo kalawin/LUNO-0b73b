@@ -130,6 +130,34 @@ export function App() {
     setActiveView('step');
   };
 
+  // ตรวจสอบสิทธิ์การเข้าถึงแต่ละด่านแบบขั้นบันได (Linear Progressive Guard)
+  const isStepAccessible = (targetStep: StepId, currentProgress: UserProgress): boolean => {
+    const completedSteps = currentProgress.completedSteps || [];
+    const completedUnits = currentProgress.completedUnits || [];
+
+    switch (targetStep) {
+      case 'login':
+      case 'pre-test':
+        return true;
+      case 'level-1':
+        return completedSteps.includes('pre-test');
+      case 'level-2':
+        return ['1.1', '1.2', '1.3'].every(u => completedUnits.includes(u));
+      case 'level-3':
+        return ['2.1', '2.2', '2.3'].every(u => completedUnits.includes(u));
+      case 'level-4':
+        return ['3.1', '3.2'].every(u => completedUnits.includes(u));
+      case 'post-test':
+        return ['1.1', '1.2', '1.3', '2.1', '2.2', '2.3', '3.1', '3.2', '4.1', '4.2'].every(u => completedUnits.includes(u));
+      case 'evaluation':
+        return completedSteps.includes('post-test');
+      case 'completed':
+        return completedSteps.includes('evaluation');
+      default:
+        return false;
+    }
+  };
+
   // เปลี่ยนด่าน / เมนู
   const handleNavigateStep = (step: StepId | 'flow') => {
     setIsMobileLeftOpen(false);
@@ -138,6 +166,22 @@ export function App() {
       setActiveView('flow');
       return;
     }
+
+    // ตรวจสอบ Prerequisite
+    if (!isStepAccessible(step, progress)) {
+      let requirementMsg = 'กรุณาทำด่านก่อนหน้าให้สำเร็จก่อนครับ';
+      if (step === 'level-1') requirementMsg = '🔒 กรุณาทำแบบทดสอบก่อนเรียน (Pre-test) ให้เสร็จสิ้นก่อนเริ่ม Module 1';
+      else if (step === 'level-2') requirementMsg = '🔒 กรุณาทำแบบฝึกหัดใน Module 1 ให้ครบทั้ง 3 หน่วย (1.1, 1.2, 1.3) ก่อนเข้าสู่ Module 2';
+      else if (step === 'level-3') requirementMsg = '🔒 กรุณาทำแบบฝึกหัดใน Module 2 ให้ครบทั้ง 3 หน่วย (2.1, 2.2, 2.3) ก่อนเข้าสู่ Module 3';
+      else if (step === 'level-4') requirementMsg = '🔒 กรุณาทำแบบฝึกหัดใน Module 3 ให้ครบทั้ง 2 หน่วย (3.1, 3.2) ก่อนเข้าสู่ Module 4';
+      else if (step === 'post-test') requirementMsg = '🔒 กรุณาทำแบบฝึกหัดให้ครบทั้ง 10 หน่วยของ 4 Modules ก่อนทำแบบทดสอบหลังเรียน (Post-test)';
+      else if (step === 'evaluation') requirementMsg = '🔒 กรุณาทำแบบทดสอบหลังเรียน (Post-test) ให้เสร็จสิ้นก่อนทำแบบประเมิน';
+      else if (step === 'completed') requirementMsg = '🔒 กรุณาทำแบบประเมินรูปแบบการวิจัยให้เสร็จสิ้นก่อนรับเกียรติบัตร';
+
+      alert(requirementMsg);
+      return;
+    }
+
     ApiService.saveLocalProgress({ currentStep: step });
     setProgress(prev => ({ ...prev, currentStep: step }));
     setActiveView('step');

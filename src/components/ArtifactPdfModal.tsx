@@ -22,8 +22,8 @@ export const ArtifactPdfModal: React.FC<Props> = ({
   const formDataEntries = Object.entries(submission.formData || {});
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-xs overflow-y-auto animate-fade-in">
-      <div className="relative w-full max-w-4xl bg-white border border-slate-200/90 rounded-[32px] shadow-2xl overflow-hidden my-6 max-h-[92vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-xs overflow-y-auto animate-fade-in print:static print:p-0 print:m-0 print:bg-white print:overflow-visible print:block print:inset-auto print:h-auto">
+      <div className="relative w-full max-w-4xl bg-white border border-slate-200/90 rounded-[32px] shadow-2xl overflow-hidden my-6 max-h-[92vh] flex flex-col print:border-none print:shadow-none print:max-h-none print:m-0 print:w-full print:rounded-none">
         {/* Modal Top Bar (Hidden when printing) */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-white print:hidden">
           <div className="flex items-center gap-3">
@@ -56,7 +56,7 @@ export const ArtifactPdfModal: React.FC<Props> = ({
         </div>
 
         {/* Printable Document Sheet */}
-        <div id="printable-artifact" className="flex-1 overflow-y-auto p-8 sm:p-12 bg-white text-slate-900 print:p-0 print:m-0 print:overflow-visible">
+        <div id="printable-artifact" className="flex-1 overflow-y-auto p-8 sm:p-12 bg-white text-slate-900 print:p-6 print:m-0 print:overflow-visible">
           {/* Header */}
           <div className="border-b-2 border-teal-600 pb-6 mb-6">
             <div className="flex items-start justify-between">
@@ -145,6 +145,22 @@ export const ArtifactPdfModal: React.FC<Props> = ({
                   </div>
                 );
               })}
+            </div>
+          </div>
+
+          {/* Official Signature Area for School Administrator / PA Portfolio */}
+          <div className="mt-10 pt-6 border-t border-slate-200 grid grid-cols-2 gap-8 text-center text-xs text-slate-700 page-break-avoid">
+            <div>
+              <p className="font-semibold text-slate-500 mb-12">ลงชื่อ............................................................</p>
+              <p className="font-bold text-slate-800">({profile?.name || '............................................................'})</p>
+              <p className="text-slate-500 mt-0.5">ผู้จัดทำแผนพัฒนา / ผู้บริหารสถานศึกษา</p>
+              <p className="text-slate-400 mt-1">วันที่ {new Date(submission.submittedAt).toLocaleDateString('th-TH')}</p>
+            </div>
+            <div>
+              <p className="font-semibold text-slate-500 mb-12">ลงชื่อ............................................................</p>
+              <p className="font-bold text-slate-800">(คณะกรรมการประเมิน / ผู้ทรงคุณวุฒิ)</p>
+              <p className="text-slate-500 mt-0.5">ผู้รับรองแผนงานและสมรรถนะดิจิทัล</p>
+              <p className="text-slate-400 mt-1">วันที่ ......./......./...........</p>
             </div>
           </div>
 

@@ -9,7 +9,9 @@ import {
   LogOut, 
   Sparkles,
   Award,
-  GraduationCap
+  GraduationCap,
+  Lock,
+  CheckCircle2
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -31,8 +33,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onLogout,
   onOpenCurriculum
 }) => {
-  const completedUnitsCount = progress.completedUnits?.length || 0;
+  const completedUnits = progress.completedUnits || [];
+  const completedSteps = progress.completedSteps || [];
+  const completedUnitsCount = completedUnits.length;
   const pendingUnitsCount = Math.max(0, 10 - completedUnitsCount);
+
+  // ตรวจสอบสิทธิ์แต่ละเมนู
+  const isPreTestDone = completedSteps.includes('pre-test');
+  const isModulesUnlocked = isPreTestDone;
+  const isAllModulesDone = completedUnitsCount >= 10;
+  const isPostTestDone = completedSteps.includes('post-test');
+  const isEvaluationDone = completedSteps.includes('evaluation');
 
   return (
     <aside className="w-64 bg-white border-r border-slate-100 flex flex-col justify-between p-6 shrink-0 h-full select-none">
@@ -75,30 +86,46 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             type="button"
             onClick={() => {
+              if (!isModulesUnlocked) {
+                alert('🔒 กรุณาทำแบบทดสอบก่อนเรียน (Pre-test) ให้เสร็จสิ้นก่อนเริ่ม 4 Modules');
+                return;
+              }
               if (currentStep.startsWith('level-')) {
                 onNavigate(currentStep);
               } else {
                 onNavigate('level-1');
               }
             }}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all cursor-pointer ${
-              activeView === 'step' && currentStep.startsWith('level-')
-                ? 'bg-slate-900 text-white shadow-md shadow-slate-900/10'
-                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all ${
+              !isModulesUnlocked
+                ? 'text-slate-400 opacity-60 cursor-not-allowed'
+                : activeView === 'step' && currentStep.startsWith('level-')
+                ? 'bg-slate-900 text-white shadow-md shadow-slate-900/10 cursor-pointer'
+                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 cursor-pointer'
             }`}
           >
             <div className="flex items-center gap-3">
-              <BookOpen className="w-5 h-5 shrink-0" />
+              {isModulesUnlocked ? (
+                <BookOpen className="w-5 h-5 shrink-0" />
+              ) : (
+                <Lock className="w-5 h-5 shrink-0 text-slate-400" />
+              )}
               <span>4 Modules</span>
             </div>
-            {pendingUnitsCount > 0 && (
-              <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
-                activeView === 'step' && currentStep.startsWith('level-')
-                  ? 'bg-emerald-500 text-white'
-                  : 'bg-rose-500 text-white'
-              }`}>
-                {pendingUnitsCount}
-              </span>
+            {isModulesUnlocked ? (
+              pendingUnitsCount > 0 ? (
+                <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                  activeView === 'step' && currentStep.startsWith('level-')
+                    ? 'bg-emerald-500 text-white'
+                    : 'bg-amber-500 text-white'
+                }`}>
+                  {completedUnitsCount}/10
+                </span>
+              ) : (
+                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              )
+            ) : (
+              <Lock className="w-3.5 h-3.5 text-slate-400" />
             )}
           </button>
 
@@ -106,7 +133,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             type="button"
             onClick={() => {
-              if (progress.completedSteps.includes('level-4')) {
+              if (isAllModulesDone) {
                 onNavigate('post-test');
               } else {
                 onNavigate('pre-test');
@@ -120,44 +147,83 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <div className="flex items-center gap-3">
               <BarChart2 className="w-5 h-5 shrink-0" />
-              <span>แบบทดสอบ</span>
+              <span>{isAllModulesDone ? 'แบบทดสอบหลังเรียน' : 'แบบทดสอบก่อนเรียน'}</span>
             </div>
-            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-              10 ข้อ
+            <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+              (isPreTestDone && !isAllModulesDone)
+                ? 'bg-emerald-100 text-emerald-800'
+                : 'bg-slate-100 text-slate-600'
+            }`}>
+              {isPreTestDone && !isAllModulesDone ? 'ทำแล้ว' : '10 ข้อ'}
             </span>
+          </button>
+
+          {/* แบบประเมิน Luno */}
+          <button
+            type="button"
+            onClick={() => {
+              if (!isPostTestDone) {
+                alert('🔒 แบบประเมินจะปลดล็อกหลังจากทำแบบทดสอบหลังเรียน (Post-test) เสร็จสิ้น');
+                return;
+              }
+              onNavigate('evaluation');
+            }}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all ${
+              !isPostTestDone
+                ? 'text-slate-400 opacity-60 cursor-not-allowed'
+                : activeView === 'step' && currentStep === 'evaluation'
+                ? 'bg-slate-900 text-white shadow-md shadow-slate-900/10 cursor-pointer'
+                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 cursor-pointer'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              {isPostTestDone ? (
+                <CheckSquare className="w-5 h-5 shrink-0" />
+              ) : (
+                <Lock className="w-5 h-5 shrink-0 text-slate-400" />
+              )}
+              <span>แบบประเมิน Luno</span>
+            </div>
+            {isEvaluationDone ? (
+              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+            ) : !isPostTestDone ? (
+              <Lock className="w-3.5 h-3.5 text-slate-400" />
+            ) : (
+              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                พร้อมทำ
+              </span>
+            )}
           </button>
 
           {/* วุฒิบัตร / ผลงาน */}
           <button
             type="button"
-            onClick={() => onNavigate('completed')}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all cursor-pointer ${
-              activeView === 'step' && currentStep === 'completed'
-                ? 'bg-slate-900 text-white shadow-md shadow-slate-900/10'
-                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
-            }`}
-          >
-            <Award className="w-5 h-5 shrink-0" />
-            <span>เกียรติบัตร & ผลงาน</span>
-          </button>
-
-          {/* แบบประเมิน */}
-          <button
-            type="button"
-            onClick={() => onNavigate('evaluation')}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all cursor-pointer ${
-              activeView === 'step' && currentStep === 'evaluation'
-                ? 'bg-slate-900 text-white shadow-md shadow-slate-900/10'
-                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+            onClick={() => {
+              if (!isEvaluationDone) {
+                alert('🔒 เกียรติบัตรจะปลดล็อกหลังจากประเมินรูปแบบการวิจัยเสร็จสิ้น');
+                return;
+              }
+              onNavigate('completed');
+            }}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all ${
+              !isEvaluationDone
+                ? 'text-slate-400 opacity-60 cursor-not-allowed'
+                : activeView === 'step' && currentStep === 'completed'
+                ? 'bg-slate-900 text-white shadow-md shadow-slate-900/10 cursor-pointer'
+                : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 cursor-pointer'
             }`}
           >
             <div className="flex items-center gap-3">
-              <CheckSquare className="w-5 h-5 shrink-0" />
-              <span>แบบประเมิน Luno</span>
+              {isEvaluationDone ? (
+                <Award className="w-5 h-5 shrink-0 text-amber-500" />
+              ) : (
+                <Lock className="w-5 h-5 shrink-0 text-slate-400" />
+              )}
+              <span>เกียรติบัตร & ผลงาน</span>
             </div>
-            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
-              01
-            </span>
+            {!isEvaluationDone && (
+              <Lock className="w-3.5 h-3.5 text-slate-400" />
+            )}
           </button>
 
           {/* ตั้งค่า */}

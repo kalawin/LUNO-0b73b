@@ -13,7 +13,8 @@ import {
   Sparkles,
   Users,
   Clock,
-  Share2
+  Share2,
+  Lock
 } from 'lucide-react';
 
 interface Props {
@@ -31,15 +32,15 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
     return prog.unitSubmissions || {};
   });
 
-  // State 3.1: ผู้นำต้นแบบแบบวันเดียว (Micro-journal 3 ช่อง + แผนสอนสั้น 10 นาที)
+  // State 3.1: ผู้นำต้นแบบแบบวันเดียว - เริ่มต้นด้วยค่าว่าง
   const [form3_1, setForm3_1] = useState(() => {
     const saved = submissions['3.1']?.formData || {};
     return {
-      toolAndGoal: saved['เครื่องมือและเป้าหมาย'] || 'Canva: ทำป้ายประกาศประชุมผู้ปกครองให้เสร็จใน 15 นาที',
-      journalAction: saved['บันทึกช่อง1_ทำอะไรและได้ผลอย่างไร'] || 'ทดลองทำป้ายประกาศประชุมผู้ปกครองได้ 1 แบบสำเร็จใน 20 นาที ตัวหนังสืออ่านง่ายและสวยงาม',
-      journalObstacle: saved['บันทึกช่อง2_ติดขัดตรงไหน'] || 'หาแม่แบบฟอนต์ภาษาไทยที่เข้ากับงานยาก ต้องปรับแต่งขนาดและสีตัวอักษรเอง',
-      journalEthics: saved['บันทึกช่อง3_จริยธรรมดิจิทัลและวิธีแก้'] || 'พบภาพตัวอย่างในเน็ตสวยแต่อาจติดลิขสิทธิ์ จึงเปลี่ยนมาใช้ภาพถ่ายกิจกรรมจริงของโรงเรียน และใส่เครดิตไอคอนที่นำมาใช้',
-      microTeachingPlan: saved['แผนถ่ายทอดให้ทีม10นาที'] || 'ที่ประชุมครูวันศุกร์ (10 นาที): สาธิตการเลือกแม่แบบ Canva และเปลี่ยนข้อความเป็นภาษาไทยให้ครู 5 คนดู'
+      toolAndGoal: saved['เครื่องมือและเป้าหมาย'] || '',
+      journalAction: saved['บันทึกช่อง1_ทำอะไรและได้ผลอย่างไร'] || '',
+      journalObstacle: saved['บันทึกช่อง2_ติดขัดตรงไหน'] || '',
+      journalEthics: saved['บันทึกช่อง3_จริยธรรมดิจิทัลและวิธีแก้'] || '',
+      microTeachingPlan: saved['แผนถ่ายทอดให้ทีม10นาที'] || ''
     };
   });
 
@@ -47,10 +48,10 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
   const [form3_2, setForm3_2] = useState(() => {
     const saved = submissions['3.2']?.formData || {};
     return {
-      teamTask: saved['ชื่องานและบทบาทสมาชิก'] || 'การจัดทำรายงานการประเมินตนเองของสถานศึกษา (SAR): ผอ. ดูภาพรวม / ครูวิชาการ รวบรวมไฟล์กลาง / ครูประจำชั้น ส่งผลสัมฤทธิ์',
-      commWorkflow: saved['เสาหลัก1_การสื่อสาร'] || 'ครูวิชาการ แจ้งกำหนดส่งหลักฐานและข้อแนะนำผ่าน LINE กลุ่มงานวิชาการ ทุกวันจันทร์ 08.30 น.',
-      driveWorkflow: saved['เสาหลัก2_การแบ่งปันไฟล์'] || 'Google Drive โฟลเดอร์ "SAR-2569" มีโฟลเดอร์ย่อย 3 มาตรฐาน / ตั้งชื่อไฟล์: มาตรฐาน_กลุ่มสาระ_ฉบับที่ / เจ้าของไฟล์กลาง: ครูวิชาการ',
-      trackingWorkflow: saved['เสาหลัก3_การติดตามงาน'] || 'แผ่นตาราง Google Sheets แปะลิงก์ในโน้ตกลุ่มไลน์ แสดง checklist สถานะ (รอส่ง / ส่งแล้ว / ตรวจผ่าน) กำหนดส่งทุกวันศุกร์'
+      teamTask: saved['ชื่องานและบทบาทสมาชิก'] || '',
+      commWorkflow: saved['เสาหลัก1_การสื่อสาร'] || '',
+      driveWorkflow: saved['เสาหลัก2_การแบ่งปันไฟล์'] || '',
+      trackingWorkflow: saved['เสาหลัก3_การติดตามงาน'] || ''
     };
   });
 
@@ -123,9 +124,17 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
 
           <button
             type="button"
-            onClick={() => setActiveUnitId('3.2')}
+            onClick={() => {
+              if (!isCompleted3_1) {
+                alert('🔒 กรุณาทำแบบฝึกหัดหน่วย 3.1 ให้ผ่านเกณฑ์ก่อนเข้าสู่หน่วย 3.2 ครับ');
+                return;
+              }
+              setActiveUnitId('3.2');
+            }}
             className={`p-4 rounded-2xl border text-left transition cursor-pointer ${
-              activeUnitId === '3.2'
+              !isCompleted3_1
+                ? 'opacity-60 cursor-not-allowed bg-slate-100 border-slate-200'
+                : activeUnitId === '3.2'
                 ? 'bg-[#fff5f5] border-rose-400 ring-2 ring-rose-400/20 text-slate-900 shadow-xs'
                 : 'bg-slate-50 border-slate-200/80 hover:border-slate-300 text-slate-600'
             }`}
@@ -136,8 +145,12 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                 <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                   <CheckCircle2 className="w-3.5 h-3.5" /> ผ่านแล้ว ({submissions['3.2']?.totalScore}/10)
                 </span>
+              ) : !isCompleted3_1 ? (
+                <span className="flex items-center gap-1 text-[11px] font-bold text-slate-500 bg-slate-200/70 px-2 py-0.5 rounded-full border border-slate-300">
+                  <Lock className="w-3 h-3 text-slate-500" /> ล็อกอยู่
+                </span>
               ) : (
-                <span className="text-[11px] font-semibold text-slate-400 bg-white px-2 py-0.5 rounded-full border border-slate-200">รอส่งงาน</span>
+                <span className="text-[11px] font-semibold text-slate-400 bg-white px-2 py-0.5 rounded-full border border-slate-200">พร้อมเรียนรู้</span>
               )}
             </div>
             <div className="text-sm font-bold text-slate-800">การทำงานร่วมกันด้วยเทคโนโลยีดิจิทัล (ทีม)</div>

@@ -10,9 +10,10 @@ import {
   ArrowRight, 
   MessageSquare, 
   Users, 
-  ShieldCheck,
-  Send,
-  Sparkles
+  ShieldCheck, 
+  Send, 
+  Sparkles,
+  Lock
 } from 'lucide-react';
 
 interface Props {
@@ -30,15 +31,15 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
     return prog.unitSubmissions || {};
   });
 
-  // State ฟอร์มของหน่วย 1.1 (แผนสื่อสาร 4 ช่อง)
+  // State ฟอร์มของหน่วย 1.1 (แผนสื่อสาร 4 ช่อง) - เริ่มต้นด้วยค่าว่างเพื่อให้ผู้บริหารคิดและเขียนเอง
   const [form1_1, setForm1_1] = useState(() => {
     const saved = submissions['1.1']?.formData || {};
     return {
-      goal: saved['เป้าหมาย'] || 'ให้ผู้ปกครองทุกคนทราบว่าวันนี้ปิดเรียนฉุกเฉิน ก่อน 07.00 น.',
-      audienceMain: saved['ผู้รับสารหลัก'] || 'ผู้ปกครองนักเรียน (ต้องรู้ว่าไม่ต้องส่งบุตรหลานมาโรงเรียน)',
-      audienceSub: saved['ผู้รับสารรอง'] || 'ครูและบุคลากร (เตรียมจัดการสอนเสริมและรอประกาศ)',
-      keyMessage: saved['ข้อความหลัก'] || 'ขอแจ้งปิดการเรียนการสอนวันนี้ เนื่องจากน้ำท่วมถนนเข้าโรงเรียน ขอให้ผู้ปกครองงดส่งนักเรียนเพื่อความปลอดภัย โรงเรียนจะแจ้งวันเปิดเรียนอีกครั้งผ่านกลุ่มนี้',
-      channels: saved['ช่องทางและเหตุผล'] || '1) LINE กลุ่มผู้ปกครอง: เข้าถึงเร็วในตอนเช้า\n2) หอกระจายข่าวหมู่บ้าน: สำหรับบ้านที่ไม่มีสมาร์ทโฟน\n3) Facebook เพจโรงเรียน: ประกาศทางการ'
+      goal: saved['เป้าหมาย'] || '',
+      audienceMain: saved['ผู้รับสารหลัก'] || '',
+      audienceSub: saved['ผู้รับสารรอง'] || '',
+      keyMessage: saved['ข้อความหลัก'] || '',
+      channels: saved['ช่องทางและเหตุผล'] || ''
     };
   });
 
@@ -46,12 +47,12 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
   const [form1_2, setForm1_2] = useState(() => {
     const saved = submissions['1.2']?.formData || {};
     return {
-      networkInternal: saved['เครือข่ายภายในโรงเรียน'] || 'ครูประจำชั้น, ครูเวร, ภารโรง (ช่องทาง: LINE กลุ่มครู)',
-      networkParents: saved['เครือข่ายผู้ปกครอง'] || 'คณะกรรมการเครือข่ายผู้ปกครอง, ผู้แทนห้องเรียน (ช่องทาง: LINE OpenChat)',
-      networkCommunity: saved['เครือข่ายชุมชนและท้องถิ่น'] || 'ผู้ใหญ่บ้าน, นายก อบต., ผอ.รพ.สต. (ช่องทาง: โทรประสานงาน และกลุ่มไลน์ตำบล)',
-      networkExternal: saved['เครือข่ายภายนอก'] || 'ชมรมศิษย์เก่า, เครือข่ายโรงเรียนพี่น้อง (ช่องทาง: เพจศิษย์เก่าสัมพันธ์)',
-      inquiryCase: saved['ข้อกังวลจากพันธมิตร'] || 'ผู้ปกครองสอบถามในกลุ่มไลน์: "ได้ยินข่าวลือว่าปีหน้าโรงเรียนจะยุบไปรวมกับโรงเรียนตำบลข้างเคียง จริงหรือไม่คะ เป็นห่วงลูกมาก"',
-      responseCase: saved['ข้อความตอบกลับของผู้บริหาร'] || 'ขอเรียนชี้แจงด้วยความเคารพครับ โรงเรียนไม่ได้มีนโยบายยุบรวมแต่อย่างใดครับ ในทางตรงกันข้าม ปีนี้เรากำลังพัฒนาห้องคอมพิวเตอร์และหลักสูตรดิจิทัลเพิ่มเติม ขอขอบพระคุณท่านผู้ปกครองที่เป็นห่วงและร่วมดูแลโรงเรียนของเราเสมอมาครับ'
+      networkInternal: saved['เครือข่ายภายในโรงเรียน'] || '',
+      networkParents: saved['เครือข่ายผู้ปกครอง'] || '',
+      networkCommunity: saved['เครือข่ายชุมชนและท้องถิ่น'] || '',
+      networkExternal: saved['เครือข่ายภายนอก'] || '',
+      inquiryCase: saved['ข้อกังวลจากพันธมิตร'] || '',
+      responseCase: saved['ข้อความตอบกลับของผู้บริหาร'] || ''
     };
   });
 
@@ -59,16 +60,18 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
   const [form1_3, setForm1_3] = useState(() => {
     const saved = submissions['1.3']?.formData || {};
     return {
-      mediaTitle: saved['หัวข้อประชาสัมพันธ์'] || 'เปิดรับสมัครนักเรียนใหม่ อนุบาลและ ป.1: โรงเรียนขนาดเล็ก คุณภาพอบอุ่น',
-      mediaHighlight: saved['จุดเด่นที่ต้องการสื่อสาร'] || 'เรียนรู้สนุกด้วยห้องคอมพิวเตอร์และสื่อดิจิทัล DLTV, อาหารกลางวันถูกหลักโภชนาการ, ครูดูแลใกล้ชิดครบทุกคน',
-      pdpaCheck1: saved['ตรวจ_ไม่ระบุเลขบัตรประชาชน_ที่อยู่'] ?? true,
-      pdpaCheck2: saved['ตรวจ_เบลอชื่อเด็กหรือใช้ชื่อเล่น'] ?? true,
-      pdpaCheck3: saved['ตรวจ_มีหนังสือยินยอมจากผู้ปกครอง'] ?? true,
-      pdpaCheck4: saved['ตรวจ_ใช้ภาพถ่ายโรงเรียนหรือภาพฟรีลิขสิทธิ์'] ?? true,
-      pdpaCheck5: saved['ตรวจ_มีข้อความคุ้มครองข้อมูลส่วนบุคคล'] ?? true,
-      consentNote: saved['ข้อความขอความยินยอม'] || 'ภาพถ่ายและวิดีโอนี้เผยแพร่เพื่อการประชาสัมพันธ์กิจกรรมของโรงเรียน โดยได้รับความยินยอมจากผู้ปกครองตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562'
+      mediaTitle: saved['หัวข้อประชาสัมพันธ์'] || '',
+      mediaHighlight: saved['จุดเด่นที่ต้องการสื่อสาร'] || '',
+      pdpaCheck1: saved['ตรวจ_ไม่ระบุเลขบัตรประชาชน_ที่อยู่'] ?? false,
+      pdpaCheck2: saved['ตรวจ_เบลอชื่อเด็กหรือใช้ชื่อเล่น'] ?? false,
+      pdpaCheck3: saved['ตรวจ_มีหนังสือยินยอมจากผู้ปกครอง'] ?? false,
+      pdpaCheck4: saved['ตรวจ_ใช้ภาพถ่ายโรงเรียนหรือภาพฟรีลิขสิทธิ์'] ?? false,
+      pdpaCheck5: saved['ตรวจ_มีข้อความคุ้มครองข้อมูลส่วนบุคคล'] ?? false,
+      consentNote: saved['ข้อความขอความยินยอม'] || ''
     };
   });
+
+  const [showSampleGuidance, setShowSampleGuidance] = useState(false);
 
   const isCompleted1_1 = !!submissions['1.1'];
   const isCompleted1_2 = !!submissions['1.2'];
@@ -137,7 +140,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   <CheckCircle2 className="w-3.5 h-3.5" /> ผ่านแล้ว ({submissions['1.1']?.totalScore}/10)
                 </span>
               ) : (
-                <span className="text-[11px] text-slate-400">รอส่งงาน</span>
+                <span className="text-[11px] text-slate-400">พร้อมทำ</span>
               )}
             </div>
             <div className="text-sm font-extrabold text-slate-900">การวางแผนในการสื่อสาร</div>
@@ -146,11 +149,19 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
           {/* Tab 1.2 */}
           <button
             type="button"
-            onClick={() => setActiveUnitId('1.2')}
-            className={`p-4 rounded-2xl border text-left transition cursor-pointer ${
-              activeUnitId === '1.2'
-                ? 'bg-[#fff9e6] border-amber-400 ring-2 ring-amber-400/20 text-slate-900 shadow-xs'
-                : 'bg-slate-50 border-slate-200/80 hover:border-slate-300 text-slate-600'
+            onClick={() => {
+              if (!isCompleted1_1) {
+                alert('🔒 กรุณาทำแบบฝึกหัดหน่วย 1.1 ให้ผ่านเกณฑ์ก่อนเข้าสู่หน่วย 1.2 ครับ');
+                return;
+              }
+              setActiveUnitId('1.2');
+            }}
+            className={`p-4 rounded-2xl border text-left transition ${
+              !isCompleted1_1
+                ? 'bg-slate-100 border-slate-200 opacity-60 cursor-not-allowed text-slate-400'
+                : activeUnitId === '1.2'
+                ? 'bg-[#fff9e6] border-amber-400 ring-2 ring-amber-400/20 text-slate-900 shadow-xs cursor-pointer'
+                : 'bg-slate-50 border-slate-200/80 hover:border-slate-300 text-slate-600 cursor-pointer'
             }`}
           >
             <div className="flex items-center justify-between mb-1">
@@ -159,8 +170,12 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                 <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-700">
                   <CheckCircle2 className="w-3.5 h-3.5" /> ผ่านแล้ว ({submissions['1.2']?.totalScore}/10)
                 </span>
+              ) : !isCompleted1_1 ? (
+                <span className="flex items-center gap-1 text-[11px] font-bold text-slate-400">
+                  <Lock className="w-3 h-3" /> ล็อกอยู่
+                </span>
               ) : (
-                <span className="text-[11px] text-slate-400">รอส่งงาน</span>
+                <span className="text-[11px] text-slate-400">พร้อมทำ</span>
               )}
             </div>
             <div className="text-sm font-extrabold text-slate-900">การสร้างเครือข่ายพันธมิตร</div>
@@ -169,11 +184,19 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
           {/* Tab 1.3 */}
           <button
             type="button"
-            onClick={() => setActiveUnitId('1.3')}
-            className={`p-4 rounded-2xl border text-left transition cursor-pointer ${
-              activeUnitId === '1.3'
-                ? 'bg-[#fff9e6] border-amber-400 ring-2 ring-amber-400/20 text-slate-900 shadow-xs'
-                : 'bg-slate-50 border-slate-200/80 hover:border-slate-300 text-slate-600'
+            onClick={() => {
+              if (!isCompleted1_2) {
+                alert('🔒 กรุณาทำแบบฝึกหัดหน่วย 1.2 ให้ผ่านเกณฑ์ก่อนเข้าสู่หน่วย 1.3 ครับ');
+                return;
+              }
+              setActiveUnitId('1.3');
+            }}
+            className={`p-4 rounded-2xl border text-left transition ${
+              !isCompleted1_2
+                ? 'bg-slate-100 border-slate-200 opacity-60 cursor-not-allowed text-slate-400'
+                : activeUnitId === '1.3'
+                ? 'bg-[#fff9e6] border-amber-400 ring-2 ring-amber-400/20 text-slate-900 shadow-xs cursor-pointer'
+                : 'bg-slate-50 border-slate-200/80 hover:border-slate-300 text-slate-600 cursor-pointer'
             }`}
           >
             <div className="flex items-center justify-between mb-1">
@@ -182,8 +205,12 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                 <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-700">
                   <CheckCircle2 className="w-3.5 h-3.5" /> ผ่านแล้ว ({submissions['1.3']?.totalScore}/10)
                 </span>
+              ) : !isCompleted1_2 ? (
+                <span className="flex items-center gap-1 text-[11px] font-bold text-slate-400">
+                  <Lock className="w-3 h-3" /> ล็อกอยู่
+                </span>
               ) : (
-                <span className="text-[11px] text-slate-400">รอส่งงาน</span>
+                <span className="text-[11px] text-slate-400">พร้อมทำ</span>
               )}
             </div>
             <div className="text-sm font-extrabold text-slate-900">การสื่อสารภาพลักษณ์และ PDPA</div>
@@ -240,41 +267,36 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   <MessageSquare className="w-5 h-5 text-amber-600" /> แบบฟอร์มแผนสื่อสาร 4 ช่อง (4-Cell Plan Form)
                 </div>
 
-                {/* Smart Suggestion Chips */}
-                <div className="flex flex-wrap items-center gap-2 pt-1 pb-2">
-                  <span className="text-[11px] font-bold text-slate-500 flex items-center gap-1">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-500" /> ตัวอย่างด่วน:
-                  </span>
+                {/* Collapsible Sample Guidance */}
+                <div className="border border-amber-200/90 rounded-2xl overflow-hidden bg-amber-50/60 mb-2">
                   <button
                     type="button"
-                    onClick={() => {
-                      setForm1_1({
-                        goal: 'ให้ผู้ปกครองทุกคนทราบว่าวันนี้ปิดเรียนฉุกเฉิน ก่อน 07.00 น.',
-                        audienceMain: 'ผู้ปกครองนักเรียน (ต้องรู้ว่างดส่งบุตรหลานมาโรงเรียน)',
-                        audienceSub: 'ครูและบุคลากร (เตรียมจัดการสอนเสริมและรอประกาศ)',
-                        keyMessage: 'ขอแจ้งปิดการเรียนการสอนวันนี้ เนื่องจากน้ำท่วมถนนเข้าโรงเรียน ขอให้ผู้ปกครองงดส่งนักเรียนเพื่อความปลอดภัย โรงเรียนจะแจ้งวันเปิดเรียนอีกครั้งผ่านกลุ่มนี้',
-                        channels: '1) LINE กลุ่มผู้ปกครอง: เข้าถึงเร็วในตอนเช้า\n2) หอกระจายข่าวหมู่บ้าน: สำหรับบ้านที่ไม่มีสมาร์ทโฟน\n3) Facebook เพจโรงเรียน: ประกาศทางการ'
-                      });
-                    }}
-                    className="text-[11px] font-bold px-3 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 transition cursor-pointer"
+                    onClick={() => setShowSampleGuidance(!showSampleGuidance)}
+                    className="w-full p-3.5 flex items-center justify-between text-left text-xs sm:text-sm font-bold text-amber-900 hover:bg-amber-100/70 transition cursor-pointer"
                   >
-                    + กรณีน้ำท่วมฉุกเฉิน (เรื่อง A)
+                    <span className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-amber-600" />
+                      💡 ดูตัวอย่างแนวทางคำตอบของโรงเรียนต้นแบบ (คลิกเพื่อศึกษาตัวอย่าง)
+                    </span>
+                    <span className="text-xs text-amber-700 underline font-semibold">
+                      {showSampleGuidance ? 'ซ่อนตัวอย่าง' : 'เปิดดูตัวอย่าง'}
+                    </span>
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setForm1_1({
-                        goal: 'ให้ผู้ปกครองเข้าร่วมประชุมอย่างพร้อมเพรียง ในวันเสาร์ 09.00 น.',
-                        audienceMain: 'ผู้ปกครองกลุ่มวัยทำงาน และกลุ่มผู้สูงอายุที่ดูแลเด็ก',
-                        audienceSub: 'คณะกรรมการสถานศึกษา (ร่วมสังเกตการณ์)',
-                        keyMessage: 'ขอเรียนเชิญผู้ปกครองทุกท่านร่วมประชุมชี้แจงแนวทางการเรียนรู้และรับเงินอุดหนุนการศึกษา ในวันเสาร์นี้ เวลา 09.00 น. ณ หอประชุมโรงเรียน',
-                        channels: '1) จดหมายเชิญเป็นทางการ 2) LINE กลุ่มห้องเรียน 3) หอกระจายข่าวหมู่บ้าน'
-                      });
-                    }}
-                    className="text-[11px] font-bold px-3 py-1 rounded-full bg-sky-50 text-sky-800 border border-sky-200 hover:bg-sky-100 transition cursor-pointer"
-                  >
-                    + กรณีประชุมผู้ปกครอง (เรื่อง B)
-                  </button>
+                  {showSampleGuidance && (
+                    <div className="p-4 bg-white border-t border-amber-200 text-xs sm:text-sm space-y-2 text-slate-700 leading-relaxed">
+                      <p className="font-bold text-amber-900">ตัวอย่างแนวคิด: กรณีปิดเรียนฉุกเฉินน้ำท่วม (เรื่อง A)</p>
+                      <ul className="list-disc list-inside space-y-1.5 text-slate-600">
+                        <li><strong>เป้าหมาย:</strong> ให้ผู้ปกครองทุกคนทราบว่าวันนี้ปิดเรียนฉุกเฉิน ก่อน 07.00 น.</li>
+                        <li><strong>ผู้รับสารหลัก:</strong> ผู้ปกครองนักเรียน (งดส่งบุตรหลานมาโรงเรียน)</li>
+                        <li><strong>ผู้รับสารรอง:</strong> ครูและบุคลากร (เตรียมจัดการสอนเสริมและเวรประจำวัน)</li>
+                        <li><strong>ข้อความหลัก:</strong> "ขอแจ้งปิดการเรียนการสอนวันนี้ เนื่องจากน้ำท่วมถนนเข้าโรงเรียน ขอให้ผู้ปกครองงดส่งนักเรียนเพื่อความปลอดภัย โรงเรียนจะแจ้งวันเปิดเรียนอีกครั้งผ่านกลุ่มนี้"</li>
+                        <li><strong>ช่องทาง:</strong> 1) LINE กลุ่มผู้ปกครอง (ด่วนตอนเช้า) 2) หอกระจายข่าวหมู่บ้าน (ครอบคลุมบ้านไม่มีสมาร์ทโฟน) 3) เพจโรงเรียน (ประกาศทางการ)</li>
+                      </ul>
+                      <p className="text-[11px] text-slate-400 italic mt-2">
+                        *ข้อความด้านบนเป็นเพียงตัวอย่างแนวคิด โปรดเขียนแผนที่สอดคล้องกับโรงเรียนของท่านลงในแบบฟอร์มด้านล่าง
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* 1. เป้าหมาย */}
@@ -286,6 +308,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     type="text"
                     value={form1_1.goal}
                     onChange={(e) => setForm1_1({ ...form1_1, goal: e.target.value })}
+                    placeholder="เช่น ให้ผู้ปกครองทุกคนทราบเรื่องปิดเรียนฉุกเฉิน ก่อนเวลา 07.00 น."
                     className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
                   />
                 </div>
@@ -300,6 +323,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                       type="text"
                       value={form1_1.audienceMain}
                       onChange={(e) => setForm1_1({ ...form1_1, audienceMain: e.target.value })}
+                      placeholder="เช่น ผู้ปกครองนักเรียนทุกคน (งดส่งนักเรียนมาโรงเรียน)"
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                     />
                   </div>
@@ -311,6 +335,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                       type="text"
                       value={form1_1.audienceSub}
                       onChange={(e) => setForm1_1({ ...form1_1, audienceSub: e.target.value })}
+                      placeholder="เช่น ครูและบุคลากร (เตรียมจัดการสอนเสริมและรอประกาศ)"
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                     />
                   </div>
@@ -330,6 +355,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     rows={3}
                     value={form1_1.keyMessage}
                     onChange={(e) => setForm1_1({ ...form1_1, keyMessage: e.target.value })}
+                    placeholder="เช่น ขอแจ้งปิดเรียนวันนี้ 1 วัน เนื่องจากน้ำท่วมถนน ขอให้งดส่งนักเรียนเพื่อความปลอดภัย โรงเรียนจะแจ้งวันเปิดเรียนอีกครั้งผ่านกลุ่มนี้"
                     className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
                   />
                 </div>
@@ -343,6 +369,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     rows={3}
                     value={form1_1.channels}
                     onChange={(e) => setForm1_1({ ...form1_1, channels: e.target.value })}
+                    placeholder="เช่น 1) LINE กลุ่มผู้ปกครอง: เข้าถึงเร็วในตอนเช้า&#10;2) หอกระจายข่าวหมู่บ้าน: สำหรับบ้านที่ไม่มีสมาร์ทโฟน&#10;3) Facebook เพจโรงเรียน: ประกาศทางการ"
                     className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
                   />
                 </div>

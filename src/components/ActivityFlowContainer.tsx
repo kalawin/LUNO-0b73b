@@ -17,6 +17,8 @@ import {
   ArrowLeft
 } from 'lucide-react';
 
+import { EvaluatorEngine } from '../utils/evaluatorEngine';
+
 interface Props {
   unit: UnitDefinition;
   profile: UserProfile | null;
@@ -48,14 +50,8 @@ export const ActivityFlowContainer: React.FC<Props> = ({
     return formData['สถานการณ์ที่เลือก'] || (unit.scenarios?.[0]?.id ?? '');
   });
 
-  const [rubricScores, setRubricScores] = useState<Record<string, number>>(() => {
-    if (existingSubmission?.rubricScores) return existingSubmission.rubricScores;
-    const initial: Record<string, number> = {};
-    unit.rubric.forEach(r => {
-      initial[r.id] = r.high.score;
-    });
-    return initial;
-  });
+  // ใช้ EvaluatorEngine ตรวจประเมินอัตโนมัติจาก formData
+  const evalResult = EvaluatorEngine.evaluate(unit.id, formData);
 
   const [reflectionNotes, setReflectionNotes] = useState<string>(() => {
     return existingSubmission?.reflectionNotes || '';
@@ -64,7 +60,10 @@ export const ActivityFlowContainer: React.FC<Props> = ({
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(() => !!existingSubmission);
 
-  const totalScore = unit.rubric.reduce((sum, item) => sum + (rubricScores[item.id] ?? 0), 0);
+  // คะแนนที่ใช้แสดงและส่ง: หากเคยส่งแล้วใช้คะแนนเดิม หากยังให้ใช้คะแนนที่ระบบเพิ่งตรวจได้
+  const effectiveTotalScore = existingSubmission ? existingSubmission.totalScore : evalResult.totalScore;
+  const effectiveScores = existingSubmission ? existingSubmission.rubricScores : evalResult.scores;
+  const isPassed = existingSubmission ? (existingSubmission.totalScore >= 7) : evalResult.isPassed;
 
   const stepMeta = [
     { index: 1, label: 'เปิดสถานการณ์' },
@@ -74,19 +73,21 @@ export const ActivityFlowContainer: React.FC<Props> = ({
     { index: 5, label: 'ตรวจสอบ & ส่งงาน' }
   ];
 
-  const handleScoreChange = (criterionId: string, score: number) => {
-    setRubricScores(prev => ({ ...prev, [criterionId]: score }));
-  };
-
   const handleFinalSubmit = () => {
+    if (!isPassed) {
+      alert('ชิ้นงานของท่านยังไม่ผ่านเกณฑ์ขั้นต่ำ 7/10 คะแนน กรุณาอ่านคำแนะนำแล้วแก้ไขข้อมูลในขั้นที่ 4 ก่อนส่งงาน');
+      setCurrentStep(4);
+      return;
+    }
+
     const sub: UnitSubmission = {
       unitId: unit.id,
       formData: {
         ...formData,
         ...(unit.scenarios ? { 'สถานการณ์ที่เลือก': unit.scenarios.find(s => s.id === selectedScenarioId)?.title || selectedScenarioId } : {})
       },
-      rubricScores,
-      totalScore,
+      rubricScores: evalResult.scores,
+      totalScore: evalResult.totalScore,
       reflectionNotes,
       submittedAt: new Date().toISOString()
     };
@@ -113,7 +114,7 @@ export const ActivityFlowContainer: React.FC<Props> = ({
               </span>
               {isSubmitted && (
                 <span className="flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> ส่งงานสำเร็จแล้ว ({existingSubmission?.totalScore || totalScore}/10)
+                  <CheckCircle2 className="w-3.5 h-3.5" /> ส่งงานสำเร็จแล้ว ({effectiveTotalScore}/10)
                 </span>
               )}
             </div>
@@ -335,17 +336,28 @@ export const ActivityFlowContainer: React.FC<Props> = ({
           <div className="space-y-6">
             <RubricEvaluationTable
               rubric={unit.rubric}
-              selectedScores={rubricScores}
-              onChangeScore={handleScoreChange}
+              scores={effectiveScores}
+              totalScore={effectiveTotalScore}
+              maxPossible={evalResult.maxPossible}
+              isPassed={isPassed}
+              feedbacks={evalResult.feedbacks}
               reflectionNotes={reflectionNotes}
               onChangeReflection={setReflectionNotes}
+              onGoBackToEdit={() => setCurrentStep(4)}
             />
 
-            <div className="bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-200/90 rounded-3xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className={`border rounded-3xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 ${
+              isPassed 
+                ? 'bg-gradient-to-r from-teal-50 to-emerald-50 border-teal-200/90' 
+                : 'bg-amber-50 border-amber-300'
+            }`}>
               <div>
-                <div className="font-extrabold text-slate-900 text-base">พร้อมส่งผลงานประจำหน่วยนี้หรือยัง?</div>
-                <p className="text-xs text-slate-600 mt-0.5">
-                  ท่านได้คะแนนประเมินตนเอง <strong>{totalScore}/10 คะแนน</strong> ข้อมูลจะถูกบันทึกและซิงก์สู่ระบบ
+                <div className="font-extrabold text-slate-900 text-base sm:text-lg">
+                  {isPassed ? 'ผลงานผ่านเกณฑ์มาตรฐาน พร้อมส่งงาน!' : 'ผลงานยังไม่ผ่านเกณฑ์ขั้นต่ำ 7/10 คะแนน'}
+                </div>
+                <p className="text-xs sm:text-sm text-slate-600 mt-0.5">
+                  คะแนนที่ระบบตรวจได้: <strong className={isPassed ? 'text-emerald-700 font-extrabold' : 'text-amber-700 font-extrabold'}>{effectiveTotalScore}/10 คะแนน</strong>
+                  {!isPassed && ' (กรุณาคลิก "กลับไปแก้ไขในขั้นที่ 4" เพื่อเติมข้อมูลตามคำแนะนำ)'}
                 </p>
               </div>
 
@@ -353,16 +365,29 @@ export const ActivityFlowContainer: React.FC<Props> = ({
                 <button
                   type="button"
                   onClick={() => setShowPdfModal(true)}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold text-xs shadow-xs transition cursor-pointer"
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer"
                 >
                   <FileText className="w-4 h-4 text-teal-600" /> พรีวิวเอกสาร
                 </button>
                 <button
                   type="button"
                   onClick={handleFinalSubmit}
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition cursor-pointer"
+                  disabled={!isPassed}
+                  className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs sm:text-sm shadow-md transition cursor-pointer ${
+                    isPassed
+                      ? 'bg-slate-900 hover:bg-slate-800 text-white'
+                      : 'bg-slate-300 text-slate-500 cursor-not-allowed opacity-60'
+                  }`}
                 >
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" /> {isSubmitted ? 'บันทึกการแก้ไข' : 'ยืนยันและส่งงาน'}
+                  {isPassed ? (
+                    <>
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" /> {isSubmitted ? 'บันทึกการแก้ไข' : 'ยืนยันและส่งงาน'}
+                    </>
+                  ) : (
+                    <>
+                      <AlertTriangle className="w-4 h-4 text-amber-500" /> ยังไม่ถึงเกณฑ์ (7/10)
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -426,8 +451,8 @@ export const ActivityFlowContainer: React.FC<Props> = ({
               ...formData,
               ...(unit.scenarios ? { 'สถานการณ์ที่เลือก': unit.scenarios.find(s => s.id === selectedScenarioId)?.title || selectedScenarioId } : {})
             },
-            rubricScores,
-            totalScore,
+            rubricScores: effectiveScores,
+            totalScore: effectiveTotalScore,
             reflectionNotes,
             submittedAt: existingSubmission?.submittedAt || new Date().toISOString()
           }}

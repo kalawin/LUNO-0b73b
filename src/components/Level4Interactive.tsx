@@ -14,7 +14,8 @@ import {
   Target,
   GraduationCap,
   Users,
-  Building2
+  Building2,
+  Lock
 } from 'lucide-react';
 
 interface Props {
@@ -36,12 +37,12 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
   const [form4_1, setForm4_1] = useState(() => {
     const saved = submissions['4.1']?.formData || {};
     return {
-      promptStudent: saved['คำตอบนำทาง_ด้านผู้เรียน'] || 'นักเรียนทุกคนได้เรียนรู้ผ่านสื่อดิจิทัลและฝึกทักษะการสืบค้นอย่างสนุกสนาน',
-      promptTeacher: saved['คำตอบนำทาง_ด้านครู'] || 'ครูใช้เทคโนโลยีลดภาระงานเอกสาร และมีเวลาดูแลนักเรียนมากขึ้น',
-      promptCommunity: saved['คำตอบนำทาง_ด้านชุมชน'] || 'ผู้ปกครองและชุมชนเข้าถึงข้อมูลผลงานโรงเรียนและร่วมสนับสนุนอย่างใกล้ชิด',
-      visionStatement: saved['วิสัยทัศน์ดิจิทัล'] || 'ภายใน 3 ปี โรงเรียนจะขับเคลื่อนการจัดการเรียนรู้เชิงรุกด้วยเทคโนโลยีดิจิทัล ครูทุกคนใช้สื่อดิจิทัลในการสอนอย่างน้อยสัปดาห์ละ 2 คาบ นักเรียนชั้น ป.4-6 ใช้คอมพิวเตอร์สืบค้นและนำเสนอผลงานได้ทุกคน และผู้ปกครองรับทราบข้อมูลข่าวสารผ่านช่องทางดิจิทัลอย่างสม่ำเสมอ',
-      forumPlan: saved['แผนเวทีระดมความเห็น'] || 'ที่ประชุมครูต้นภาคเรียน (30 นาที): เปิดคำถาม "เทคโนโลยีอะไรจะช่วยลดงานเอกสารของท่านได้มากที่สุด?"',
-      commVisionChannel: saved['ช่องทางสื่อสารวิสัยทัศน์'] || 'กลุ่มไลน์ครู, แผ่นป้ายประชาสัมพันธ์ห้องประชุม, และชี้แจงในวันประชุมผู้ปกครอง'
+      promptStudent: saved['คำตอบนำทาง_ด้านผู้เรียน'] || '',
+      promptTeacher: saved['คำตอบนำทาง_ด้านครู'] || '',
+      promptCommunity: saved['คำตอบนำทาง_ด้านชุมชน'] || '',
+      visionStatement: saved['วิสัยทัศน์ดิจิทัล'] || '',
+      forumPlan: saved['แผนเวทีระดมความเห็น'] || '',
+      commVisionChannel: saved['ช่องทางสื่อสารวิสัยทัศน์'] || ''
     };
   });
 
@@ -49,12 +50,12 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
   const [form4_2, setForm4_2] = useState(() => {
     const saved = submissions['4.2']?.formData || {};
     return {
-      targetGroupConcern: saved['กลุ่มเป้าหมายและความกังวล'] || 'ครูอาวุโสและครูที่ยังไม่คุ้นเคยกับเทคโนโลยี กังวลว่าจะทำคอมพิวเตอร์พังหรือเสียเวลาทำงานเอกสารเพิ่ม',
-      activityFormat: saved['รูปแบบกิจกรรม'] || 'Tech Coffee Break (เวิร์กช็อปสั้น 15 นาทีช่วงพักบ่าย พร้อมชากาแฟ)',
-      quickWinDetail: saved['QuickWinที่เห็นผลครั้งเดียว'] || 'ทดลองใช้ Google Docs Voice Typing พิมพ์ข้อความบันทึกข้อความด้วยเสียงพูด ช่วยลดเวลาพิมพ์งานได้ทันที 50%',
-      frequencySchedule: saved['ความถี่และผู้รับผิดชอบ'] || 'จัดสัปดาห์ละ 1 ครั้ง (วันพุธบ่าย) ผู้รับผิดชอบ: ผู้อำนวยการร่วมกับครูแกนนำดิจิทัล',
-      metricQuantity: saved['ตัวชี้วัดเชิงปริมาณ'] || 'ครูเข้าร่วมกิจกรรมอย่างน้อย 80% และทดลองใช้เครื่องมือสำเร็จทุกคนในครั้งแรก',
-      metricQuality: saved['ตัวชี้วัดเชิงคุณภาพ'] || 'ครูมีความมั่นใจเพิ่มขึ้น และมีความรู้สึกเชิงบวกว่าเทคโนโลยีช่วยลดภาระงานได้จริง'
+      targetGroupConcern: saved['กลุ่มเป้าหมายและความกังวล'] || '',
+      activityFormat: saved['รูปแบบกิจกรรม'] || '',
+      quickWinDetail: saved['QuickWinที่เห็นผลครั้งเดียว'] || '',
+      frequencySchedule: saved['ความถี่และผู้รับผิดชอบ'] || '',
+      metricQuantity: saved['ตัวชี้วัดเชิงปริมาณ'] || '',
+      metricQuality: saved['ตัวชี้วัดเชิงคุณภาพ'] || ''
     };
   });
 
@@ -132,9 +133,17 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
 
           <button
             type="button"
-            onClick={() => setActiveUnitId('4.2')}
+            onClick={() => {
+              if (!isCompleted4_1) {
+                alert('🔒 กรุณาทำแบบฝึกหัดหน่วย 4.1 ให้ผ่านเกณฑ์ก่อนเข้าสู่หน่วย 4.2 ครับ');
+                return;
+              }
+              setActiveUnitId('4.2');
+            }}
             className={`p-4 rounded-2xl border text-left transition cursor-pointer ${
-              activeUnitId === '4.2'
+              !isCompleted4_1
+                ? 'opacity-60 cursor-not-allowed bg-slate-100 border-slate-200'
+                : activeUnitId === '4.2'
                 ? 'bg-[#f5f3ff] border-indigo-400 ring-2 ring-indigo-400/20 text-slate-900 shadow-xs'
                 : 'bg-slate-50 border-slate-200/80 hover:border-slate-300 text-slate-600'
             }`}
@@ -145,8 +154,12 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                 <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                   <CheckCircle2 className="w-3.5 h-3.5" /> ผ่านแล้ว ({submissions['4.2']?.totalScore}/10)
                 </span>
+              ) : !isCompleted4_1 ? (
+                <span className="flex items-center gap-1 text-[11px] font-bold text-slate-500 bg-slate-200/70 px-2 py-0.5 rounded-full border border-slate-300">
+                  <Lock className="w-3 h-3 text-slate-500" /> ล็อกอยู่
+                </span>
               ) : (
-                <span className="text-[11px] font-semibold text-slate-400 bg-white px-2 py-0.5 rounded-full border border-slate-200">รอส่งงาน</span>
+                <span className="text-[11px] font-semibold text-slate-400 bg-white px-2 py-0.5 rounded-full border border-slate-200">พร้อมเรียนรู้</span>
               )}
             </div>
             <div className="text-sm font-bold text-slate-800">การส่งเสริมเจตคติเชิงบวกต่อเทคโนโลยี</div>
@@ -224,6 +237,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form4_1.promptStudent}
+                      placeholder="เช่น นักเรียนทุกคนได้เรียนรู้ผ่านสื่อดิจิทัลและฝึกทักษะการสืบค้นอย่างสนุกสนานและปลอดภัย"
                       onChange={(e) => setForm4_1({ ...form4_1, promptStudent: e.target.value })}
                       className="w-full bg-white border border-blue-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-200"
                     />
@@ -237,6 +251,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form4_1.promptTeacher}
+                      placeholder="เช่น ครูใช้เทคโนโลยีลดภาระงานเอกสาร และมีเวลาดูแลพัฒนาผู้เรียนเป็นรายบุคคลมากขึ้น"
                       onChange={(e) => setForm4_1({ ...form4_1, promptTeacher: e.target.value })}
                       className="w-full bg-white border border-emerald-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-200"
                     />
@@ -250,6 +265,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form4_1.promptCommunity}
+                      placeholder="เช่น ผู้ปกครองและชุมชนเข้าถึงข้อมูลผลงานนักเรียนและกิจกรรมโรงเรียนได้สะดวกรวดเร็ว"
                       onChange={(e) => setForm4_1({ ...form4_1, promptCommunity: e.target.value })}
                       className="w-full bg-white border border-amber-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-200"
                     />
@@ -266,6 +282,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   <textarea
                     rows={4}
                     value={form4_1.visionStatement}
+                    placeholder="เช่น ภายใน 3 ปี โรงเรียนจะขับเคลื่อนการเรียนรู้เชิงรุกด้วยเทคโนโลยีดิจิทัล ครูทุกคนใช้สื่อดิจิทัลในการสอนสม่ำเสมอ นักเรียนมีทักษะดิจิทัลและคุณธรรม และผู้ปกครองมีส่วนร่วมผ่านระบบออนไลน์"
                     onChange={(e) => setForm4_1({ ...form4_1, visionStatement: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200/50 leading-relaxed"
                   />
@@ -295,6 +312,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <textarea
                       rows={2}
                       value={form4_1.forumPlan}
+                      placeholder="เช่น ประชุมครูประจำเดือน (30 นาที) หัวข้อ เทคโนโลยีอะไรจะช่วยลดงานเอกสารของครูได้มากที่สุด"
                       onChange={(e) => setForm4_1({ ...form4_1, forumPlan: e.target.value })}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                     />
@@ -307,6 +325,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <textarea
                       rows={2}
                       value={form4_1.commVisionChannel}
+                      placeholder="เช่น กลุ่มไลน์ครู, ป้ายนิเทศหน้าโรงเรียน, เพจเฟซบุ๊กโรงเรียน, ประชุมผู้ปกครอง"
                       onChange={(e) => setForm4_1({ ...form4_1, commVisionChannel: e.target.value })}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                     />
@@ -355,6 +374,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   <input
                     type="text"
                     value={form4_2.targetGroupConcern}
+                    placeholder="เช่น ครูอาวุโส กังวลว่าจะจำขั้นตอนไม่ได้ หรือกลัวทำคอมพิวเตอร์เสียหาย"
                     onChange={(e) => setForm4_2({ ...form4_2, targetGroupConcern: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200/50"
                   />
@@ -385,6 +405,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form4_2.activityFormat}
+                      placeholder="เช่น เวิร์กช็อปสั้น 15 นาทีช่วงพักบ่าย พร้อมชากาแฟ (Tech Coffee Break)"
                       onChange={(e) => setForm4_2({ ...form4_2, activityFormat: e.target.value })}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                     />
@@ -397,6 +418,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form4_2.frequencySchedule}
+                      placeholder="เช่น สัปดาห์ละ 1 ครั้ง (วันพุธบ่าย) ผู้รับผิดชอบ: ผู้อำนวยการร่วมกับครูแกนนำ"
                       onChange={(e) => setForm4_2({ ...form4_2, frequencySchedule: e.target.value })}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                     />
@@ -411,6 +433,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   <textarea
                     rows={2}
                     value={form4_2.quickWinDetail}
+                    placeholder="เช่น ทดลองใช้ Google Docs Voice Typing พิมพ์ข้อความด้วยเสียงพูด ช่วยลดเวลาพิมพ์ได้ 50% ทันที"
                     onChange={(e) => setForm4_2({ ...form4_2, quickWinDetail: e.target.value })}
                     className="w-full bg-white border border-emerald-300 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-200"
                   />
@@ -441,6 +464,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form4_2.metricQuantity}
+                      placeholder="เช่น ครูเข้าร่วมอย่างน้อย 80% และทดลองใช้เครื่องมือสำเร็จทุกคนในครั้งแรก"
                       onChange={(e) => setForm4_2({ ...form4_2, metricQuantity: e.target.value })}
                       className="w-full bg-white border border-blue-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-200"
                     />
@@ -453,6 +477,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form4_2.metricQuality}
+                      placeholder="เช่น ครูมีความมั่นใจเพิ่มขึ้น และรู้สึกเชิงบวกว่าเทคโนโลยีช่วยลดภาระงานได้จริง"
                       onChange={(e) => setForm4_2({ ...form4_2, metricQuality: e.target.value })}
                       className="w-full bg-white border border-amber-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-200"
                     />

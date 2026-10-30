@@ -7,7 +7,9 @@ import {
   Clock, 
   Award, 
   ArrowRight,
-  ChevronDown
+  ChevronDown,
+  Lock,
+  CheckCircle2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { CurriculumModal } from './CurriculumModal';
@@ -24,6 +26,7 @@ export const DashboardFlow: React.FC<DashboardFlowProps> = ({ progress, profile,
   const [searchQuery, setSearchQuery] = useState('');
 
   const completedUnits = progress.completedUnits || [];
+  const completedSteps = progress.completedSteps || [];
   const completedCount = completedUnits.length;
   const overallPercent = Math.round((completedCount / 10) * 100);
 
@@ -43,6 +46,12 @@ export const DashboardFlow: React.FC<DashboardFlowProps> = ({ progress, profile,
   const m3Pct = Math.round((m3Done / 2) * 100);
   const m4Pct = Math.round((m4Done / 2) * 100);
 
+  // ตรวจสอบเงื่อนไขการปลดล็อกแต่ละ Module
+  const isM1Unlocked = completedSteps.includes('pre-test');
+  const isM2Unlocked = m1Done === 3;
+  const isM3Unlocked = isM2Unlocked && m2Done === 3;
+  const isM4Unlocked = isM3Unlocked && m3Done === 2;
+
   const modules = [
     {
       id: 'level-1' as StepId,
@@ -56,7 +65,9 @@ export const DashboardFlow: React.FC<DashboardFlowProps> = ({ progress, profile,
       badgeColor: 'text-amber-800 bg-amber-100',
       percent: m1Pct,
       doneCount: m1Done,
-      totalCount: 3
+      totalCount: 3,
+      isUnlocked: isM1Unlocked,
+      lockMsg: 'ต้องทำ Pre-test ให้เสร็จสิ้นก่อน'
     },
     {
       id: 'level-2' as StepId,
@@ -70,7 +81,9 @@ export const DashboardFlow: React.FC<DashboardFlowProps> = ({ progress, profile,
       badgeColor: 'text-indigo-800 bg-indigo-100',
       percent: m2Pct,
       doneCount: m2Done,
-      totalCount: 3
+      totalCount: 3,
+      isUnlocked: isM2Unlocked,
+      lockMsg: 'ปลดล็อกเมื่อผ่าน Module 1 ครบทั้ง 3 หน่วย'
     },
     {
       id: 'level-3' as StepId,
@@ -84,7 +97,9 @@ export const DashboardFlow: React.FC<DashboardFlowProps> = ({ progress, profile,
       badgeColor: 'text-teal-800 bg-teal-100',
       percent: m3Pct,
       doneCount: m3Done,
-      totalCount: 2
+      totalCount: 2,
+      isUnlocked: isM3Unlocked,
+      lockMsg: 'ปลดล็อกเมื่อผ่าน Module 2 ครบทั้ง 3 หน่วย'
     },
     {
       id: 'level-4' as StepId,
@@ -98,7 +113,9 @@ export const DashboardFlow: React.FC<DashboardFlowProps> = ({ progress, profile,
       badgeColor: 'text-rose-800 bg-rose-100',
       percent: m4Pct,
       doneCount: m4Done,
-      totalCount: 2
+      totalCount: 2,
+      isUnlocked: isM4Unlocked,
+      lockMsg: 'ปลดล็อกเมื่อผ่าน Module 3 ครบทั้ง 2 หน่วย'
     }
   ];
 
@@ -352,51 +369,90 @@ export const DashboardFlow: React.FC<DashboardFlowProps> = ({ progress, profile,
 
         {/* Modules Cards List */}
         <div className="space-y-3.5">
-          {filteredModules.map((m) => (
-            <motion.div
-              key={m.id}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              onClick={() => onSelectStep(m.id)}
-              className={`${m.colorBg} border ${m.colorBorder} rounded-3xl p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 cursor-pointer transition`}
-            >
-              <div className="flex items-center gap-4">
-                {/* Tech Thumbnail Icon */}
-                <div className="w-14 h-14 rounded-2xl bg-slate-900 text-white shadow-md flex items-center justify-center shrink-0">
-                  <BookOpen className="w-6 h-6 text-emerald-400" />
-                </div>
-
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md ${m.badgeColor}`}>
-                      {m.code}
-                    </span>
-                    <span className="text-xs text-slate-400 font-semibold">{m.duration}</span>
+          {filteredModules.map((m) => {
+            const isCompleted = m.percent === 100;
+            return (
+              <motion.div
+                key={m.id}
+                whileHover={m.isUnlocked ? { scale: 1.01 } : {}}
+                whileTap={m.isUnlocked ? { scale: 0.99 } : {}}
+                onClick={() => onSelectStep(m.id)}
+                className={`rounded-3xl p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition ${
+                  m.isUnlocked
+                    ? `${m.colorBg} border ${m.colorBorder} cursor-pointer`
+                    : 'bg-slate-50 border border-slate-200/90 opacity-70 grayscale-[35%] cursor-not-allowed'
+                }`}
+              >
+                <div className="flex items-center gap-4">
+                  {/* Tech Thumbnail Icon */}
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-md ${
+                    m.isUnlocked ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-500'
+                  }`}>
+                    {m.isUnlocked ? (
+                      isCompleted ? (
+                        <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+                      ) : (
+                        <BookOpen className="w-6 h-6 text-emerald-400" />
+                      )
+                    ) : (
+                      <Lock className="w-6 h-6 text-slate-400" />
+                    )}
                   </div>
-                  <h3 className="font-extrabold text-base sm:text-lg text-slate-900 leading-snug">
-                    {m.title}
-                  </h3>
-                  <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">
-                    {m.desc}
-                  </p>
-                </div>
-              </div>
 
-              {/* Progress Pill Bar */}
-              <div className="shrink-0 flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-                <div className="w-32 bg-white/80 rounded-full h-3 overflow-hidden border border-slate-200/60 relative">
-                  <div
-                    style={{ width: `${m.percent}%` }}
-                    className={`h-full ${m.barColor} rounded-full transition-all duration-500`}
-                  />
+                  <div>
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md ${
+                        m.isUnlocked ? m.badgeColor : 'bg-slate-200 text-slate-600'
+                      }`}>
+                        {m.code}
+                      </span>
+                      <span className="text-xs text-slate-400 font-semibold">{m.duration}</span>
+
+                      {m.isUnlocked ? (
+                        isCompleted ? (
+                          <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-md flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" /> ผ่านแล้ว ({m.doneCount}/{m.totalCount} หน่วย)
+                          </span>
+                        ) : m.doneCount > 0 ? (
+                          <span className="text-[11px] font-bold text-indigo-700 bg-indigo-100/80 px-2 py-0.5 rounded-md">
+                            ⚡ กำลังเรียน ({m.doneCount}/{m.totalCount} หน่วย)
+                          </span>
+                        ) : null
+                      ) : (
+                        <span className="text-[11px] font-bold text-rose-700 bg-rose-100/80 px-2 py-0.5 rounded-md flex items-center gap-1">
+                          <Lock className="w-3 h-3" /> {m.lockMsg}
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="font-extrabold text-base sm:text-lg text-slate-900 leading-snug">
+                      {m.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-500 mt-0.5 line-clamp-1">
+                      {m.desc}
+                    </p>
+                  </div>
                 </div>
-                <span className="text-xs font-bold text-slate-700 min-w-10 text-right">
-                  {m.percent}%
-                </span>
-                <ArrowRight className="w-4 h-4 text-slate-400 hidden sm:block" />
-              </div>
-            </motion.div>
-          ))}
+
+                {/* Progress Pill Bar */}
+                <div className="shrink-0 flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                  <div className="w-32 bg-white/80 rounded-full h-3 overflow-hidden border border-slate-200/60 relative">
+                    <div
+                      style={{ width: `${m.percent}%` }}
+                      className={`h-full ${m.barColor} rounded-full transition-all duration-500`}
+                    />
+                  </div>
+                  <span className="text-xs font-bold text-slate-700 min-w-10 text-right">
+                    {m.percent}%
+                  </span>
+                  {m.isUnlocked ? (
+                    <ArrowRight className="w-4 h-4 text-slate-400 hidden sm:block" />
+                  ) : (
+                    <Lock className="w-4 h-4 text-slate-400 hidden sm:block" />
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
 
