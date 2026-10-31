@@ -1,7 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import type { UserProfile, UserProgress } from '../types';
+import { PRE_TEST_QUESTIONS, POST_TEST_QUESTIONS } from '../data/courseData';
 import { Award, Printer, TrendingUp, BarChart3, Radar, Home, GraduationCap, CheckCircle2 } from 'lucide-react';
 import { Chart, BarController, BarElement, CategoryScale, LinearScale, RadarController, RadialLinearScale, PointElement, LineElement, Tooltip, Legend, Filler } from 'chart.js';
+import { printElementById } from '../utils/printHelper';
 
 // Register Chart.js components
 Chart.register(BarController, BarElement, CategoryScale, LinearScale, RadarController, RadialLinearScale, PointElement, LineElement, Tooltip, Legend, Filler);
@@ -17,10 +19,12 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ profile, progr
   const radarChartRef = useRef<HTMLCanvasElement | null>(null);
   const chartInstances = useRef<{ bar?: Chart; radar?: Chart }>({});
 
+  const maxPre = PRE_TEST_QUESTIONS.length || 12;
+  const maxPost = POST_TEST_QUESTIONS.length || 12;
   const pre = progress.preTestScore ?? 0;
-  const post = progress.postTestScore ?? 4;
+  const post = progress.postTestScore ?? maxPost;
   const diff = post - pre;
-  const growthPct = pre === 0 ? (post * 25) : Math.round((diff / 4) * 100);
+  const growthPct = Math.round((diff / maxPost) * 100);
 
   const certCode = progress.certCode || `LUNO-${Math.floor(100000 + Math.random() * 900000)}`;
   const certDate = progress.completionDate || (() => {
@@ -30,7 +34,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ profile, progr
   })();
 
   const handlePrint = () => {
-    window.print();
+    printElementById('certificate-printable', `LUNO_Certificate_${profile.name}`);
   };
 
   useEffect(() => {
@@ -45,7 +49,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ profile, progr
         data: {
           labels: ['ก่อนเรียน (Pre-test)', 'หลังเรียน (Post-test)'],
           datasets: [{
-            label: 'คะแนนสอบ (เต็ม 4)',
+            label: `คะแนนสอบ (เต็ม ${maxPost})`,
             data: [pre, post],
             backgroundColor: ['#cbd5e1', '#0d9488'],
             borderColor: ['#94a3b8', '#0f766e'],
@@ -60,8 +64,8 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ profile, progr
           scales: {
             y: {
               beginAtZero: true,
-              max: 4,
-              ticks: { stepSize: 1, color: '#64748b', font: { family: 'Prompt, sans-serif' } },
+              max: maxPost,
+              ticks: { stepSize: 2, color: '#64748b', font: { family: 'Prompt, sans-serif' } },
               grid: { color: '#f1f5f9' }
             },
             x: {
@@ -95,7 +99,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ profile, progr
           labels: [
             'การสื่อสารเชิงดิจิทัล',
             'การสร้างวิถีการเรียนรู้',
-            'การพัฒนาด้านการทำงานเป็นทีมสู่ความเป็นมืออาชีพ',
+            'การทำงานเป็นทีมมืออาชีพ',
             'การสร้างค่านิยมเชิงดิจิทัล'
           ],
           datasets: [{
@@ -144,7 +148,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ profile, progr
       if (chartInstances.current.bar) chartInstances.current.bar.destroy();
       if (chartInstances.current.radar) chartInstances.current.radar.destroy();
     };
-  }, [pre, post]);
+  }, [pre, post, maxPost]);
 
   return (
     <div className="max-w-5xl mx-auto space-y-7 animate-fade-in pb-12">
@@ -176,7 +180,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ profile, progr
             onClick={handlePrint}
             className="flex-1 sm:flex-none px-5 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
           >
-            <Printer className="w-4 h-4" />
+            <Printer className="w-4 h-4 text-emerald-400" />
             <span>พิมพ์ / บันทึก PDF</span>
           </button>
           {onBackToDashboard && (
@@ -196,12 +200,12 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ profile, progr
       <div className="print:hidden grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="p-6 rounded-[24px] bg-white border border-slate-200/80 text-center shadow-xs">
           <span className="text-xs text-slate-400 uppercase font-bold tracking-wider">คะแนนก่อนเรียน (Pre-test)</span>
-          <div className="text-4xl font-black text-slate-700 mt-2">{pre} <span className="text-sm font-medium text-slate-400">/ 4</span></div>
+          <div className="text-4xl font-black text-slate-700 mt-2">{pre} <span className="text-sm font-medium text-slate-400">/ {maxPre}</span></div>
         </div>
 
         <div className="p-6 rounded-[24px] bg-teal-50/50 border border-teal-200 text-center shadow-xs">
           <span className="text-xs text-teal-800 uppercase font-bold tracking-wider">คะแนนหลังเรียน (Post-test)</span>
-          <div className="text-4xl font-black text-teal-700 mt-2">{post} <span className="text-sm font-medium text-teal-500">/ 4</span></div>
+          <div className="text-4xl font-black text-teal-700 mt-2">{post} <span className="text-sm font-medium text-teal-500">/ {maxPost}</span></div>
         </div>
 
         <div className="p-6 rounded-[24px] bg-emerald-50/50 border border-emerald-200 text-center shadow-xs">
@@ -220,7 +224,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ profile, progr
         <div className="p-6 rounded-[28px] bg-white border border-slate-200/80 shadow-xs">
           <h4 className="font-extrabold text-slate-900 text-sm sm:text-base mb-4 flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-teal-600" />
-            เปรียบเทียบคะแนน Pre-test vs Post-test
+            เปรียบเทียบคะแนน Pre-test vs Post-test (เต็ม {maxPost} คะแนน)
           </h4>
           <div className="relative h-64 w-full">
             <canvas ref={barChartRef} />

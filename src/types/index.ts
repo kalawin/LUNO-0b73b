@@ -1,4 +1,4 @@
-﻿export type StepId = 
+export type StepId = 
   | 'login'
   | 'pre-test'
   | 'level-1'
@@ -21,6 +21,7 @@ export interface UserProfile {
 
 export interface QuizQuestion {
   id: number;
+  module?: string;
   question: string;
   options: string[];
   correctIndex?: number;
@@ -71,6 +72,11 @@ export interface ScenarioItem {
   extraDetails?: string;
 }
 
+export interface KnowledgeDeepDive {
+  title: string;
+  points: string[];
+}
+
 export interface UnitDefinition {
   id: string; // e.g. '1.1', '1.2'
   moduleNumber: 1 | 2 | 3 | 4;
@@ -82,6 +88,8 @@ export interface UnitDefinition {
   prerequisites?: string;
   steps: ActivityStepData[];
   scenarios?: ScenarioItem[];
+  knowledgeDeepDive?: KnowledgeDeepDive[];
+  practicalTips?: string[];
   rubric: RubricCriterion[];
   checklist: string[];
   commonMistakes: string[];

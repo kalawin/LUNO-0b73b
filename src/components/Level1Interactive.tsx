@@ -256,7 +256,13 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
             'ข้อความหลัก': form1_1.keyMessage,
             'ช่องทางและเหตุผล': form1_1.channels
           }}
-          isStep4Valid={!!form1_1.goal.trim() && !!form1_1.keyMessage.trim()}
+          isStep4Valid={
+            !!form1_1.goal.trim() &&
+            !!form1_1.audienceMain.trim() &&
+            !!form1_1.audienceSub.trim() &&
+            !!form1_1.keyMessage.trim() &&
+            !!form1_1.channels.trim()
+          }
           onSubmitUnit={handleUnitSubmit}
           onNextUnit={() => handleNextUnitFrom('1.1')}
           onBackToDashboard={onBackToDashboard}
@@ -392,7 +398,14 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
             'ข้อกังวลจากพันธมิตร': form1_2.inquiryCase,
             'ข้อความตอบกลับของผู้บริหาร': form1_2.responseCase
           }}
-          isStep4Valid={!!form1_2.responseCase.trim()}
+          isStep4Valid={
+            !!form1_2.networkInternal.trim() &&
+            !!form1_2.networkParents.trim() &&
+            !!form1_2.networkCommunity.trim() &&
+            !!form1_2.networkExternal.trim() &&
+            !!form1_2.inquiryCase.trim() &&
+            !!form1_2.responseCase.trim()
+          }
           onSubmitUnit={handleUnitSubmit}
           onNextUnit={() => handleNextUnitFrom('1.2')}
           onBackToDashboard={onBackToDashboard}
@@ -409,6 +422,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form1_2.networkInternal}
+                      placeholder="เช่น ครูและบุคลากร 12 คน ผ่าน LINE กลุ่มครูและประชุมประจำเดือน"
                       onChange={(e) => setForm1_2({ ...form1_2, networkInternal: e.target.value })}
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                     />
@@ -418,6 +432,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form1_2.networkParents}
+                      placeholder="เช่น เครือข่ายผู้ปกครองรายชั้นเรียน ผ่าน LINE ห้องเรียนและสมุดพก"
                       onChange={(e) => setForm1_2({ ...form1_2, networkParents: e.target.value })}
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                     />
@@ -427,6 +442,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form1_2.networkCommunity}
+                      placeholder="เช่น อบต. / ผู้ใหญ่บ้าน / รพ.สต. ผ่านโทรศัพท์สายตรงและหนังสือราชการ"
                       onChange={(e) => setForm1_2({ ...form1_2, networkCommunity: e.target.value })}
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                     />
@@ -436,6 +452,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form1_2.networkExternal}
+                      placeholder="เช่น ชมรมศิษย์เก่า / มูลนิธิ / มหาวิทยาลัย ผ่านเพจ Facebook โรงเรียน"
                       onChange={(e) => setForm1_2({ ...form1_2, networkExternal: e.target.value })}
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                     />
@@ -452,6 +469,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                       <input
                         type="text"
                         value={form1_2.inquiryCase}
+                        placeholder="เช่น ผู้ปกครองกังวลเรื่องความปลอดภัยของอาหารกลางวัน หรือการบ้านออนไลน์"
                         onChange={(e) => setForm1_2({ ...form1_2, inquiryCase: e.target.value })}
                         className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                       />
@@ -461,6 +479,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                       <textarea
                         rows={3}
                         value={form1_2.responseCase}
+                        placeholder="เช่น ขอบคุณสำหรับข้อเสนอแนะและรับทราบความกังวลครับ โรงเรียนได้ดำเนินการตรวจสอบร่วมกับครูเวรประจำวัน และจะรายงานภาพเมนูอาหารในกลุ่มไลน์ทุกวันเพื่อความมั่นใจครับ"
                         onChange={(e) => setForm1_2({ ...form1_2, responseCase: e.target.value })}
                         className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
                       />
@@ -488,7 +507,12 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
             'ตรวจ_มีข้อความคุ้มครองข้อมูลส่วนบุคคล': form1_3.pdpaCheck5,
             'ข้อความขอความยินยอม': form1_3.consentNote
           }}
-          isStep4Valid={!!form1_3.mediaTitle.trim() && form1_3.pdpaCheck3}
+          isStep4Valid={
+            !!form1_3.mediaTitle.trim() &&
+            !!form1_3.mediaHighlight.trim() &&
+            !!form1_3.consentNote.trim() &&
+            form1_3.pdpaCheck3
+          }
           onSubmitUnit={handleUnitSubmit}
           onBackToDashboard={onBackToDashboard}
           childrenStep4={
@@ -503,6 +527,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   <input
                     type="text"
                     value={form1_3.mediaTitle}
+                    placeholder="เช่น กิจกรรมห้องเรียนต้นแบบ Active Learning และทักษะอาชีพของนักเรียน"
                     onChange={(e) => setForm1_3({ ...form1_3, mediaTitle: e.target.value })}
                     className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                   />
@@ -513,6 +538,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   <textarea
                     rows={2}
                     value={form1_3.mediaHighlight}
+                    placeholder="เช่น เล่าเรื่องการที่นักเรียนได้ลงมือปฏิบัติจริงด้วยความสุข โดยมีคุณครูคอยดูแลใกล้ชิดผ่านเพจ Facebook โรงเรียนและกลุ่ม LINE"
                     onChange={(e) => setForm1_3({ ...form1_3, mediaHighlight: e.target.value })}
                     className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                   />
@@ -578,6 +604,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   <input
                     type="text"
                     value={form1_3.consentNote}
+                    placeholder="เช่น ภาพถ่ายนี้ได้รับความยินยอมจากผู้ปกครองเพื่อการประชาสัมพันธ์กิจกรรมทางการศึกษาของโรงเรียนเท่านั้น"
                     onChange={(e) => setForm1_3({ ...form1_3, consentNote: e.target.value })}
                     className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                   />

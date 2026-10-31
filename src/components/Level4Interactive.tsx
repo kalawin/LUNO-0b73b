@@ -27,6 +27,8 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
   const [profile] = useState<UserProfile | null>(() => ApiService.getLocalProfile());
   const [activeUnitId, setActiveUnitId] = useState<'4.1' | '4.2'>('4.1');
   const [showCurriculumModal, setShowCurriculumModal] = useState(false);
+  const [showGuidance4_1, setShowGuidance4_1] = useState(false);
+  const [showGuidance4_2, setShowGuidance4_2] = useState(false);
 
   const [submissions, setSubmissions] = useState<Record<string, UnitSubmission>>(() => {
     const prog = ApiService.getLocalProgress();
@@ -207,7 +209,14 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
             'แผนเวทีระดมความเห็น': form4_1.forumPlan,
             'ช่องทางสื่อสารวิสัยทัศน์': form4_1.commVisionChannel
           }}
-          isStep4Valid={!!form4_1.visionStatement.trim() && !!form4_1.forumPlan.trim()}
+          isStep4Valid={
+            !!form4_1.promptStudent.trim() &&
+            !!form4_1.promptTeacher.trim() &&
+            !!form4_1.promptCommunity.trim() &&
+            !!form4_1.visionStatement.trim() &&
+            !!form4_1.forumPlan.trim() &&
+            !!form4_1.commVisionChannel.trim()
+          }
           onSubmitUnit={handleUnitSubmit}
           onNextUnit={() => setActiveUnitId('4.2')}
           onBackToDashboard={onBackToDashboard}
@@ -221,6 +230,29 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   <span className="text-xs bg-indigo-50 text-indigo-800 border border-indigo-200 px-3 py-1 rounded-full font-bold">
                     หน่วย 4.1
                   </span>
+                </div>
+
+                {/* Collapsible Example Guidance */}
+                <div className="border border-indigo-200/90 rounded-2xl overflow-hidden bg-indigo-50/50">
+                  <button
+                    type="button"
+                    onClick={() => setShowGuidance4_1(!showGuidance4_1)}
+                    className="w-full p-3.5 flex items-center justify-between text-left text-xs sm:text-sm font-bold text-indigo-900 hover:bg-indigo-100/60 transition cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-indigo-600" />
+                      💡 ดูแนวทางการร่างวิสัยทัศน์ดิจิทัล 3-4 ประโยค (คลิกเพื่อดูแนวคิด)
+                    </span>
+                    <span className="text-xs text-indigo-700 underline font-semibold">
+                      {showGuidance4_1 ? 'ซ่อนแนวทาง' : 'เปิดดูแนวทาง'}
+                    </span>
+                  </button>
+                  {showGuidance4_1 && (
+                    <div className="p-4 bg-white border-t border-indigo-200 text-xs space-y-1.5 text-slate-700 leading-relaxed">
+                      <p><strong>โครงสร้างวิสัยทัศน์ดิจิทัลที่ดี:</strong> ระบุกรอบเวลา (เช่น ภายใน 3 ปี) + เป้าหมายด้านผู้เรียน + เป้าหมายด้านครู/การบริหาร + การมีส่วนร่วมของชุมชน</p>
+                      <p><strong>ตัวอย่างประโยควิสัยทัศน์:</strong> "ภายใน 3 ปี โรงเรียนจะขับเคลื่อนการเรียนรู้เชิงรุกด้วยเทคโนโลยีดิจิทัลที่ปลอดภัย ครูทุกคนใช้สื่อดิจิทัลในการจัดการเรียนรู้และใช้ระบบ Cloud ลดภาระงานเอกสาร นักเรียนมีทักษะการสืบค้นและรู้เท่าทันสื่อดิจิทัล โดยมีผู้ปกครองและชุมชนร่วมพัฒนาผ่านเครือข่ายออนไลน์อย่างต่อเนื่อง"</p>
+                    </div>
+                  )}
                 </div>
 
                 {/* 3 Guided Prompts */}
@@ -286,21 +318,6 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     onChange={(e) => setForm4_1({ ...form4_1, visionStatement: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200/50 leading-relaxed"
                   />
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {[
-                      'ภายใน 3 ปี โรงเรียนจะขับเคลื่อนการเรียนรู้เชิงรุกด้วยเทคโนโลยีดิจิทัล ครูทุกคนใช้สื่อดิจิทัลอย่างน้อยสัปดาห์ละ 2 คาบ นักเรียน ป.4-6 ใช้คอมพิวเตอร์สืบค้นและนำเสนอผลงานได้ทุกคน และผู้ปกครองรับข่าวสารผ่านไลน์กลุ่มอย่างสม่ำเสมอ',
-                      'ภายใน 2 ปี ยกระดับโรงเรียนสู่สังคมแห่งการเรียนรู้ดิจิทัลที่ปลอดภัย ครูใช้ระบบ Cloud จัดการเอกสารลดการใช้กระดาษ 50% นักเรียนมีทักษะความฉลาดทางดิจิทัล (DQ) และชุมชนร่วมประเมินผลผ่านระบบออนไลน์'
-                    ].map((example, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => setForm4_1({ ...form4_1, visionStatement: example })}
-                        className="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-indigo-100 text-slate-700 hover:text-indigo-900 border border-slate-200 transition"
-                      >
-                        แม่แบบวิสัยทัศน์ {i + 1}
-                      </button>
-                    ))}
-                  </div>
                 </div>
 
                 {/* Forum Plan & Communication Channels */}
@@ -351,7 +368,14 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
             'ตัวชี้วัดเชิงปริมาณ': form4_2.metricQuantity,
             'ตัวชี้วัดเชิงคุณภาพ': form4_2.metricQuality
           }}
-          isStep4Valid={!!form4_2.targetGroupConcern.trim() && !!form4_2.quickWinDetail.trim()}
+          isStep4Valid={
+            !!form4_2.targetGroupConcern.trim() &&
+            !!form4_2.activityFormat.trim() &&
+            !!form4_2.quickWinDetail.trim() &&
+            !!form4_2.frequencySchedule.trim() &&
+            !!form4_2.metricQuantity.trim() &&
+            !!form4_2.metricQuality.trim()
+          }
           onSubmitUnit={handleUnitSubmit}
           onBackToDashboard={onBackToDashboard}
           childrenStep4={
@@ -366,6 +390,30 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   </span>
                 </div>
 
+                {/* Collapsible Example Guidance */}
+                <div className="border border-indigo-200/90 rounded-2xl overflow-hidden bg-indigo-50/50">
+                  <button
+                    type="button"
+                    onClick={() => setShowGuidance4_2(!showGuidance4_2)}
+                    className="w-full p-3.5 flex items-center justify-between text-left text-xs sm:text-sm font-bold text-indigo-900 hover:bg-indigo-100/60 transition cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-indigo-600" />
+                      💡 ดูแนวทางการออกแบบกิจกรรม Quick Win ตามหลัก TAM (คลิกเพื่อดูแนวคิด)
+                    </span>
+                    <span className="text-xs text-indigo-700 underline font-semibold">
+                      {showGuidance4_2 ? 'ซ่อนแนวทาง' : 'เปิดดูแนวทาง'}
+                    </span>
+                  </button>
+                  {showGuidance4_2 && (
+                    <div className="p-4 bg-white border-t border-indigo-200 text-xs space-y-1.5 text-slate-700 leading-relaxed">
+                      <p><strong>กลุ่มเป้าหมายและความกังวล:</strong> ครูอาวุโสที่กังวลว่าพิมพ์งานช้าและกลัวทำข้อมูลในระบบหาย</p>
+                      <p><strong>รูปแบบกิจกรรม & Quick Win:</strong> กิจกรรม "คลินิกไอที 15 นาทีพักเบรก" จับคู่ครูรุ่นใหม่แนะนำการใช้ Google Voice Typing พิมพ์หนังสือราชการด้วยเสียงพูด เห็นผลสำเร็จทันทีในครั้งเดียว</p>
+                      <p><strong>ตัวชี้วัด:</strong> เชิงปริมาณ (ครูเข้าร่วม 100% และพิมพ์เอกสารสำเร็จอย่างน้อยคนละ 1 ฉบับ) / เชิงคุณภาพ (ครูมีความมั่นใจและลดความกังวลในการใช้เทคโนโลยี)</p>
+                    </div>
+                  )}
+                </div>
+
                 {/* Target Group */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
@@ -378,22 +426,6 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     onChange={(e) => setForm4_2({ ...form4_2, targetGroupConcern: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200/50"
                   />
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {[
-                      'ครูอาวุโส: กังวลว่าจะทำคอมพิวเตอร์พัง หรือจำขั้นตอนการใช้งานไม่ได้',
-                      'ครูประจำชั้น: กังวลว่าการใช้แอพใหม่จะเพิ่มภาระงานและเสียเวลาสอน',
-                      'ครูธุรการ/การเงิน: กังวลเรื่องความถูกต้องของเอกสารและความปลอดภัยของข้อมูล'
-                    ].map((example, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => setForm4_2({ ...form4_2, targetGroupConcern: example })}
-                        className="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-indigo-100 text-slate-700 hover:text-indigo-900 border border-slate-200 transition"
-                      >
-                        {example.split(':')[0]}
-                      </button>
-                    ))}
-                  </div>
                 </div>
 
                 {/* Activity Format & Quick Win */}
@@ -437,22 +469,6 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     onChange={(e) => setForm4_2({ ...form4_2, quickWinDetail: e.target.value })}
                     className="w-full bg-white border border-emerald-300 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-200"
                   />
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {[
-                      'พิมพ์บันทึกข้อความด้วยเสียงใน Google Docs (Voice Typing) ลดเวลาพิมพ์ 50% ทันที',
-                      'สแกนเอกสารด้วยแอป CamScanner หรือ Google Drive บนมือถือ แปลงเป็น PDF ส่งใน 1 นาที',
-                      'ใช้แม่แบบรายงานสำเร็จรูปใน Canva เปลี่ยนรูปและข้อความเสร็จได้เล่มรายงานใน 15 นาที'
-                    ].map((example, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => setForm4_2({ ...form4_2, quickWinDetail: example })}
-                        className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-white hover:bg-emerald-100 text-slate-700 hover:text-emerald-900 border border-emerald-200 transition"
-                      >
-                        ตัวอย่าง {i + 1}
-                      </button>
-                    ))}
-                  </div>
                 </div>
 
                 {/* Indicators */}

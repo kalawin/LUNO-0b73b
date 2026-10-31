@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PRE_TEST_QUESTIONS, POST_TEST_QUESTIONS } from '../data/courseData';
-import { CheckCircle2, ChevronRight, ChevronLeft, Send, Sparkles, Check, ArrowRight, Award } from 'lucide-react';
+import { CheckCircle2, ChevronRight, ChevronLeft, Send, Sparkles, Check, ArrowRight, Award, Layers } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { SoundService } from '../services/audio';
 
@@ -44,8 +44,12 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizType, onComplete, onBack
 
   const handleSubmit = () => {
     if (answeredCount < totalQuestions) {
+      const firstUnansweredIdx = questions.findIndex(q => answers[q.id] === undefined);
       SoundService.playError();
-      alert(`ท่านตอบไปแล้ว ${answeredCount} จาก ${totalQuestions} ข้อ กรุณาตอบให้ครบทุกข้อก่อนส่งแบบทดสอบครับ`);
+      alert(`ท่านตอบไปแล้ว ${answeredCount} จาก ${totalQuestions} ข้อ กรุณาตอบให้ครบทุกข้อก่อนส่งแบบทดสอบครับ (ระบบจะพาท่านไปยังข้อที่ยังไม่ได้ตอบ)`);
+      if (firstUnansweredIdx !== -1) {
+        setCurrentIndex(firstUnansweredIdx);
+      }
       return;
     }
 
@@ -94,8 +98,8 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizType, onComplete, onBack
             </h2>
             <p className="text-slate-500 text-sm">
               {quizType === 'pre'
-                ? 'คะแนนพื้นฐานก่อนการพัฒนาภาวะผู้นำดิจิทัล'
-                : 'คะแนนประเมินผลสัมฤทธิ์ทางการเรียนรู้'}
+                ? 'คะแนนพื้นฐานก่อนการพัฒนาภาวะผู้นำดิจิทัล (ครอบคลุม 4 โมดูล)'
+                : 'คะแนนประเมินผลสัมฤทธิ์ทางการเรียนรู้หลังผ่านครบ 4 โมดูล'}
             </p>
           </div>
 
@@ -135,12 +139,12 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizType, onComplete, onBack
               {quizType === 'pre' ? 'แบบทดสอบก่อนเรียน (Pre-test)' : 'แบบทดสอบหลังเรียน (Post-test)'}
             </span>
             <h1 className="text-xl sm:text-2xl font-black text-slate-900">
-              {quizType === 'pre' ? 'วัดระดับความเข้าใจพื้นฐาน 4 มิติ' : 'วัดผลสัมฤทธิ์ทางการเรียนรู้'}
+              {quizType === 'pre' ? 'วัดระดับความเข้าใจพื้นฐานครบทั้ง 4 โมดูล' : 'วัดผลสัมฤทธิ์ทางการเรียนรู้เชิงสถานการณ์ 4 โมดูล'}
             </h1>
             <p className="text-xs text-slate-500 mt-1">
               {quizType === 'pre'
-                ? 'แบบทดสอบเลือกตอบ 10 ข้อ เพื่อประเมินสมรรถนะก่อนเข้ารับการพัฒนา'
-                : 'แบบทดสอบประเมินสมรรถนะปลายทางหลังจากผ่านกิจกรรมครบ 4 โมดูล'}
+                ? `แบบทดสอบปรนัย 4 ตัวเลือก จำนวน ${totalQuestions} ข้อ (โมดูลละ 3 ข้อ ครอบคลุมครบ 10 หน่วยย่อย)`
+                : `แบบทดสอบวิเคราะห์สถานการณ์การบริหาร จำนวน ${totalQuestions} ข้อ หลังจากผ่านกิจกรรมครบ 4 โมดูล`}
             </p>
           </div>
 
@@ -170,15 +174,48 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizType, onComplete, onBack
             style={{ width: `${(answeredCount / totalQuestions) * 100}%` }}
           />
         </div>
+
+        {/* Question Quick Navigator Pills */}
+        <div className="flex flex-wrap items-center gap-1.5 mt-4 pt-4 border-t border-slate-100">
+          {questions.map((q, idx) => {
+            const done = answers[q.id] !== undefined;
+            const active = idx === currentIndex;
+            return (
+              <button
+                key={q.id}
+                type="button"
+                onClick={() => setCurrentIndex(idx)}
+                className={`w-8 h-8 rounded-xl text-xs font-bold transition flex items-center justify-center cursor-pointer ${
+                  active
+                    ? 'bg-slate-900 text-white shadow-xs ring-2 ring-slate-900/20'
+                    : done
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
+                    : 'bg-slate-50 text-slate-500 border border-slate-200 hover:bg-slate-100'
+                }`}
+                title={`ข้อที่ ${idx + 1}`}
+              >
+                {idx + 1}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Question Card */}
-      <div className="bg-white border border-slate-200/80 rounded-[28px] p-6 sm:p-8 shadow-xs space-y-6">
-        {/* Counter and status */}
-        <div className="flex items-center justify-between text-xs font-semibold">
-          <span className="px-3 py-1 rounded-xl bg-slate-100 text-slate-700 font-bold">
-            คำถามข้อที่ {currentIndex + 1} จาก {totalQuestions}
-          </span>
+      <div className="bg-white border border-slate-200/80 rounded-[28px] p-6 sm:p-8 shadow-xs space-y-5">
+        {/* Counter, Module Badge, and Status */}
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-semibold">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="px-3 py-1 rounded-xl bg-slate-900 text-white font-bold">
+              ข้อที่ {currentIndex + 1} / {totalQuestions}
+            </span>
+            {currentQ.module && (
+              <span className="px-3 py-1 rounded-xl bg-indigo-50 text-indigo-800 border border-indigo-200 font-bold flex items-center gap-1.5">
+                <Layers className="w-3.5 h-3.5 text-indigo-600" />
+                {currentQ.module}
+              </span>
+            )}
+          </div>
           {isAnswered ? (
             <span className="text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-xl flex items-center gap-1 font-bold">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
@@ -251,7 +288,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizType, onComplete, onBack
             className="px-6 py-3 rounded-2xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-extrabold text-sm flex items-center gap-2 shadow-lg shadow-teal-600/20 transition cursor-pointer"
           >
             <Send className="w-4 h-4" />
-            <span>ส่งคำตอบทั้งหมด</span>
+            <span>ส่งคำตอบทั้งหมด ({answeredCount}/{totalQuestions})</span>
           </button>
         ) : (
           <button

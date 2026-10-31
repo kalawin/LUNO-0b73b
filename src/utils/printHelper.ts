@@ -1,0 +1,107 @@
+/**
+ * ============================================================================
+ * 🖨️ ระบบช่วยพิมพ์เอกสารและใบงาน (Reliable Print Helper)
+ * ============================================================================
+ * แก้ปัญหาการสั่งพิมพ์แล้วหน้าว่าง หรือถูกตัดขอบจาก Modal / overflow-hidden
+ * โดยสร้าง Iframe สำหรับพิมพ์โดยเฉพาะพร้อมคัดลอกสไตล์ทั้งหมดของระบบ
+ */
+
+export function printElementById(elementId: string, documentTitle?: string): void {
+  const sourceElement = document.getElementById(elementId);
+  if (!sourceElement) {
+    window.print();
+    return;
+  }
+
+  // ลบ iframe พิมพ์เก่าถ้ามีค้างอยู่
+  const existingIframe = document.getElementById('luno-print-iframe');
+  if (existingIframe && existingIframe.parentNode) {
+    existingIframe.parentNode.removeChild(existingIframe);
+  }
+
+  const iframe = document.createElement('iframe');
+  iframe.id = 'luno-print-iframe';
+  iframe.style.position = 'fixed';
+  iframe.style.right = '0';
+  iframe.style.bottom = '0';
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  iframe.style.border = '0';
+  iframe.style.visibility = 'hidden';
+  document.body.appendChild(iframe);
+
+  const iframeDoc = iframe.contentWindow?.document;
+  if (!iframeDoc || !iframe.contentWindow) {
+    window.print();
+    return;
+  }
+
+  // รวบรวม <style> และ <link rel="stylesheet"> ทั้งหมดจากหน้าหลัก
+  const styleNodes = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'));
+  const stylesHtml = styleNodes.map(node => node.outerHTML).join('\n');
+
+  const printTitle = documentTitle || document.title || 'LUNO_Document';
+
+  iframeDoc.open();
+  iframeDoc.write(`
+    <!DOCTYPE html>
+    <html lang="th">
+      <head>
+        <meta charset="UTF-8" />
+        <title>${printTitle}</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        ${stylesHtml}
+        <style>
+          @page {
+            size: A4 portrait;
+            margin: 12mm 14mm;
+          }
+          html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            color: #0f172a !important;
+            font-family: 'Prompt', 'Plus Jakarta Sans', sans-serif !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            height: auto !important;
+            overflow: visible !important;
+          }
+          body * {
+            visibility: visible !important;
+          }
+          #printable-artifact, #certificate-printable {
+            position: static !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 4px !important;
+            box-shadow: none !important;
+            overflow: visible !important;
+          }
+          .print-avoid-break, .rounded-2xl, .rounded-xl, .page-break-avoid {
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+          }
+        </style>
+      </head>
+      <body>
+        ${sourceElement.outerHTML}
+      </body>
+    </html>
+  `);
+  iframeDoc.close();
+
+  // รอให้ฟอนต์และ CSS โหลดเสร็จก่อนสั่งพิมพ์
+  setTimeout(() => {
+    try {
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+    } catch {
+      window.print();
+    }
+  }, 350);
+}
+

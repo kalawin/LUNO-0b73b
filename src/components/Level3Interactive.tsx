@@ -26,6 +26,8 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
   const [profile] = useState<UserProfile | null>(() => ApiService.getLocalProfile());
   const [activeUnitId, setActiveUnitId] = useState<'3.1' | '3.2'>('3.1');
   const [showCurriculumModal, setShowCurriculumModal] = useState(false);
+  const [showGuidance3_1, setShowGuidance3_1] = useState(false);
+  const [showGuidance3_2, setShowGuidance3_2] = useState(false);
 
   const [submissions, setSubmissions] = useState<Record<string, UnitSubmission>>(() => {
     const prog = ApiService.getLocalProgress();
@@ -197,7 +199,13 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
             'บันทึกช่อง3_จริยธรรมดิจิทัลและวิธีแก้': form3_1.journalEthics,
             'แผนถ่ายทอดให้ทีม10นาที': form3_1.microTeachingPlan
           }}
-          isStep4Valid={!!form3_1.toolAndGoal.trim() && !!form3_1.journalAction.trim() && !!form3_1.journalEthics.trim()}
+          isStep4Valid={
+            !!form3_1.toolAndGoal.trim() &&
+            !!form3_1.journalAction.trim() &&
+            !!form3_1.journalObstacle.trim() &&
+            !!form3_1.journalEthics.trim() &&
+            !!form3_1.microTeachingPlan.trim()
+          }
           onSubmitUnit={handleUnitSubmit}
           onNextUnit={() => setActiveUnitId('3.2')}
           onBackToDashboard={onBackToDashboard}
@@ -213,37 +221,44 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   </span>
                 </div>
 
+                {/* Collapsible Example Guidance */}
+                <div className="border border-rose-200/90 rounded-2xl overflow-hidden bg-rose-50/50">
+                  <button
+                    type="button"
+                    onClick={() => setShowGuidance3_1(!showGuidance3_1)}
+                    className="w-full p-3.5 flex items-center justify-between text-left text-xs sm:text-sm font-bold text-rose-900 hover:bg-rose-100/60 transition cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-rose-600" />
+                      💡 ดูแนวทางการเขียน Micro-journal ของผู้นำต้นแบบ (คลิกเพื่อดูแนวคิด)
+                    </span>
+                    <span className="text-xs text-rose-700 underline font-semibold">
+                      {showGuidance3_1 ? 'ซ่อนแนวทาง' : 'เปิดดูแนวทาง'}
+                    </span>
+                  </button>
+                  {showGuidance3_1 && (
+                    <div className="p-4 bg-white border-t border-rose-200 text-xs space-y-1.5 text-slate-700 leading-relaxed">
+                      <p><strong>ตัวอย่างเครื่องมือและเป้าหมาย:</strong> ใช้ Canva ออกแบบป้ายประกาศประชุมผู้ปกครองให้เสร็จใน 15 นาที</p>
+                      <p><strong>ช่องที่ 1 (ผลลัพธ์):</strong> ทดลองเลือกแม่แบบประกาศโรงเรียนและใส่โลโก้สำเร็จ ได้ไฟล์ภาพส่งไลน์กลุ่มครูทันที</p>
+                      <p><strong>ช่องที่ 2 (อุปสรรค):</strong> ช่วงแรกหาฟอนต์ภาษาไทยที่อ่านง่ายไม่เจอ จึงตั้งค่าฟอนต์มาตรฐานไว้ใช้ครั้งต่อไป</p>
+                      <p><strong>ช่องที่ 3 (จริยธรรม):</strong> ตรวจสอบภาพประกอบว่าเป็นภาพฟรีปลอดลิขสิทธิ์ และไม่เปิดเผยข้อมูลส่วนบุคคล (PDPA) ของนักเรียน</p>
+                      <p><strong>แผนถ่ายทอด 10 นาที:</strong> ช่วงเปิดประชุมครูวันศุกร์ สาธิตวิธีแชร์ลิงก์แม่แบบ Canva ให้ครูประจำชั้นลองแก้ไขข้อความเอง</p>
+                    </div>
+                  )}
+                </div>
+
                 {/* Field 1: Tool & Goal */}
                 <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-rose-600" /> เครื่องมือดิจิทัลที่เลือก + เป้าหมายการใช้งาน 1 ข้อ:
-                    </label>
-                    <span className="text-[11px] text-slate-400 font-medium">คลิกข้อความด้านล่างเพื่อเลือกแบบด่วน</span>
-                  </div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    1. เครื่องมือดิจิทัลที่เลือก + เป้าหมายการใช้งาน 1 ข้อ:
+                  </label>
                   <input
                     type="text"
                     value={form3_1.toolAndGoal}
+                    placeholder="เช่น ใช้ Google Sheets สร้างตารางสรุปสถิติการมาเรียนรายวันอัตโนมัติ"
                     onChange={(e) => setForm3_1({ ...form3_1, toolAndGoal: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200/50"
                   />
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {[
-                      'Canva: ทำป้ายประกาศประชุมผู้ปกครองให้เสร็จใน 15 นาที',
-                      'Google Sheets: สร้างตารางเช็คชื่อนักเรียนออนไลน์ที่สรุปยอดอัตโนมัติ',
-                      'ChatGPT / Gemini: ช่วยร่างหนังสือราชการขอความอนุเคราะห์วิทยากร',
-                      'Padlet: สร้างกระดานระดมความคิดเห็นของคุณครูในการพัฒนาโรงเรียน'
-                    ].map((example, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => setForm3_1({ ...form3_1, toolAndGoal: example })}
-                        className="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-rose-100 text-slate-700 hover:text-rose-900 border border-slate-200 transition"
-                      >
-                        {example.split(':')[0]}
-                      </button>
-                    ))}
-                  </div>
                 </div>
 
                 {/* 3-Column Micro-journal Cards */}
@@ -260,6 +275,7 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <textarea
                       rows={3}
                       value={form3_1.journalAction}
+                      placeholder="ระบุสิ่งที่ท่านได้ลงมือทดลองทำจริงและผลลัพธ์ที่ได้..."
                       onChange={(e) => setForm3_1({ ...form3_1, journalAction: e.target.value })}
                       className="w-full bg-white border border-emerald-300 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-200"
                     />
@@ -277,6 +293,7 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <textarea
                       rows={3}
                       value={form3_1.journalObstacle}
+                      placeholder="ระบุจุดที่ติดขัดในการใช้งานและแนวทางแก้ไข..."
                       onChange={(e) => setForm3_1({ ...form3_1, journalObstacle: e.target.value })}
                       className="w-full bg-white border border-amber-300 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-200"
                     />
@@ -294,6 +311,7 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <textarea
                       rows={3}
                       value={form3_1.journalEthics}
+                      placeholder="ระบุประเด็นลิขสิทธิ์ ความปลอดภัย หรือ PDPA และการป้องกัน..."
                       onChange={(e) => setForm3_1({ ...form3_1, journalEthics: e.target.value })}
                       className="w-full bg-white border border-blue-300 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-200"
                     />
@@ -302,33 +320,16 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
 
                 {/* Field 3: Micro-teaching Plan */}
                 <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5 text-rose-600" /> แผนถ่ายทอดให้ทีม 10 นาที (เวลา, กลุ่มเป้าหมาย, สิ่งที่จะสาธิต):
-                    </label>
-                  </div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-rose-600" /> 2. แผนถ่ายทอดให้ทีม 10 นาที (เวลา, กลุ่มเป้าหมาย, สิ่งที่จะสาธิต):
+                  </label>
                   <input
                     type="text"
                     value={form3_1.microTeachingPlan}
+                    placeholder="เช่น ช่วงพักเที่ยงวันพุธ (10 นาที) สาธิตวิธีกรอกข้อมูลใน Google Sheets บนมือถือให้ครูประจำชั้น 6 คน"
                     onChange={(e) => setForm3_1({ ...form3_1, microTeachingPlan: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200/50"
                   />
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {[
-                      'ที่ประชุมครูวันศุกร์ (10 นาที): สาธิตการเลือกแม่แบบ Canva และเปลี่ยนข้อความเป็นภาษาไทยให้ครู 5 คนดู',
-                      'ช่วงพักเที่ยงห้องพักครู: สอนครูประจำชั้นกรอกคะแนนใน Google Sheets แบบออนไลน์ไม่ต้องรอส่งแฟลชไดรฟ์',
-                      'ก่อนเริ่มประชุมสัปดาห์หน้า: เปิดคลิปสั้น 3 นาทีวิธีบันทึกเสียงเป็นข้อความด้วย Google Voice Typing'
-                    ].map((example, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => setForm3_1({ ...form3_1, microTeachingPlan: example })}
-                        className="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-rose-100 text-slate-700 hover:text-rose-900 border border-slate-200 transition"
-                      >
-                        ตัวอย่าง {i + 1}
-                      </button>
-                    ))}
-                  </div>
                 </div>
               </div>
             </div>
@@ -348,7 +349,12 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
             'เสาหลัก2_การแบ่งปันไฟล์': form3_2.driveWorkflow,
             'เสาหลัก3_การติดตามงาน': form3_2.trackingWorkflow
           }}
-          isStep4Valid={!!form3_2.teamTask.trim() && !!form3_2.driveWorkflow.trim()}
+          isStep4Valid={
+            !!form3_2.teamTask.trim() &&
+            !!form3_2.commWorkflow.trim() &&
+            !!form3_2.driveWorkflow.trim() &&
+            !!form3_2.trackingWorkflow.trim()
+          }
           onSubmitUnit={handleUnitSubmit}
           onBackToDashboard={onBackToDashboard}
           childrenStep4={
@@ -363,35 +369,43 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   </span>
                 </div>
 
+                {/* Collapsible Example Guidance */}
+                <div className="border border-rose-200/90 rounded-2xl overflow-hidden bg-rose-50/50">
+                  <button
+                    type="button"
+                    onClick={() => setShowGuidance3_2(!showGuidance3_2)}
+                    className="w-full p-3.5 flex items-center justify-between text-left text-xs sm:text-sm font-bold text-rose-900 hover:bg-rose-100/60 transition cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-rose-600" />
+                      💡 ดูแนวทางการวางผังงานทีม 3 เสาหลัก (คลิกเพื่อดูแนวคิด)
+                    </span>
+                    <span className="text-xs text-rose-700 underline font-semibold">
+                      {showGuidance3_2 ? 'ซ่อนแนวทาง' : 'เปิดดูแนวทาง'}
+                    </span>
+                  </button>
+                  {showGuidance3_2 && (
+                    <div className="p-4 bg-white border-t border-rose-200 text-xs space-y-1.5 text-slate-700 leading-relaxed">
+                      <p><strong>ชื่องานและบทบาท:</strong> การจัดทำรายงานประเมินตนเอง (SAR) — ผอ. กำกับภาพรวม / หัวหน้าวิชาการดูแลโฟลเดอร์กลาง / ครูประจำชั้นกรอกข้อมูล</p>
+                      <p><strong>เสาหลัก 1 (การสื่อสาร):</strong> แจ้งโจทย์และลิงก์ผ่าน LINE กลุ่มวิชาการ พร้อมปักหมุดประกาศทุกวันจันทร์</p>
+                      <p><strong>เสาหลัก 2 (ไฟล์กลางบน Cloud):</strong> สร้างโฟลเดอร์ Google Drive แยกตามมาตรฐาน ตั้งชื่อไฟล์ YYYYMMDD_ชื่อเรื่อง_v1 กำหนดสิทธิ์ครูเป็น Editor</p>
+                      <p><strong>เสาหลัก 3 (การติดตามงาน):</strong> ใช้ตาราง Checklist ใน Google Sheets แสดงสถานะสีเขียวเมื่อส่งแล้ว และทบทวนทุกวันศุกร์เวลา 15.30 น.</p>
+                    </div>
+                  )}
+                </div>
+
                 {/* Team Task */}
                 <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                      <Users className="w-3.5 h-3.5 text-rose-600" /> 1. งานทีมจริง 1 เรื่อง พร้อมบทบาทสมาชิก:
-                    </label>
-                  </div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                    <Users className="w-3.5 h-3.5 text-rose-600" /> 1. งานทีมจริง 1 เรื่อง พร้อมบทบาทสมาชิก:
+                  </label>
                   <input
                     type="text"
                     value={form3_2.teamTask}
+                    placeholder="เช่น การจัดทำรายงาน SAR: ผอ. กำกับภาพรวม / ครูวิชาการ ดูแลไฟล์กลาง / ครูประจำชั้น ส่งข้อมูลผลสัมฤทธิ์"
                     onChange={(e) => setForm3_2({ ...form3_2, teamTask: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200/50"
                   />
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {[
-                      'การจัดทำรายงาน SAR: ผอ. ดูภาพรวม / ครูวิชาการ รวบรวมไฟล์กลาง / ครูประจำชั้น ส่งผลสัมฤทธิ์',
-                      'การจัดงานวันวิชาการ/Open House: ครูแกนนำ จัดตารางกิจกรรม / ครูธุรการ ทำงบประมาณ / ผอ. ตรวจสอบ',
-                      'การจัดสอบปลายภาค: หัวหน้าฝ่ายวัดผล จัดตารางสอบ / ครูประจำวิชา ส่งข้อสอบเข้าไดรฟ์กลาง'
-                    ].map((example, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => setForm3_2({ ...form3_2, teamTask: example })}
-                        className="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 hover:bg-rose-100 text-slate-700 hover:text-rose-900 border border-slate-200 transition"
-                      >
-                        {example.split(':')[0]}
-                      </button>
-                    ))}
-                  </div>
                 </div>
 
                 {/* 3 Pillars */}
@@ -404,6 +418,7 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form3_2.commWorkflow}
+                      placeholder="เช่น หัวหน้าวิชาการแจ้งลิงก์และกำหนดการผ่าน LINE กลุ่มครู พร้อมปักหมุดไว้ทุกต้นสัปดาห์"
                       onChange={(e) => setForm3_2({ ...form3_2, commWorkflow: e.target.value })}
                       className="w-full bg-white border border-emerald-300 rounded-xl px-4 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-200"
                     />
@@ -417,6 +432,7 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <textarea
                       rows={2}
                       value={form3_2.driveWorkflow}
+                      placeholder="เช่น ใช้ Google Drive แยกโฟลเดอร์ตามฝ่าย ตั้งชื่อไฟล์ ปีเดือนวัน_ชื่องาน_v1 กำหนดสิทธิ์ Editor เฉพาะผู้รับผิดชอบ"
                       onChange={(e) => setForm3_2({ ...form3_2, driveWorkflow: e.target.value })}
                       className="w-full bg-white border border-blue-300 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-200"
                     />
@@ -430,6 +446,7 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form3_2.trackingWorkflow}
+                      placeholder="เช่น ติดตามผ่านตาราง Checklist ใน Google Sheets และแจ้งเตือนใน Google Calendar ก่อนกำหนดส่ง 3 วัน"
                       onChange={(e) => setForm3_2({ ...form3_2, trackingWorkflow: e.target.value })}
                       className="w-full bg-white border border-amber-300 rounded-xl px-4 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-200"
                     />
