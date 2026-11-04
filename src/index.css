@@ -43,11 +43,11 @@
   background: #94a3b8;
 }
 
-/* Print styling for 1-page artifact & certificate */
+/* Print styling for 1-page A4 artifact & A4 certificate */
 @media print {
   @page {
-    size: A4 portrait;
-    margin: 12mm 14mm;
+    size: A4;
+    margin: 10mm 12mm;
   }
   
   html, body, #root, main, div {
@@ -65,15 +65,28 @@
     display: none !important;
   }
 
-  #printable-artifact,
-  #certificate-printable {
+  #printable-artifact {
     position: static !important;
     width: 100% !important;
-    max-width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    max-width: 186mm !important;
+    min-height: 273mm !important;
+    padding: 4mm 6mm !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
     box-shadow: none !important;
     overflow: visible !important;
+  }
+
+  #certificate-printable {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 277mm !important;
+    min-height: 190mm !important;
+    padding: 12mm 16mm !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
   }
 
   /* ป้องกันการตัดขาดหน้าเอกสาร */

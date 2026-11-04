@@ -6,7 +6,11 @@
  * โดยสร้าง Iframe สำหรับพิมพ์โดยเฉพาะพร้อมคัดลอกสไตล์ทั้งหมดของระบบ
  */
 
-export function printElementById(elementId: string, documentTitle?: string): void {
+export function printElementById(
+  elementId: string,
+  documentTitle?: string,
+  orientation: 'portrait' | 'landscape' = 'portrait'
+): void {
   const sourceElement = document.getElementById(elementId);
   if (!sourceElement) {
     window.print();
@@ -41,6 +45,7 @@ export function printElementById(elementId: string, documentTitle?: string): voi
   const stylesHtml = styleNodes.map(node => node.outerHTML).join('\n');
 
   const printTitle = documentTitle || document.title || 'LUNO_Document';
+  const pageMargin = orientation === 'landscape' ? '8mm 10mm' : '10mm 12mm';
 
   iframeDoc.open();
   iframeDoc.write(`
@@ -55,8 +60,8 @@ export function printElementById(elementId: string, documentTitle?: string): voi
         ${stylesHtml}
         <style>
           @page {
-            size: A4 portrait;
-            margin: 12mm 14mm;
+            size: A4 ${orientation};
+            margin: ${pageMargin};
           }
           html, body {
             margin: 0 !important;
@@ -66,20 +71,45 @@ export function printElementById(elementId: string, documentTitle?: string): voi
             font-family: 'Prompt', 'Plus Jakarta Sans', sans-serif !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
+            width: 100% !important;
             height: auto !important;
             overflow: visible !important;
           }
           body * {
             visibility: visible !important;
           }
-          #printable-artifact, #certificate-printable {
+          #printable-artifact {
             position: static !important;
             width: 100% !important;
-            max-width: 100% !important;
-            margin: 0 !important;
-            padding: 4px !important;
+            max-width: 186mm !important;
+            min-height: 273mm !important;
+            margin: 0 auto !important;
+            padding: 6mm 8mm !important;
+            box-sizing: border-box !important;
             box-shadow: none !important;
+            border: none !important;
             overflow: visible !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+          }
+          #certificate-printable {
+            position: relative !important;
+            width: 277mm !important;
+            max-width: 100% !important;
+            height: 192mm !important;
+            min-height: 192mm !important;
+            max-height: 192mm !important;
+            margin: 0 auto !important;
+            padding: 12mm 16mm !important;
+            box-sizing: border-box !important;
+            box-shadow: none !important;
+            overflow: hidden !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            page-break-after: avoid !important;
+            break-inside: avoid !important;
           }
           .print-avoid-break, .rounded-2xl, .rounded-xl, .page-break-avoid {
             break-inside: avoid !important;

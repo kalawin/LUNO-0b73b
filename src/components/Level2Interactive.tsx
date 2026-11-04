@@ -278,7 +278,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   >
                     <span className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-indigo-600" />
-                      💡 ดูแนวทางการเขียนแผนโค้ชครู 3 ครั้ง (คลิกเพื่อศึกษาแนวทาง)
+                      💡 ดูแนวทางการตอบแผนโค้ชครู 3 ครั้ง (คลิกเพื่อดูโครงสร้างการตอบ)
                     </span>
                     <span className="text-xs text-indigo-700 underline font-semibold">
                       {showSample2_1 ? 'ซ่อนแนวทาง' : 'เปิดดูแนวทาง'}
@@ -286,12 +286,16 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   </button>
                   {showSample2_1 && (
                     <div className="p-4 bg-white border-t border-indigo-200 text-xs sm:text-sm space-y-1.5 text-slate-700 leading-relaxed">
-                      <p><strong>• ครูเป้าหมายและปัญหา:</strong> ครูประจำชั้น ป.2 สอนควบชั้น ป.3 นักเรียนอ่านสะกดคำไม่คล่อง และครูไม่มีเวลาทำบัตรคำกระดาษ</p>
-                      <p><strong>• เครื่องมือที่เลือก:</strong> Canva for Education และคลังสื่อ DLTV เพราะมีเทมเพลตบัตรคำและคลิปการสอนพร้อมใช้</p>
-                      <p><strong>• ครั้งที่ 1 (ชวนคุย-สาธิต):</strong> พูดคุยรับฟังปัญหาการสอนอ่าน และเปิดตัวอย่างเทมเพลตบัตรคำใน Canva ให้ครูดู</p>
-                      <p><strong>• ครั้งที่ 2 (ร่วมออกแบบ):</strong> นั่งข้างๆ ช่วยครูสร้างชุดบัตรคำศัพท์ภาษาไทยและวางแผนใช้สอนในคาบเรียนวันพุธ</p>
-                      <p><strong>• ครั้งที่ 3 (สังเกต-ชื่นชม):</strong> ร่วมเข้าสังเกตชั้นเรียนดูการมีส่วนร่วมของเด็ก และกล่าวชื่นชมให้กำลังใจครูในที่ประชุม</p>
-                      <p><strong>• การหนุนเสริมของผู้บริหาร:</strong> สนับสนุนอินเทอร์เน็ต สายเชื่อมต่อทีวี และลดภาระงานเอกสารที่ไม่จำเป็น</p>
+                      <p className="font-bold text-indigo-900">โครงสร้างและแนวทางการเขียนคำตอบด้วยตนเอง:</p>
+                      <p><strong>• ครูเป้าหมายและปัญหา:</strong> ระบุระดับชั้น/วิชาที่ครูสอน และอุปสรรคในการจัดการเรียนรู้ที่ต้องการช่วยเหลือ</p>
+                      <p><strong>• เครื่องมือที่เลือก:</strong> ระบุชื่อเครื่องมือดิจิทัลหรือสื่อเปิด (OER) ที่เลือกใช้ พร้อมเหตุผลว่าช่วยลดภาระครูได้อย่างไร</p>
+                      <p><strong>• ครั้งที่ 1 (ชวนคุย-สาธิต):</strong> อธิบายแนวทางการพูดคุยรับฟังปัญหาและการเปิดตัวอย่างสื่อ/เครื่องมือให้ครูดู</p>
+                      <p><strong>• ครั้งที่ 2 (ร่วมออกแบบ):</strong> อธิบายการนั่งข้างๆ ร่วมกับครูเพื่อช่วยออกแบบสื่อหรือแผนการสอนสำหรับใช้จริง 1 คาบ</p>
+                      <p><strong>• ครั้งที่ 3 (สังเกต-ชื่นชม):</strong> อธิบายการเข้าเยี่ยมชั้นเรียนแบบกัลยาณมิตรและการกล่าวชื่นชมให้กำลังใจครู</p>
+                      <p><strong>• การหนุนเสริมของผู้บริหาร:</strong> ระบุการสนับสนุนด้านเวลา อุปกรณ์ เครือข่ายอินเทอร์เน็ต หรือการลดงานเอกสาร</p>
+                      <p className="text-[11px] text-rose-600 font-semibold pt-1">
+                        *ห้ามคัดลอกข้อความจากแนวทางหรือตัวอย่างต้นแบบมาส่ง ระบบจะตรวจจับและไม่อนุมัติให้ผ่านเกณฑ์
+                      </p>
                     </div>
                   )}
                 </div>
@@ -303,7 +307,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                       type="text"
                       value={form2_1.teacherTarget}
                       onChange={(e) => setForm2_1({ ...form2_1, teacherTarget: e.target.value })}
-                      placeholder="เช่น ครูประจำชั้น ป.2 สอนควบ ป.3 นักเรียนอ่านไม่คล่องและไม่มีเวลาทำสื่อ"
+                      placeholder="ระบุระดับชั้น/วิชาของครู และสภาพปัญหาในการจัดการเรียนรู้..."
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900"
                     />
                   </div>
@@ -313,7 +317,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                       type="text"
                       value={form2_1.toolSelected}
                       onChange={(e) => setForm2_1({ ...form2_1, toolSelected: e.target.value })}
-                      placeholder="เช่น Canva for Education / DLTV เพราะมีสื่อสำเร็จรูปช่วยลดเวลาเตรียมสอน"
+                      placeholder="ระบุชื่อเครื่องมือดิจิทัลที่เลือกใช้ พร้อมเหตุผลที่ช่วยแก้ปัญหาของครู..."
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900"
                     />
                   </div>
@@ -326,7 +330,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                       type="text"
                       value={form2_1.coachSession1}
                       onChange={(e) => setForm2_1({ ...form2_1, coachSession1: e.target.value })}
-                      placeholder="เช่น ชวนครูคุยเรื่องปัญหาการสอนและสาธิตวิธีใช้แม่แบบสื่อสำเร็จรูปให้ดู 15 นาที"
+                      placeholder="ระบุแนวทางการพูดคุยรับฟังปัญหา และการสาธิตตัวอย่างเครื่องมือให้ครูดู..."
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900"
                     />
                   </div>
@@ -336,7 +340,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                       type="text"
                       value={form2_1.coachSession2}
                       onChange={(e) => setForm2_1({ ...form2_1, coachSession2: e.target.value })}
-                      placeholder="เช่น นั่งข้างครูช่วยกันปรับแก้สื่อและออกแบบกิจกรรมการสอนสำหรับใช้จริง 1 คาบ"
+                      placeholder="ระบุแนวทางการร่วมออกแบบสื่อหรือแผนการจัดการเรียนรู้ 1 คาบร่วมกับครู..."
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900"
                     />
                   </div>
@@ -346,7 +350,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                       type="text"
                       value={form2_1.coachSession3}
                       onChange={(e) => setForm2_1({ ...form2_1, coachSession3: e.target.value })}
-                      placeholder="เช่น เข้าเยี่ยมชั้นเรียนด้วยความเป็นกัลยาณมิตรและกล่าวชื่นชมความสำเร็จของครูในที่ประชุม"
+                      placeholder="ระบุแนวทางการเข้าสังเกตชั้นเรียนและการสะท้อนผลเชิงบวก/ชื่นชมครู..."
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900"
                     />
                   </div>
@@ -358,7 +362,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     type="text"
                     value={form2_1.adminSupport}
                     onChange={(e) => setForm2_1({ ...form2_1, adminSupport: e.target.value })}
-                    placeholder="เช่น จัดเตรียมสายเชื่อมต่อทีวี ดูแลสัญญาณอินเทอร์เน็ต และลดงานเอกสารให้ครูมีเวลาเตรียมสอน"
+                    placeholder="ระบุสิ่งที่ผู้บริหารจะอำนวยความสะดวกและสนับสนุนแก่ครู..."
                     className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900"
                   />
                 </div>
@@ -409,7 +413,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   >
                     <span className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-indigo-600" />
-                      💡 ดูแนวทางการประเมินและการเขียนแผน Quick Wins 3 ลำดับ (คลิกเพื่อศึกษาแนวทาง)
+                      💡 ดูแนวทางการตอบประเมินสภาพแวดล้อมและ Quick Wins (คลิกเพื่อดูโครงสร้างการตอบ)
                     </span>
                     <span className="text-xs text-indigo-700 underline font-semibold">
                       {showSample2_2 ? 'ซ่อนแนวทาง' : 'เปิดดูแนวทาง'}
@@ -417,10 +421,14 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   </button>
                   {showSample2_2 && (
                     <div className="p-4 bg-white border-t border-indigo-200 text-xs sm:text-sm space-y-1.5 text-slate-700 leading-relaxed">
-                      <p><strong>• การประเมิน 3 ด้าน:</strong> ระบุสภาพจริง เช่น (1) ฮาร์ดแวร์: มีทีวีครบห้องแต่สาย HDMI ชำรุด 2 ห้อง (2) เครือข่าย: สัญญาณ Wi-Fi ไปไม่ถึงตึกประถมปลาย (3) แหล่งเรียนรู้: มีการเปิดสื่อ DLTV แต่ยังไม่ได้จัดตารางใช้ห้องคอมพ์</p>
-                      <p><strong>• Quick Win อันดับ 1:</strong> ย้ายจุดวางเราเตอร์หรือเดินสายแลนเพิ่มจุดกระจายสัญญาณ Wi-Fi อาคารประถมปลายภายในสัปดาห์นี้</p>
-                      <p><strong>• Quick Win อันดับ 2:</strong> ซ่อมบำรุงปลั๊กไฟและจัดซื้อสาย HDMI ใหม่ประจำห้องเรียนให้พร้อมใช้งานทันที</p>
-                      <p><strong>• Quick Win อันดับ 3:</strong> จัดตารางหมุนเวียนการใช้คอมพิวเตอร์ห้องสมุด และแนะนำครูดาวน์โหลดคลิป DLTV เก็บไว้เปิดแบบออฟไลน์</p>
+                      <p className="font-bold text-indigo-900">โครงสร้างและแนวทางการเขียนคำตอบด้วยตนเอง:</p>
+                      <p><strong>• การประเมินสภาพจริง 3 ด้าน:</strong> ระบุระดับความพร้อม (ดี/พอใช้/ต้องปรับปรุง) พร้อมอธิบายสภาพปัจจุบันและจุดที่เป็นปัญหาในโรงเรียนของท่านทั้งด้านฮาร์ดแวร์ เครือข่ายอินเทอร์เน็ต และแหล่งเรียนรู้</p>
+                      <p><strong>• Quick Win อันดับ 1:</strong> ระบุวิธีแก้ปัญหาคอขวดเร่งด่วนที่สุดที่ทำได้ทันทีภายใต้งบจำกัด พร้อมกรอบเวลา</p>
+                      <p><strong>• Quick Win อันดับ 2:</strong> ระบุการซ่อมบำรุงหรือจัดระบบอุปกรณ์เชื่อมต่อในชั้นเรียนให้พร้อมใช้งาน</p>
+                      <p><strong>• Quick Win อันดับ 3:</strong> ระบุการจัดตารางหมุนเวียนใช้ทรัพยากรร่วมกันหรือการสำรองสื่อออฟไลน์</p>
+                      <p className="text-[11px] text-rose-600 font-semibold pt-1">
+                        *ห้ามคัดลอกข้อความจากแนวทางหรือตัวอย่างต้นแบบมาส่ง ระบบจะตรวจจับและไม่อนุมัติให้ผ่านเกณฑ์
+                      </p>
                     </div>
                   )}
                 </div>
@@ -432,7 +440,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                       type="text"
                       value={form2_2.hwScore}
                       onChange={(e) => setForm2_2({ ...form2_2, hwScore: e.target.value })}
-                      placeholder="เช่น พอใช้ มีทีวีทุกห้องและคอมพิวเตอร์ 8 เครื่อง แต่สายเชื่อมต่อชำรุดบางจุด"
+                      placeholder="ระบุสภาพความพร้อมของคอมพิวเตอร์ ทีวี และจุดชำรุดในโรงเรียนท่าน..."
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900"
                     />
                   </div>
@@ -442,7 +450,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                       type="text"
                       value={form2_2.netScore}
                       onChange={(e) => setForm2_2({ ...form2_2, netScore: e.target.value })}
-                      placeholder="เช่น ต้องปรับปรุง สัญญาณ Wi-Fi หลุดบ่อยและไปไม่ถึงห้องเรียนชั้น ป.4-6"
+                      placeholder="ระบุความเสถียรของสัญญาณอินเทอร์เน็ต และจุดอับสัญญาณ..."
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900"
                     />
                   </div>
@@ -452,7 +460,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                       type="text"
                       value={form2_2.spaceScore}
                       onChange={(e) => setForm2_2({ ...form2_2, spaceScore: e.target.value })}
-                      placeholder="เช่น ดี มีการเปิดสื่อ DLTV ประจำ แต่ยังขาดตารางหมุนเวียนใช้เครื่องสืบค้น"
+                      placeholder="ระบุสภาพการใช้สื่อ DLTV ห้องสมุด หรือมุมสืบค้นในโรงเรียน..."
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900"
                     />
                   </div>
@@ -468,7 +476,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                       type="text"
                       value={form2_2.quickWin1}
                       onChange={(e) => setForm2_2({ ...form2_2, quickWin1: e.target.value })}
-                      placeholder="เช่น เดินสายแลนและเพิ่มจุดกระจายสัญญาณ Wi-Fi กึ่งกลางอาคารเรียนภายในสัปดาห์นี้"
+                      placeholder="ระบุแผนปฏิบัติการเร่งด่วนลำดับที่ 1 วิธีดำเนินการ และกรอบเวลา..."
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900"
                     />
                   </div>
@@ -478,7 +486,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                       type="text"
                       value={form2_2.quickWin2}
                       onChange={(e) => setForm2_2({ ...form2_2, quickWin2: e.target.value })}
-                      placeholder="เช่น ตรวจเช็คปลั๊กพ่วงและเปลี่ยนสาย HDMI ที่ชำรุดในห้องเรียนให้พร้อมเชื่อมต่อทันที"
+                      placeholder="ระบุแผนปฏิบัติการเร่งด่วนลำดับที่ 2 ที่แตกต่างจากข้อแรก..."
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900"
                     />
                   </div>
@@ -488,7 +496,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                       type="text"
                       value={form2_2.quickWin3}
                       onChange={(e) => setForm2_2({ ...form2_2, quickWin3: e.target.value })}
-                      placeholder="เช่น จัดตารางหมุนเวียนใช้คอมพิวเตอร์ห้องสมุด และทำคลังโหลดคลิป DLTV ไว้ใช้ตอนเน็ตหลุด"
+                      placeholder="ระบุแผนปฏิบัติการเร่งด่วนลำดับที่ 3 เพื่อการใช้ทรัพยากรอย่างคุ้มค่า..."
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900"
                     />
                   </div>
@@ -535,7 +543,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   >
                     <span className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-indigo-600" />
-                      💡 ดูแนวทางการร่างข้อคำถามดิจิทัลและการตัดสินใจเชิงบริหาร (คลิกเพื่อศึกษาแนวทาง)
+                      💡 ดูแนวทางการตอบแบบสำรวจและการตัดสินใจเชิงบริหาร (คลิกเพื่อดูโครงสร้างการตอบ)
                     </span>
                     <span className="text-xs text-indigo-700 underline font-semibold">
                       {showSample2_3 ? 'ซ่อนแนวทาง' : 'เปิดดูแนวทาง'}
@@ -543,15 +551,14 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   </button>
                   {showSample2_3 && (
                     <div className="p-4 bg-white border-t border-indigo-200 text-xs sm:text-sm space-y-1.5 text-slate-700 leading-relaxed">
-                      <p><strong>• หัวข้อแบบสำรวจ:</strong> แบบสำรวจปัญหาการอ่านออกเขียนได้และความต้องการสื่อเสริมที่บ้าน</p>
-                      <p><strong>• กลุ่มผู้ตอบ:</strong> ครูประจำชั้น ป.1-ป.6 และผู้ปกครองนักเรียน</p>
-                      <p><strong>• ตัวอย่างรายการข้อคำถาม (อย่างน้อย 3-5 ข้อ):</strong><br/>
-                        1. ระดับชั้นของนักเรียน (ตัวเลือก)<br/>
-                        2. ความคล่องแคล่วในการอ่านสะกดคำของนักเรียนอยู่ในระดับใด (มาตรวัด 1-5)<br/>
-                        3. ความสม่ำเสมอในการทบทวนบทเรียนที่บ้านผ่านสื่อดิจิทัล (มาตรวัด 1-5)<br/>
-                        4. ปัญหาหรือข้อเสนอแนะที่ต้องการให้โรงเรียนสนับสนุนเพิ่มเติม (ปลายเปิด)
+                      <p className="font-bold text-indigo-900">โครงสร้างและแนวทางการเขียนคำตอบด้วยตนเอง:</p>
+                      <p><strong>• หัวข้อแบบสำรวจ:</strong> ตั้งชื่อแบบสำรวจออนไลน์ที่ต้องการเก็บข้อมูลเพื่อพัฒนาผู้เรียนหรือการบริหาร</p>
+                      <p><strong>• กลุ่มผู้ตอบ:</strong> ระบุกลุ่มเป้าหมายที่จะเป็นผู้กรอกข้อมูล (เช่น ครูประจำชั้น นักเรียน หรือผู้ปกครอง)</p>
+                      <p><strong>• รายการข้อคำถาม:</strong> เขียนข้อคำถามเรียงลำดับ 1, 2, 3... อย่างน้อย 3–5 ข้อ โดยผสมผสานคำถามแบบตัวเลือก คำถามมาตรวัด 1–5 และคำถามปลายเปิด</p>
+                      <p><strong>• การตัดสินใจเชิงบริหาร:</strong> สมมติผลข้อมูลที่คาดว่าจะพบ (เช่น ร้อยละของผู้ตอบที่พบปัญหาในประเด็นใดประเด็นหนึ่ง) แล้วระบุว่าผู้บริหารจะสั่งการหรือจัดกิจกรรมแก้ไขอย่างไร</p>
+                      <p className="text-[11px] text-rose-600 font-semibold pt-1">
+                        *ห้ามคัดลอกข้อความจากแนวทางหรือตัวอย่างต้นแบบมาส่ง ระบบจะตรวจจับและไม่อนุมัติให้ผ่านเกณฑ์
                       </p>
-                      <p><strong>• การตัดสินใจเชิงบริหาร:</strong> หากพบว่านักเรียนชั้น ป.1-2 ร้อยละ 40 ยังอ่านคำควบกล้ำไม่คล่อง ผู้บริหารจะตัดสินใจจัดตารางซ่อมเสริม 15 นาทีหลังเลิกเรียนและส่งชุดบัตรคำดิจิทัลให้ผู้ปกครองผ่านกลุ่มไลน์</p>
                     </div>
                   )}
                 </div>
@@ -563,7 +570,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                       type="text"
                       value={form2_3.surveyTopic}
                       onChange={(e) => setForm2_3({ ...form2_3, surveyTopic: e.target.value })}
-                      placeholder="เช่น แบบสำรวจภาวะการอ่านคล่องเขียนคล่อง / ความพึงพอใจอาหารกลางวัน"
+                      placeholder="ระบุชื่อหัวข้อเรื่องที่ต้องการสำรวจข้อมูลในโรงเรียนท่าน..."
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900"
                     />
                   </div>
@@ -573,7 +580,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                       type="text"
                       value={form2_3.targetRespondents}
                       onChange={(e) => setForm2_3({ ...form2_3, targetRespondents: e.target.value })}
-                      placeholder="เช่น นักเรียนชั้น ป.4-6 และผู้ปกครองนักเรียนทุกคน"
+                      placeholder="ระบุกลุ่มผู้ตอบแบบสำรวจและจำนวนหรือระดับชั้น..."
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900"
                     />
                   </div>
@@ -587,7 +594,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     rows={4}
                     value={form2_3.questionsDraft}
                     onChange={(e) => setForm2_3({ ...form2_3, questionsDraft: e.target.value })}
-                    placeholder={"1. ระดับชั้นของผู้เรียน (ตัวเลือก)\n2. ความพึงพอใจต่อปริมาณและรสชาติอาหารกลางวัน (มาตรวัด 1-5)\n3. ความสะอาดและคุณค่าทางโภชนาการของเมนูผักผลไม้ (มาตรวัด 1-5)\n4. ข้อเสนอแนะเมนูอาหารที่ต้องการให้ปรับปรุงเพิ่มเติม (ปลายเปิด)"}
+                    placeholder={"พิมพ์ข้อคำถามของท่านเองอย่างน้อย 3–5 ข้อ (ระบุเลขข้อ 1., 2., 3. และประเภทคำถาม)..."}
                     className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900"
                   />
                 </div>
@@ -600,7 +607,7 @@ export const Level2Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     rows={2}
                     value={form2_3.dataDecision}
                     onChange={(e) => setForm2_3({ ...form2_3, dataDecision: e.target.value })}
-                    placeholder="เช่น หากผลสำรวจพบว่านักเรียนร้อยละ 60 ไม่ชอบทานผักเพราะชิ้นใหญ่ ผู้บริหารจะตัดสินใจปรับเมนูอาหารร่วมกับแม่ครัวและติดตามผลซ้ำใน 2 สัปดาห์"
+                    placeholder="สมมติผลข้อมูลที่พบจากแบบสำรวจ แล้วระบุแนวทางการตัดสินใจแก้ปัญหาและการติดตามผลของผู้บริหาร..."
                     className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
                   />
                 </div>

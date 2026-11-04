@@ -19,8 +19,8 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ profile, progr
   const radarChartRef = useRef<HTMLCanvasElement | null>(null);
   const chartInstances = useRef<{ bar?: Chart; radar?: Chart }>({});
 
-  const maxPre = PRE_TEST_QUESTIONS.length || 12;
-  const maxPost = POST_TEST_QUESTIONS.length || 12;
+  const maxPre = PRE_TEST_QUESTIONS.length || 10;
+  const maxPost = POST_TEST_QUESTIONS.length || 10;
   const pre = progress.preTestScore ?? 0;
   const post = progress.postTestScore ?? maxPost;
   const diff = post - pre;
@@ -34,7 +34,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ profile, progr
   })();
 
   const handlePrint = () => {
-    printElementById('certificate-printable', `LUNO_Certificate_${profile.name}`);
+    printElementById('certificate-printable', `LUNO_Certificate_${profile.name}`, 'landscape');
   };
 
   useEffect(() => {
@@ -181,7 +181,7 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ profile, progr
             className="flex-1 sm:flex-none px-5 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
           >
             <Printer className="w-4 h-4 text-emerald-400" />
-            <span>พิมพ์ / บันทึก PDF</span>
+            <span>พิมพ์เกียรติบัตร A4 / บันทึก PDF</span>
           </button>
           {onBackToDashboard && (
             <button
@@ -243,13 +243,13 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ profile, progr
         </div>
       </div>
 
-      {/* Certificate Printable Card (Executive Academic Certificate) */}
+      {/* Certificate Printable Card (A4 Landscape: 297mm x 210mm) */}
       <div
         id="certificate-printable"
-        className="relative overflow-hidden rounded-[28px] p-8 sm:p-14 bg-[#fcfdfa] border-[8px] border-[#0f172a] shadow-xl text-center text-slate-900 print:rounded-none print:shadow-none print:border-[6px] print:m-0"
+        className="relative overflow-hidden w-full max-w-[297mm] md:aspect-[297/210] mx-auto rounded-[20px] p-8 sm:p-14 bg-[#fcfdfa] border-[8px] border-[#0f172a] shadow-xl text-center text-slate-900 flex flex-col justify-between print:rounded-none print:shadow-none print:border-[6px] print:m-0"
       >
         {/* Inner Gold Border */}
-        <div className="absolute inset-2.5 sm:inset-3 border-2 border-amber-600/60 rounded-xl pointer-events-none" />
+        <div className="absolute inset-2.5 sm:inset-3.5 border-2 border-amber-600/60 rounded-xl pointer-events-none" />
         
         {/* Decorative Gold Corners */}
         <div className="absolute top-4 left-4 w-8 sm:w-12 h-8 sm:h-12 border-t-2 border-l-2 border-amber-600 pointer-events-none" />
@@ -257,40 +257,44 @@ export const CertificateView: React.FC<CertificateViewProps> = ({ profile, progr
         <div className="absolute bottom-4 left-4 w-8 sm:w-12 h-8 sm:h-12 border-b-2 border-l-2 border-amber-600 pointer-events-none" />
         <div className="absolute bottom-4 right-4 w-8 sm:w-12 h-8 sm:h-12 border-b-2 border-r-2 border-amber-600 pointer-events-none" />
 
-        <div className="max-w-2xl mx-auto space-y-4 relative z-10 py-2">
-          {/* Crest / Logo */}
-          <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center text-white mx-auto shadow-md shadow-amber-500/20 border-2 border-amber-300">
-            <GraduationCap className="w-9 h-9" />
+        <div className="max-w-3xl mx-auto w-full flex-1 flex flex-col justify-between relative z-10 py-2">
+          <div className="space-y-3 sm:space-y-4">
+            {/* Crest / Logo */}
+            <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center text-white mx-auto shadow-md shadow-amber-500/20 border-2 border-amber-300">
+              <GraduationCap className="w-9 h-9" />
+            </div>
+
+            <div className="text-xs sm:text-sm uppercase tracking-widest text-slate-500 font-extrabold">
+              คณะศึกษาศาสตร์ มหาวิทยาลัยขอนแก่น ร่วมกับ สพป.ขอนแก่น เขต 1
+            </div>
+
+            <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
+              เกียรติบัตรรับรองสมรรถนะผู้นำดิจิทัล
+            </h2>
           </div>
 
-          <div className="text-xs uppercase tracking-widest text-slate-500 font-extrabold">
-            คณะศึกษาศาสตร์ มหาวิทยาลัยขอนแก่น ร่วมกับ สพป.ขอนแก่น เขต 1
+          <div className="space-y-3 my-4">
+            <p className="text-xs sm:text-sm text-slate-500">
+              ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า
+            </p>
+
+            <div className="text-2xl sm:text-4xl font-black text-slate-900 border-b-2 border-amber-500/80 pb-2 inline-block min-w-[300px] px-6">
+              {profile.name}
+            </div>
+
+            <p className="text-sm sm:text-base text-slate-700 font-medium">
+              สถานศึกษา: <span className="text-slate-900 font-bold">{profile.school || 'สถานศึกษาขนาดเล็ก'}</span>
+            </p>
+
+            <p className="text-xs sm:text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed pt-1">
+              ได้ผ่านการพัฒนาภาวะผู้นำดิจิทัลของผู้บริหารสถานศึกษาขนาดเล็ก ครบทั้ง 4 โมดูล 10 หน่วยการเรียนรู้
+              (การสื่อสารดิจิทัล, การออกแบบวิถีการเรียนรู้, การพัฒนาด้านการทำงานเป็นทีมสู่ความเป็นมืออาชีพ, การสร้างค่านิยมดิจิทัล)
+              ตามเกณฑ์มาตรฐานโปรแกรม LUNO เป็นผลสำเร็จสมบูรณ์
+            </p>
           </div>
-
-          <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
-            เกียรติบัตรรับรองสมรรถนะผู้นำดิจิทัล
-          </h2>
-
-          <p className="text-xs sm:text-sm text-slate-500">
-            ขอมอบเกียรติบัตรฉบับนี้ให้ไว้เพื่อแสดงว่า
-          </p>
-
-          <div className="text-2xl sm:text-3xl font-black text-slate-900 border-b-2 border-amber-500/80 pb-2 inline-block min-w-[280px]">
-            {profile.name}
-          </div>
-
-          <p className="text-sm sm:text-base text-slate-700 font-medium">
-            สถานศึกษา: <span className="text-slate-900 font-bold">{profile.school || 'สถานศึกษาขนาดเล็ก'}</span>
-          </p>
-
-          <p className="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto leading-relaxed pt-2">
-            ได้ผ่านการพัฒนาภาวะผู้นำดิจิทัลของผู้บริหารสถานศึกษาขนาดเล็ก ครบทั้ง 4 โมดูล 10 หน่วยการเรียนรู้
-            (การสื่อสารดิจิทัล, การออกแบบวิถีการเรียนรู้, การพัฒนาด้านการทำงานเป็นทีมสู่ความเป็นมืออาชีพ, การสร้างค่านิยมดิจิทัล)
-            ตามเกณฑ์มาตรฐานโปรแกรม LUNO เป็นผลสำเร็จสมบูรณ์
-          </p>
 
           {/* Bottom signatures and certification info */}
-          <div className="pt-8 flex justify-between items-end text-xs text-slate-500 border-t border-slate-200 mt-6 px-4">
+          <div className="pt-5 flex justify-between items-end text-xs text-slate-500 border-t border-slate-200 mt-4 px-4">
             <div className="text-left space-y-1">
               <div className="font-bold text-teal-800">รหัสรับรอง: {certCode}</div>
               <div className="text-slate-500">ออกให้ ณ วันที่ {certDate}</div>

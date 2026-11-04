@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PRE_TEST_QUESTIONS, POST_TEST_QUESTIONS } from '../data/courseData';
-import { CheckCircle2, ChevronRight, ChevronLeft, Send, Sparkles, Check, ArrowRight, Award, Layers } from 'lucide-react';
+import { CheckCircle2, ChevronRight, ChevronLeft, Send, Sparkles, Check, ArrowRight, Award } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { SoundService } from '../services/audio';
 
@@ -143,8 +143,8 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizType, onComplete, onBack
             </h1>
             <p className="text-xs text-slate-500 mt-1">
               {quizType === 'pre'
-                ? `แบบทดสอบปรนัย 4 ตัวเลือก จำนวน ${totalQuestions} ข้อ (โมดูลละ 3 ข้อ ครอบคลุมครบ 10 หน่วยย่อย)`
-                : `แบบทดสอบวิเคราะห์สถานการณ์การบริหาร จำนวน ${totalQuestions} ข้อ หลังจากผ่านกิจกรรมครบ 4 โมดูล`}
+                ? `แบบทดสอบปรนัย 4 ตัวเลือก จำนวน ${totalQuestions} ข้อ`
+                : `แบบทดสอบวิเคราะห์สถานการณ์การบริหาร จำนวน ${totalQuestions} ข้อ`}
             </p>
           </div>
 
@@ -203,18 +203,12 @@ export const QuizView: React.FC<QuizViewProps> = ({ quizType, onComplete, onBack
 
       {/* Question Card */}
       <div className="bg-white border border-slate-200/80 rounded-[28px] p-6 sm:p-8 shadow-xs space-y-5">
-        {/* Counter, Module Badge, and Status */}
+        {/* Counter and Status */}
         <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-semibold">
           <div className="flex flex-wrap items-center gap-2">
             <span className="px-3 py-1 rounded-xl bg-slate-900 text-white font-bold">
               ข้อที่ {currentIndex + 1} / {totalQuestions}
             </span>
-            {currentQ.module && (
-              <span className="px-3 py-1 rounded-xl bg-indigo-50 text-indigo-800 border border-indigo-200 font-bold flex items-center gap-1.5">
-                <Layers className="w-3.5 h-3.5 text-indigo-600" />
-                {currentQ.module}
-              </span>
-            )}
           </div>
           {isAnswered ? (
             <span className="text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-xl flex items-center gap-1 font-bold">

@@ -241,7 +241,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   >
                     <span className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-indigo-600" />
-                      💡 ดูแนวทางการร่างวิสัยทัศน์ดิจิทัล 3-4 ประโยค (คลิกเพื่อดูแนวคิด)
+                      💡 ดูแนวทางการตอบวิสัยทัศน์ดิจิทัล 3-4 ประโยค (คลิกเพื่อดูโครงสร้างการตอบ)
                     </span>
                     <span className="text-xs text-indigo-700 underline font-semibold">
                       {showGuidance4_1 ? 'ซ่อนแนวทาง' : 'เปิดดูแนวทาง'}
@@ -249,8 +249,13 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   </button>
                   {showGuidance4_1 && (
                     <div className="p-4 bg-white border-t border-indigo-200 text-xs space-y-1.5 text-slate-700 leading-relaxed">
-                      <p><strong>โครงสร้างวิสัยทัศน์ดิจิทัลที่ดี:</strong> ระบุกรอบเวลา (เช่น ภายใน 3 ปี) + เป้าหมายด้านผู้เรียน + เป้าหมายด้านครู/การบริหาร + การมีส่วนร่วมของชุมชน</p>
-                      <p><strong>ตัวอย่างประโยควิสัยทัศน์:</strong> "ภายใน 3 ปี โรงเรียนจะขับเคลื่อนการเรียนรู้เชิงรุกด้วยเทคโนโลยีดิจิทัลที่ปลอดภัย ครูทุกคนใช้สื่อดิจิทัลในการจัดการเรียนรู้และใช้ระบบ Cloud ลดภาระงานเอกสาร นักเรียนมีทักษะการสืบค้นและรู้เท่าทันสื่อดิจิทัล โดยมีผู้ปกครองและชุมชนร่วมพัฒนาผ่านเครือข่ายออนไลน์อย่างต่อเนื่อง"</p>
+                      <p className="font-bold text-indigo-900">โครงสร้างและแนวทางการเขียนคำตอบด้วยตนเอง:</p>
+                      <p><strong>• คำถามนำทาง 3 ด้าน:</strong> ระบุเป้าหมายที่ต้องการให้เกิดขึ้นจริงกับ (1) นักเรียน (2) ครู และ (3) ชุมชน/ผู้ปกครอง ของโรงเรียนท่าน</p>
+                      <p><strong>• โครงสร้างวิสัยทัศน์ดิจิทัล (3–4 ประโยค):</strong> เริ่มต้นด้วยกรอบเวลา (เช่น "ภายใน ... ปี") ตามด้วยผลลัพธ์ด้านผู้เรียน การใช้เทคโนโลยีของครู และการมีส่วนร่วมของชุมชน</p>
+                      <p><strong>• แผนเวทีระดมความเห็น & ช่องทางสื่อสาร:</strong> ระบุรูปแบบการเปิดรับฟังความคิดเห็นจากคณะครู และช่องทางที่จะใช้เผยแพร่วิสัยทัศน์อย่างน้อย 2 ช่องทาง</p>
+                      <p className="text-[11px] text-rose-600 font-semibold pt-1">
+                        *ห้ามคัดลอกข้อความจากแนวทางหรือตัวอย่างต้นแบบมาส่ง ระบบจะตรวจจับและไม่อนุมัติให้ผ่านเกณฑ์
+                      </p>
                     </div>
                   )}
                 </div>
@@ -269,7 +274,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form4_1.promptStudent}
-                      placeholder="เช่น นักเรียนทุกคนได้เรียนรู้ผ่านสื่อดิจิทัลและฝึกทักษะการสืบค้นอย่างสนุกสนานและปลอดภัย"
+                      placeholder="ระบุทักษะหรือผลลัพธ์ด้านการใช้เทคโนโลยีที่ต้องการให้เกิดกับนักเรียน..."
                       onChange={(e) => setForm4_1({ ...form4_1, promptStudent: e.target.value })}
                       className="w-full bg-white border border-blue-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-200"
                     />
@@ -283,7 +288,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form4_1.promptTeacher}
-                      placeholder="เช่น ครูใช้เทคโนโลยีลดภาระงานเอกสาร และมีเวลาดูแลพัฒนาผู้เรียนเป็นรายบุคคลมากขึ้น"
+                      placeholder="ระบุแนวทางการใช้เทคโนโลยีช่วยจัดการเรียนรู้และลดภาระงานของครู..."
                       onChange={(e) => setForm4_1({ ...form4_1, promptTeacher: e.target.value })}
                       className="w-full bg-white border border-emerald-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-200"
                     />
@@ -297,7 +302,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form4_1.promptCommunity}
-                      placeholder="เช่น ผู้ปกครองและชุมชนเข้าถึงข้อมูลผลงานนักเรียนและกิจกรรมโรงเรียนได้สะดวกรวดเร็ว"
+                      placeholder="ระบุรูปแบบการเชื่อมโยงข้อมูลและการมีส่วนร่วมของผู้ปกครองและชุมชน..."
                       onChange={(e) => setForm4_1({ ...form4_1, promptCommunity: e.target.value })}
                       className="w-full bg-white border border-amber-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-200"
                     />
@@ -314,7 +319,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   <textarea
                     rows={4}
                     value={form4_1.visionStatement}
-                    placeholder="เช่น ภายใน 3 ปี โรงเรียนจะขับเคลื่อนการเรียนรู้เชิงรุกด้วยเทคโนโลยีดิจิทัล ครูทุกคนใช้สื่อดิจิทัลในการสอนสม่ำเสมอ นักเรียนมีทักษะดิจิทัลและคุณธรรม และผู้ปกครองมีส่วนร่วมผ่านระบบออนไลน์"
+                    placeholder="เรียบเรียงแถลงการณ์วิสัยทัศน์ดิจิทัลของโรงเรียนท่าน (ระบุกรอบเวลา และครอบคลุมทั้งนักเรียน ครู และชุมชน)..."
                     onChange={(e) => setForm4_1({ ...form4_1, visionStatement: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200/50 leading-relaxed"
                   />
@@ -329,7 +334,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <textarea
                       rows={2}
                       value={form4_1.forumPlan}
-                      placeholder="เช่น ประชุมครูประจำเดือน (30 นาที) หัวข้อ เทคโนโลยีอะไรจะช่วยลดงานเอกสารของครูได้มากที่สุด"
+                      placeholder="ระบุรูปแบบเวทีรับฟังความคิดเห็นครู ช่วงเวลา และประเด็นคำถามที่ใช้ระดมสมอง..."
                       onChange={(e) => setForm4_1({ ...form4_1, forumPlan: e.target.value })}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                     />
@@ -342,7 +347,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <textarea
                       rows={2}
                       value={form4_1.commVisionChannel}
-                      placeholder="เช่น กลุ่มไลน์ครู, ป้ายนิเทศหน้าโรงเรียน, เพจเฟซบุ๊กโรงเรียน, ประชุมผู้ปกครอง"
+                      placeholder="ระบุช่องทางที่จะใช้สื่อสารวิสัยทัศน์ให้ครู ผู้ปกครอง และชุมชนรับทราบ (อย่างน้อย 2 ช่องทาง)..."
                       onChange={(e) => setForm4_1({ ...form4_1, commVisionChannel: e.target.value })}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                     />
@@ -399,7 +404,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   >
                     <span className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-indigo-600" />
-                      💡 ดูแนวทางการออกแบบกิจกรรม Quick Win ตามหลัก TAM (คลิกเพื่อดูแนวคิด)
+                      💡 ดูแนวทางการตอบแผนกิจกรรม Quick Win ตามหลัก TAM (คลิกเพื่อดูโครงสร้างการตอบ)
                     </span>
                     <span className="text-xs text-indigo-700 underline font-semibold">
                       {showGuidance4_2 ? 'ซ่อนแนวทาง' : 'เปิดดูแนวทาง'}
@@ -407,9 +412,14 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   </button>
                   {showGuidance4_2 && (
                     <div className="p-4 bg-white border-t border-indigo-200 text-xs space-y-1.5 text-slate-700 leading-relaxed">
-                      <p><strong>กลุ่มเป้าหมายและความกังวล:</strong> ครูอาวุโสที่กังวลว่าพิมพ์งานช้าและกลัวทำข้อมูลในระบบหาย</p>
-                      <p><strong>รูปแบบกิจกรรม & Quick Win:</strong> กิจกรรม "คลินิกไอที 15 นาทีพักเบรก" จับคู่ครูรุ่นใหม่แนะนำการใช้ Google Voice Typing พิมพ์หนังสือราชการด้วยเสียงพูด เห็นผลสำเร็จทันทีในครั้งเดียว</p>
-                      <p><strong>ตัวชี้วัด:</strong> เชิงปริมาณ (ครูเข้าร่วม 100% และพิมพ์เอกสารสำเร็จอย่างน้อยคนละ 1 ฉบับ) / เชิงคุณภาพ (ครูมีความมั่นใจและลดความกังวลในการใช้เทคโนโลยี)</p>
+                      <p className="font-bold text-indigo-900">โครงสร้างและแนวทางการเขียนคำตอบด้วยตนเอง:</p>
+                      <p><strong>• กลุ่มเป้าหมายและความกังวล:</strong> ระบุกลุ่มครูในโรงเรียนและความกังวลหรืออุปสรรคในการใช้เทคโนโลยี</p>
+                      <p><strong>• รูปแบบกิจกรรม & ความถี่:</strong> ออกแบบกิจกรรมสั้นๆ ที่เป็นกันเอง ไม่กดดัน พร้อมระบุความถี่และผู้รับผิดชอบดูแล</p>
+                      <p><strong>• รายละเอียด Quick Win:</strong> ระบุเครื่องมือหรือเทคนิคที่ใช้ง่าย (Easy to Use) และช่วยลดภาระงานได้ทันทีในครั้งเดียว (Useful)</p>
+                      <p><strong>• ตัวชี้วัดความสำเร็จ:</strong> แยกเป็นตัวชี้วัดเชิงปริมาณ (จำนวน/ร้อยละ) และตัวชี้วัดเชิงคุณภาพ (ความมั่นใจ/เจตคติเชิงบวก)</p>
+                      <p className="text-[11px] text-rose-600 font-semibold pt-1">
+                        *ห้ามคัดลอกข้อความจากแนวทางหรือตัวอย่างต้นแบบมาส่ง ระบบจะตรวจจับและไม่อนุมัติให้ผ่านเกณฑ์
+                      </p>
                     </div>
                   )}
                 </div>
@@ -422,7 +432,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   <input
                     type="text"
                     value={form4_2.targetGroupConcern}
-                    placeholder="เช่น ครูอาวุโส กังวลว่าจะจำขั้นตอนไม่ได้ หรือกลัวทำคอมพิวเตอร์เสียหาย"
+                    placeholder="ระบุกลุ่มครูเป้าหมาย และสาเหตุความกังวลต่อการใช้เทคโนโลยี..."
                     onChange={(e) => setForm4_2({ ...form4_2, targetGroupConcern: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200/50"
                   />
@@ -437,7 +447,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form4_2.activityFormat}
-                      placeholder="เช่น เวิร์กช็อปสั้น 15 นาทีช่วงพักบ่าย พร้อมชากาแฟ (Tech Coffee Break)"
+                      placeholder="ระบุชื่อหรือรูปแบบกิจกรรมสั้นๆ ที่สร้างบรรยากาศผ่อนคลาย..."
                       onChange={(e) => setForm4_2({ ...form4_2, activityFormat: e.target.value })}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                     />
@@ -450,7 +460,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form4_2.frequencySchedule}
-                      placeholder="เช่น สัปดาห์ละ 1 ครั้ง (วันพุธบ่าย) ผู้รับผิดชอบ: ผู้อำนวยการร่วมกับครูแกนนำ"
+                      placeholder="ระบุความถี่ในการจัดกิจกรรม และผู้รับผิดชอบ/ครูพี่เลี้ยง..."
                       onChange={(e) => setForm4_2({ ...form4_2, frequencySchedule: e.target.value })}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
                     />
@@ -465,7 +475,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   <textarea
                     rows={2}
                     value={form4_2.quickWinDetail}
-                    placeholder="เช่น ทดลองใช้ Google Docs Voice Typing พิมพ์ข้อความด้วยเสียงพูด ช่วยลดเวลาพิมพ์ได้ 50% ทันที"
+                    placeholder="อธิบายทักษะหรือเครื่องมือที่จะให้ครูทดลองทำแล้วเห็นผลช่วยลดงานได้ทันทีในครั้งเดียว..."
                     onChange={(e) => setForm4_2({ ...form4_2, quickWinDetail: e.target.value })}
                     className="w-full bg-white border border-emerald-300 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-200"
                   />
@@ -480,7 +490,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form4_2.metricQuantity}
-                      placeholder="เช่น ครูเข้าร่วมอย่างน้อย 80% และทดลองใช้เครื่องมือสำเร็จทุกคนในครั้งแรก"
+                      placeholder="ระบุตัวชี้วัดเชิงปริมาณที่นับหรือวัดผลได้ชัดเจน..."
                       onChange={(e) => setForm4_2({ ...form4_2, metricQuantity: e.target.value })}
                       className="w-full bg-white border border-blue-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-200"
                     />
@@ -493,7 +503,7 @@ export const Level4Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form4_2.metricQuality}
-                      placeholder="เช่น ครูมีความมั่นใจเพิ่มขึ้น และรู้สึกเชิงบวกว่าเทคโนโลยีช่วยลดภาระงานได้จริง"
+                      placeholder="ระบุตัวชี้วัดเชิงคุณภาพด้านความมั่นใจและเจตคติของครู..."
                       onChange={(e) => setForm4_2({ ...form4_2, metricQuality: e.target.value })}
                       className="w-full bg-white border border-amber-300 rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-200"
                     />

@@ -230,7 +230,7 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   >
                     <span className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-rose-600" />
-                      💡 ดูแนวทางการเขียน Micro-journal ของผู้นำต้นแบบ (คลิกเพื่อดูแนวคิด)
+                      💡 ดูแนวทางการตอบ Micro-journal 3 ช่อง (คลิกเพื่อดูโครงสร้างการตอบ)
                     </span>
                     <span className="text-xs text-rose-700 underline font-semibold">
                       {showGuidance3_1 ? 'ซ่อนแนวทาง' : 'เปิดดูแนวทาง'}
@@ -238,11 +238,15 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   </button>
                   {showGuidance3_1 && (
                     <div className="p-4 bg-white border-t border-rose-200 text-xs space-y-1.5 text-slate-700 leading-relaxed">
-                      <p><strong>ตัวอย่างเครื่องมือและเป้าหมาย:</strong> ใช้ Canva ออกแบบป้ายประกาศประชุมผู้ปกครองให้เสร็จใน 15 นาที</p>
-                      <p><strong>ช่องที่ 1 (ผลลัพธ์):</strong> ทดลองเลือกแม่แบบประกาศโรงเรียนและใส่โลโก้สำเร็จ ได้ไฟล์ภาพส่งไลน์กลุ่มครูทันที</p>
-                      <p><strong>ช่องที่ 2 (อุปสรรค):</strong> ช่วงแรกหาฟอนต์ภาษาไทยที่อ่านง่ายไม่เจอ จึงตั้งค่าฟอนต์มาตรฐานไว้ใช้ครั้งต่อไป</p>
-                      <p><strong>ช่องที่ 3 (จริยธรรม):</strong> ตรวจสอบภาพประกอบว่าเป็นภาพฟรีปลอดลิขสิทธิ์ และไม่เปิดเผยข้อมูลส่วนบุคคล (PDPA) ของนักเรียน</p>
-                      <p><strong>แผนถ่ายทอด 10 นาที:</strong> ช่วงเปิดประชุมครูวันศุกร์ สาธิตวิธีแชร์ลิงก์แม่แบบ Canva ให้ครูประจำชั้นลองแก้ไขข้อความเอง</p>
+                      <p className="font-bold text-rose-900">โครงสร้างและแนวทางการเขียนคำตอบด้วยตนเอง:</p>
+                      <p><strong>• เครื่องมือและเป้าหมาย:</strong> ระบุชื่อเครื่องมือดิจิทัล 1 ชนิด และชิ้นงานบริหารหรือการสื่อสารที่ท่านได้ทดลองทำด้วยตนเอง</p>
+                      <p><strong>• ช่องที่ 1 (ผลลัพธ์):</strong> อธิบายสิ่งที่ได้ลงมือทำจริง ผลลัพธ์ที่ได้ และประโยชน์ที่เกิดขึ้นต่อการทำงาน</p>
+                      <p><strong>• ช่องที่ 2 (อุปสรรค):</strong> ระบุจุดที่ติดขัดหรือไม่คุ้นเคยระหว่างทดลองทำ และวิธีแก้ปัญหาของท่าน</p>
+                      <p><strong>• ช่องที่ 3 (จริยธรรม):</strong> ระบุการตรวจสอบด้านลิขสิทธิ์สื่อ (ภาพ/ฟอนต์) การคุ้มครองข้อมูลส่วนบุคคล (PDPA) หรือความถูกต้องของข้อมูล</p>
+                      <p><strong>• แผนถ่ายทอด 10 นาที:</strong> ระบุช่วงเวลา กลุ่มเป้าหมายครู และขั้นตอนสั้นๆ ที่จะนำไปสาธิตแบ่งปันทีมงาน</p>
+                      <p className="text-[11px] text-rose-600 font-semibold pt-1">
+                        *ห้ามคัดลอกข้อความจากแนวทางหรือตัวอย่างต้นแบบมาส่ง ระบบจะตรวจจับและไม่อนุมัติให้ผ่านเกณฑ์
+                      </p>
                     </div>
                   )}
                 </div>
@@ -255,7 +259,7 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   <input
                     type="text"
                     value={form3_1.toolAndGoal}
-                    placeholder="เช่น ใช้ Google Sheets สร้างตารางสรุปสถิติการมาเรียนรายวันอัตโนมัติ"
+                    placeholder="ระบุชื่อเครื่องมือดิจิทัลที่ทดลองใช้ และเป้าหมายของชิ้นงาน..."
                     onChange={(e) => setForm3_1({ ...form3_1, toolAndGoal: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200/50"
                   />
@@ -326,7 +330,7 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   <input
                     type="text"
                     value={form3_1.microTeachingPlan}
-                    placeholder="เช่น ช่วงพักเที่ยงวันพุธ (10 นาที) สาธิตวิธีกรอกข้อมูลใน Google Sheets บนมือถือให้ครูประจำชั้น 6 คน"
+                    placeholder="ระบุช่วงเวลา กลุ่มครูเป้าหมาย และขั้นตอนสั้นๆ ที่จะสาธิตให้ทีมดูภายใน 10 นาที..."
                     onChange={(e) => setForm3_1({ ...form3_1, microTeachingPlan: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200/50"
                   />
@@ -378,7 +382,7 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   >
                     <span className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-rose-600" />
-                      💡 ดูแนวทางการวางผังงานทีม 3 เสาหลัก (คลิกเพื่อดูแนวคิด)
+                      💡 ดูแนวทางการตอบผังงานทีม 3 เสาหลัก (คลิกเพื่อดูโครงสร้างการตอบ)
                     </span>
                     <span className="text-xs text-rose-700 underline font-semibold">
                       {showGuidance3_2 ? 'ซ่อนแนวทาง' : 'เปิดดูแนวทาง'}
@@ -386,10 +390,14 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   </button>
                   {showGuidance3_2 && (
                     <div className="p-4 bg-white border-t border-rose-200 text-xs space-y-1.5 text-slate-700 leading-relaxed">
-                      <p><strong>ชื่องานและบทบาท:</strong> การจัดทำรายงานประเมินตนเอง (SAR) — ผอ. กำกับภาพรวม / หัวหน้าวิชาการดูแลโฟลเดอร์กลาง / ครูประจำชั้นกรอกข้อมูล</p>
-                      <p><strong>เสาหลัก 1 (การสื่อสาร):</strong> แจ้งโจทย์และลิงก์ผ่าน LINE กลุ่มวิชาการ พร้อมปักหมุดประกาศทุกวันจันทร์</p>
-                      <p><strong>เสาหลัก 2 (ไฟล์กลางบน Cloud):</strong> สร้างโฟลเดอร์ Google Drive แยกตามมาตรฐาน ตั้งชื่อไฟล์ YYYYMMDD_ชื่อเรื่อง_v1 กำหนดสิทธิ์ครูเป็น Editor</p>
-                      <p><strong>เสาหลัก 3 (การติดตามงาน):</strong> ใช้ตาราง Checklist ใน Google Sheets แสดงสถานะสีเขียวเมื่อส่งแล้ว และทบทวนทุกวันศุกร์เวลา 15.30 น.</p>
+                      <p className="font-bold text-rose-900">โครงสร้างและแนวทางการเขียนคำตอบด้วยตนเอง:</p>
+                      <p><strong>• ชื่องานและบทบาท:</strong> ระบุภารกิจงานของโรงเรียน 1 เรื่อง พร้อมแบ่งบทบาทหน้าที่ของ ผอ. และคณะครู</p>
+                      <p><strong>• เสาหลัก 1 (การสื่อสาร):</strong> ระบุช่องทางสื่อสารของทีม ช่วงเวลาแจ้งงาน และวิธีปักหมุดข้อมูลสำคัญ</p>
+                      <p><strong>• เสาหลัก 2 (ไฟล์กลางบน Cloud):</strong> ระบุการจัดโครงสร้างโฟลเดอร์บน Cloud มาตรฐานการตั้งชื่อไฟล์ การกำหนดสิทธิ์ และผู้ดูแลไฟล์หลัก</p>
+                      <p><strong>• เสาหลัก 3 (การติดตามงาน):</strong> ระบุเครื่องมือที่ใช้ติดตามความก้าวหน้าของงานและกำหนดวันส่งงาน</p>
+                      <p className="text-[11px] text-rose-600 font-semibold pt-1">
+                        *ห้ามคัดลอกข้อความจากแนวทางหรือตัวอย่างต้นแบบมาส่ง ระบบจะตรวจจับและไม่อนุมัติให้ผ่านเกณฑ์
+                      </p>
                     </div>
                   )}
                 </div>
@@ -402,7 +410,7 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   <input
                     type="text"
                     value={form3_2.teamTask}
-                    placeholder="เช่น การจัดทำรายงาน SAR: ผอ. กำกับภาพรวม / ครูวิชาการ ดูแลไฟล์กลาง / ครูประจำชั้น ส่งข้อมูลผลสัมฤทธิ์"
+                    placeholder="ระบุชื่องานทีมของโรงเรียน และบทบาทหน้าที่ของสมาชิกแต่ละฝ่าย..."
                     onChange={(e) => setForm3_2({ ...form3_2, teamTask: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-200/50"
                   />
@@ -418,7 +426,7 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form3_2.commWorkflow}
-                      placeholder="เช่น หัวหน้าวิชาการแจ้งลิงก์และกำหนดการผ่าน LINE กลุ่มครู พร้อมปักหมุดไว้ทุกต้นสัปดาห์"
+                      placeholder="ระบุกติกาการสื่อสารของทีม ช่องทางที่ใช้ และช่วงเวลาการแจ้งประสานงาน..."
                       onChange={(e) => setForm3_2({ ...form3_2, commWorkflow: e.target.value })}
                       className="w-full bg-white border border-emerald-300 rounded-xl px-4 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-200"
                     />
@@ -432,7 +440,7 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <textarea
                       rows={2}
                       value={form3_2.driveWorkflow}
-                      placeholder="เช่น ใช้ Google Drive แยกโฟลเดอร์ตามฝ่าย ตั้งชื่อไฟล์ ปีเดือนวัน_ชื่องาน_v1 กำหนดสิทธิ์ Editor เฉพาะผู้รับผิดชอบ"
+                      placeholder="ระบุชื่อโฟลเดอร์กลางบน Cloud รูปแบบการตั้งชื่อไฟล์ การกำหนดสิทธิ์ และผู้ดูแลไฟล์หลัก..."
                       onChange={(e) => setForm3_2({ ...form3_2, driveWorkflow: e.target.value })}
                       className="w-full bg-white border border-blue-300 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-200"
                     />
@@ -446,7 +454,7 @@ export const Level3Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form3_2.trackingWorkflow}
-                      placeholder="เช่น ติดตามผ่านตาราง Checklist ใน Google Sheets และแจ้งเตือนใน Google Calendar ก่อนกำหนดส่ง 3 วัน"
+                      placeholder="ระบุเครื่องมือติดตามความคืบหน้าของงาน และกรอบเวลาการส่งงาน..."
                       onChange={(e) => setForm3_2({ ...form3_2, trackingWorkflow: e.target.value })}
                       className="w-full bg-white border border-amber-300 rounded-xl px-4 py-2 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-200"
                     />

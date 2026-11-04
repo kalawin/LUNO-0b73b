@@ -282,24 +282,24 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   >
                     <span className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-amber-600" />
-                      💡 ดูตัวอย่างแนวทางคำตอบของโรงเรียนต้นแบบ (คลิกเพื่อศึกษาตัวอย่าง)
+                      💡 ดูแนวทางการตอบแผนสื่อสาร 4 ช่อง (คลิกเพื่อดูโครงสร้างการตอบ)
                     </span>
                     <span className="text-xs text-amber-700 underline font-semibold">
-                      {showSampleGuidance ? 'ซ่อนตัวอย่าง' : 'เปิดดูตัวอย่าง'}
+                      {showSampleGuidance ? 'ซ่อนแนวทาง' : 'เปิดดูแนวทาง'}
                     </span>
                   </button>
                   {showSampleGuidance && (
                     <div className="p-4 bg-white border-t border-amber-200 text-xs sm:text-sm space-y-2 text-slate-700 leading-relaxed">
-                      <p className="font-bold text-amber-900">ตัวอย่างแนวคิด: กรณีปิดเรียนฉุกเฉินน้ำท่วม (เรื่อง A)</p>
+                      <p className="font-bold text-amber-900">โครงสร้างและแนวทางการเขียนคำตอบด้วยตนเอง:</p>
                       <ul className="list-disc list-inside space-y-1.5 text-slate-600">
-                        <li><strong>เป้าหมาย:</strong> ให้ผู้ปกครองทุกคนทราบว่าวันนี้ปิดเรียนฉุกเฉิน ก่อน 07.00 น.</li>
-                        <li><strong>ผู้รับสารหลัก:</strong> ผู้ปกครองนักเรียน (งดส่งบุตรหลานมาโรงเรียน)</li>
-                        <li><strong>ผู้รับสารรอง:</strong> ครูและบุคลากร (เตรียมจัดการสอนเสริมและเวรประจำวัน)</li>
-                        <li><strong>ข้อความหลัก:</strong> "ขอแจ้งปิดการเรียนการสอนวันนี้ เนื่องจากน้ำท่วมถนนเข้าโรงเรียน ขอให้ผู้ปกครองงดส่งนักเรียนเพื่อความปลอดภัย โรงเรียนจะแจ้งวันเปิดเรียนอีกครั้งผ่านกลุ่มนี้"</li>
-                        <li><strong>ช่องทาง:</strong> 1) LINE กลุ่มผู้ปกครอง (ด่วนตอนเช้า) 2) หอกระจายข่าวหมู่บ้าน (ครอบคลุมบ้านไม่มีสมาร์ทโฟน) 3) เพจโรงเรียน (ประกาศทางการ)</li>
+                        <li><strong>เป้าหมาย:</strong> เขียน 1 ประโยคตามโครงสร้าง "ต้องการให้ [กลุ่มเป้าหมาย] [ทราบ/ปฏิบัติสิ่งใด] ภายใน [กรอบเวลาใด]"</li>
+                        <li><strong>ผู้รับสารหลัก:</strong> ระบุกลุ่มเป้าหมายหลักที่ต้องรับทราบและปฏิบัติทันที พร้อมระบุสิ่งที่ต้องทำ</li>
+                        <li><strong>ผู้รับสารรอง:</strong> ระบุบุคลากรหรือผู้เกี่ยวข้องที่ช่วยประสานงานและสนับสนุน</li>
+                        <li><strong>ข้อความหลัก:</strong> ร่างข้อความสั้นกระชับไม่เกิน 3 ประโยค (1. เกิดอะไรขึ้น 2. ต้องทำอย่างไร 3. ติดตามข้อมูลต่อได้ที่ไหน/เมื่อไร)</li>
+                        <li><strong>ช่องทาง:</strong> เลือก 2–3 ช่องทางที่ผสมผสานทั้งช่องทางดิจิทัลที่รวดเร็วและช่องทางชุมชนสำหรับผู้ไม่มีสมาร์ทโฟน พร้อมระบุเหตุผล</li>
                       </ul>
-                      <p className="text-[11px] text-slate-400 italic mt-2">
-                        *ข้อความด้านบนเป็นเพียงตัวอย่างแนวคิด โปรดเขียนแผนที่สอดคล้องกับโรงเรียนของท่านลงในแบบฟอร์มด้านล่าง
+                      <p className="text-[11px] text-rose-600 font-semibold mt-2">
+                        *ห้ามคัดลอกข้อความจากตัวอย่างต้นแบบมาส่ง ระบบจะตรวจจับและไม่อนุมัติให้ผ่านเกณฑ์ โปรดเขียนด้วยสำนวนและบริบทของโรงเรียนท่านเอง
                       </p>
                     </div>
                   )}
@@ -314,7 +314,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     type="text"
                     value={form1_1.goal}
                     onChange={(e) => setForm1_1({ ...form1_1, goal: e.target.value })}
-                    placeholder="เช่น ให้ผู้ปกครองทุกคนทราบเรื่องปิดเรียนฉุกเฉิน ก่อนเวลา 07.00 น."
+                    placeholder="ระบุเป้าหมาย 1 ประโยค (ต้องการให้ใคร ทราบหรือทำอะไร ภายในเวลาใด)..."
                     className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
                   />
                 </div>
@@ -323,25 +323,25 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                      2.1 ผู้รับสารหลัก (สิ่งที่ต้องรู้)
+                      2.1 ผู้รับสารหลัก (สิ่งที่ต้องรู้/ปฏิบัติ)
                     </label>
                     <input
                       type="text"
                       value={form1_1.audienceMain}
                       onChange={(e) => setForm1_1({ ...form1_1, audienceMain: e.target.value })}
-                      placeholder="เช่น ผู้ปกครองนักเรียนทุกคน (งดส่งนักเรียนมาโรงเรียน)"
+                      placeholder="ระบุกลุ่มผู้รับสารหลัก และสิ่งที่ต้องการให้ปฏิบัติ..."
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                     />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                      2.2 ผู้รับสารรอง (สิ่งที่ต้องรู้)
+                      2.2 ผู้รับสารรอง (บทบาทสนับสนุน)
                     </label>
                     <input
                       type="text"
                       value={form1_1.audienceSub}
                       onChange={(e) => setForm1_1({ ...form1_1, audienceSub: e.target.value })}
-                      placeholder="เช่น ครูและบุคลากร (เตรียมจัดการสอนเสริมและรอประกาศ)"
+                      placeholder="ระบุกลุ่มผู้รับสารรอง และบทบาทในการช่วยประสานงาน..."
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                     />
                   </div>
@@ -361,7 +361,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     rows={3}
                     value={form1_1.keyMessage}
                     onChange={(e) => setForm1_1({ ...form1_1, keyMessage: e.target.value })}
-                    placeholder="เช่น ขอแจ้งปิดเรียนวันนี้ 1 วัน เนื่องจากน้ำท่วมถนน ขอให้งดส่งนักเรียนเพื่อความปลอดภัย โรงเรียนจะแจ้งวันเปิดเรียนอีกครั้งผ่านกลุ่มนี้"
+                    placeholder="ร่างข้อความประชาสัมพันธ์สั้นกระชับไม่เกิน 3 ประโยค ด้วยสำนวนของท่านเอง..."
                     className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
                   />
                 </div>
@@ -375,7 +375,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     rows={3}
                     value={form1_1.channels}
                     onChange={(e) => setForm1_1({ ...form1_1, channels: e.target.value })}
-                    placeholder="เช่น 1) LINE กลุ่มผู้ปกครอง: เข้าถึงเร็วในตอนเช้า&#10;2) หอกระจายข่าวหมู่บ้าน: สำหรับบ้านที่ไม่มีสมาร์ทโฟน&#10;3) Facebook เพจโรงเรียน: ประกาศทางการ"
+                    placeholder="ระบุช่องทางสื่อสาร 2–3 ช่องทาง (ครอบคลุมทั้งออนไลน์และช่องทางชุมชน) พร้อมอธิบายเหตุผล..."
                     className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
                   />
                 </div>
@@ -422,7 +422,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form1_2.networkInternal}
-                      placeholder="เช่น ครูและบุคลากร 12 คน ผ่าน LINE กลุ่มครูและประชุมประจำเดือน"
+                      placeholder="ระบุกลุ่มบุคลากรภายในโรงเรียน และช่องทางดิจิทัลที่ใช้ประสานงาน..."
                       onChange={(e) => setForm1_2({ ...form1_2, networkInternal: e.target.value })}
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                     />
@@ -432,7 +432,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form1_2.networkParents}
-                      placeholder="เช่น เครือข่ายผู้ปกครองรายชั้นเรียน ผ่าน LINE ห้องเรียนและสมุดพก"
+                      placeholder="ระบุกลุ่มผู้ปกครอง/นักเรียน และช่องทางที่ใช้สื่อสารแลกเปลี่ยน..."
                       onChange={(e) => setForm1_2({ ...form1_2, networkParents: e.target.value })}
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                     />
@@ -442,7 +442,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form1_2.networkCommunity}
-                      placeholder="เช่น อบต. / ผู้ใหญ่บ้าน / รพ.สต. ผ่านโทรศัพท์สายตรงและหนังสือราชการ"
+                      placeholder="ระบุหน่วยงานท้องถิ่น/ผู้นำชุมชน และช่องทางที่ใช้เชื่อมโยง..."
                       onChange={(e) => setForm1_2({ ...form1_2, networkCommunity: e.target.value })}
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                     />
@@ -452,7 +452,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                     <input
                       type="text"
                       value={form1_2.networkExternal}
-                      placeholder="เช่น ชมรมศิษย์เก่า / มูลนิธิ / มหาวิทยาลัย ผ่านเพจ Facebook โรงเรียน"
+                      placeholder="ระบุเครือข่ายภายนอก/ศิษย์เก่า และช่องทางประชาสัมพันธ์..."
                       onChange={(e) => setForm1_2({ ...form1_2, networkExternal: e.target.value })}
                       className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                     />
@@ -469,7 +469,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                       <input
                         type="text"
                         value={form1_2.inquiryCase}
-                        placeholder="เช่น ผู้ปกครองกังวลเรื่องความปลอดภัยของอาหารกลางวัน หรือการบ้านออนไลน์"
+                        placeholder="ระบุประเด็นคำถามหรือข้อกังวลจากผู้ปกครอง/ชุมชนที่ต้องการชี้แจง..."
                         onChange={(e) => setForm1_2({ ...form1_2, inquiryCase: e.target.value })}
                         className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                       />
@@ -479,7 +479,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                       <textarea
                         rows={3}
                         value={form1_2.responseCase}
-                        placeholder="เช่น ขอบคุณสำหรับข้อเสนอแนะและรับทราบความกังวลครับ โรงเรียนได้ดำเนินการตรวจสอบร่วมกับครูเวรประจำวัน และจะรายงานภาพเมนูอาหารในกลุ่มไลน์ทุกวันเพื่อความมั่นใจครับ"
+                        placeholder="ร่างข้อความตอบกลับตามหลัก 4 ขั้นตอน (ขอบคุณ-ชี้แจงข้อเท็จจริง-แนวทางพัฒนา-เชิญชวนมีส่วนร่วม)..."
                         onChange={(e) => setForm1_2({ ...form1_2, responseCase: e.target.value })}
                         className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
                       />
@@ -527,7 +527,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   <input
                     type="text"
                     value={form1_3.mediaTitle}
-                    placeholder="เช่น กิจกรรมห้องเรียนต้นแบบ Active Learning และทักษะอาชีพของนักเรียน"
+                    placeholder="ระบุชื่อหัวข้อข่าวหรือกิจกรรมประชาสัมพันธ์ของโรงเรียนท่าน..."
                     onChange={(e) => setForm1_3({ ...form1_3, mediaTitle: e.target.value })}
                     className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                   />
@@ -538,7 +538,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   <textarea
                     rows={2}
                     value={form1_3.mediaHighlight}
-                    placeholder="เช่น เล่าเรื่องการที่นักเรียนได้ลงมือปฏิบัติจริงด้วยความสุข โดยมีคุณครูคอยดูแลใกล้ชิดผ่านเพจ Facebook โรงเรียนและกลุ่ม LINE"
+                    placeholder="อธิบายคุณค่าของกิจกรรม พัฒนาการที่เกิดขึ้นกับผู้เรียน และช่องทางที่จะนำไปเผยแพร่..."
                     onChange={(e) => setForm1_3({ ...form1_3, mediaHighlight: e.target.value })}
                     className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                   />
@@ -604,7 +604,7 @@ export const Level1Interactive: React.FC<Props> = ({ onPassLevel, onBackToDashbo
                   <input
                     type="text"
                     value={form1_3.consentNote}
-                    placeholder="เช่น ภาพถ่ายนี้ได้รับความยินยอมจากผู้ปกครองเพื่อการประชาสัมพันธ์กิจกรรมทางการศึกษาของโรงเรียนเท่านั้น"
+                    placeholder="ร่างข้อความแจ้งการขอความยินยอมจากผู้ปกครองและวัตถุประสงค์การเผยแพร่ตามหลัก PDPA..."
                     onChange={(e) => setForm1_3({ ...form1_3, consentNote: e.target.value })}
                     className="w-full bg-white border border-slate-200 rounded-2xl px-4 py-2 text-sm text-slate-900"
                   />

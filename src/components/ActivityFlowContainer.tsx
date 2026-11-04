@@ -394,7 +394,7 @@ export const ActivityFlowContainer: React.FC<Props> = ({
           <div className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-2 bg-teal-50/70 border border-teal-200/80 rounded-2xl px-4 py-3 text-xs text-teal-900">
               <span>
-                💡 <strong>คำแนะนำ:</strong> กรุณากรอกข้อมูลตามบริบทจริงของโรงเรียนท่านให้ครบทุกช่อง (หลีกเลี่ยงการคัดลอกข้อความซ้ำกันในหลายช่อง)
+                💡 <strong>คำแนะนำ:</strong> กรุณาคิดและเขียนคำตอบตามบริบทจริงของสถานศึกษาท่านด้วยตนเอง (ห้ามคัดลอกข้อความจากแนวทางหรือตัวอย่างต้นแบบ ระบบจะตรวจสอบและไม่อนุมัติให้ผ่านหากใช้คำตอบซ้ำกับตัวอย่าง)
               </span>
               <button
                 type="button"
@@ -404,6 +404,20 @@ export const ActivityFlowContainer: React.FC<Props> = ({
                 <Printer className="w-3.5 h-3.5 text-teal-600" /> พิมพ์แบบฟอร์มใบงาน
               </button>
             </div>
+
+            {evalResult.hasCopiedSample && (
+              <div className="bg-rose-50 border-2 border-rose-300 rounded-2xl p-4 flex items-start gap-3 text-xs sm:text-sm text-rose-900">
+                <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                <div>
+                  <div className="font-extrabold text-rose-950">
+                    ตรวจพบการใช้ข้อความซ้ำกับตัวอย่างหรือแนวทางของระบบ ({evalResult.copiedFields?.join(', ')})
+                  </div>
+                  <p className="text-xs text-rose-800 mt-0.5">
+                    ระบบไม่อนุญาตให้คัดลอกคำตอบจากแนวทางหรือตัวอย่างต้นแบบมาส่งโดยตรง กรุณาปรับแก้ข้อความในช่องดังกล่าวให้เป็นสำนวนและข้อมูลตามบริบทจริงของโรงเรียนท่านครับ
+                  </p>
+                </div>
+              </div>
+            )}
 
             {childrenStep4}
 
